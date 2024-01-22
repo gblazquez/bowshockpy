@@ -5,6 +5,8 @@
 # ignore files in folder
 models/*
 
+*ignore.ipynb
+
 # Git cannot commit empty folder, so add exceptions .gitkeep files
 !*/.gitkeep
 
