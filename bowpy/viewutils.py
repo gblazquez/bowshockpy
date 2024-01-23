@@ -80,6 +80,7 @@ def mosaic_slices(image_cube, nrow, ncol, chan_0, chan_f, wcs, box,
 #     else:
 #         extent = None
 #
+    extent = None
     if kwargs['subgridspec'] is not None:
         supgrid = kwargs['subgridspec']
         gs = supgrid.subgridspec(
