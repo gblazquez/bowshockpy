@@ -11,7 +11,7 @@ import matplotlib.font_manager as fm
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 from itertools import product
-
+
 from astropy import units as u
 from astropy.wcs.utils import pixel_to_skycoord, skycoord_to_pixel
 from astropy.coordinates import SkyCoord
@@ -19,7 +19,7 @@ from astropy.coordinates import SkyCoord
 from photutils.isophote import EllipseGeometry
 from photutils import EllipticalAperture, EllipticalAnnulus, CircularAperture, RectangularAperture
 
-
+import bowpy.utils as mf
 
 
 def mosaic_slices(image_cube, nrow, ncol, chan_0, chan_f, wcs, box,
