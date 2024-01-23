@@ -41,45 +41,45 @@ def mosaic_slices(image_cube, nrow, ncol, chan_0, chan_f, wcs, box,
     plt.rc('text', usetex=kwargs['use_tex'])
 #   plt.rc('font', family='serif')
 
-    if kwargs['offset_coordinates']:
-        center_skycoords = SkyCoord(mf.default_params["vla4b_deg"][0]*u.deg,
-                                    mf.default_params["vla4b_deg"][1]*u.deg)
-
-        center_pixels = [
-            float(skycoord_to_pixel(center_skycoords, wcs)[0]),
-            float(skycoord_to_pixel(center_skycoords, wcs)[1])
-        ]
-
-        x0y0_extent = mf.pixel2offset([0,0],
-                             [kwargs["header"]["CDELT1"]*3600,
-                              kwargs["header"]["CDELT2"]*3600],
-                             center_pixels,
-                             bounds=True)
-
-        xNyN_extent = mf.pixel2offset([kwargs["header"]["NAXIS1"]-1,
-                                        kwargs["header"]["NAXIS2"]-1],
-                             [kwargs["header"]["CDELT1"]*3600,
-                              kwargs["header"]["CDELT2"]*3600],
-                             center_pixels,
-                             bounds=True)
-
-        extent = [x0y0_extent[0], xNyN_extent[0],
-                   x0y0_extent[1], xNyN_extent[1]]
-        x0y0lim = mf.pixel2offset(box[0],
-                             [kwargs['header']["CDELT1"]*3600,
-                              kwargs['header']["CDELT2"]*3600],
-                             center_pixels,
-                             bounds=True)
-
-        xNyNlim = mf.pixel2offset(box[1],
-                             [kwargs['header']["CDELT1"]*3600,
-                              kwargs['header']["CDELT2"]*3600],
-                             center_pixels,
-                             bounds=True)
-
-    else:
-        extent = None
-
+#     if kwargs['offset_coordinates']:
+#         center_skycoords = SkyCoord(mf.default_params["vla4b_deg"][0]*u.deg,
+#                                     mf.default_params["vla4b_deg"][1]*u.deg)
+#
+#         center_pixels = [
+#             float(skycoord_to_pixel(center_skycoords, wcs)[0]),
+#             float(skycoord_to_pixel(center_skycoords, wcs)[1])
+#         ]
+#
+#         x0y0_extent = mf.pixel2offset([0,0],
+#                              [kwargs["header"]["CDELT1"]*3600,
+#                               kwargs["header"]["CDELT2"]*3600],
+#                              center_pixels,
+#                              bounds=True)
+#
+#         xNyN_extent = mf.pixel2offset([kwargs["header"]["NAXIS1"]-1,
+#                                         kwargs["header"]["NAXIS2"]-1],
+#                              [kwargs["header"]["CDELT1"]*3600,
+#                               kwargs["header"]["CDELT2"]*3600],
+#                              center_pixels,
+#                              bounds=True)
+#
+#         extent = [x0y0_extent[0], xNyN_extent[0],
+#                    x0y0_extent[1], xNyN_extent[1]]
+#         x0y0lim = mf.pixel2offset(box[0],
+#                              [kwargs['header']["CDELT1"]*3600,
+#                               kwargs['header']["CDELT2"]*3600],
+#                              center_pixels,
+#                              bounds=True)
+#
+#         xNyNlim = mf.pixel2offset(box[1],
+#                              [kwargs['header']["CDELT1"]*3600,
+#                               kwargs['header']["CDELT2"]*3600],
+#                              center_pixels,
+#                              bounds=True)
+#
+#     else:
+#         extent = None
+#
     if kwargs['subgridspec'] is not None:
         supgrid = kwargs['subgridspec']
         gs = supgrid.subgridspec(
@@ -354,48 +354,6 @@ def mosaic_slices(image_cube, nrow, ncol, chan_0, chan_f, wcs, box,
                     transform=ims[n].transAxes,
                     bbox=props,
                     zorder=100)
-
-        if kwargs['add_stars']:
-            if kwargs['offset_coordinates']:
-                vla4b_coords = SkyCoord(*kwargs['vla4b_deg'], unit='deg')
-                vla4a_coords = SkyCoord(*kwargs['vla4a_deg'], unit='deg')
-
-                offset_frame = center_skycoords.skyoffset_frame()
-                vla4a_offset = vla4a_coords.transform_to(offset_frame)
-
-                ims[n].plot([vla4a_offset.lon.arcsec, 0],
-                        [vla4a_offset.lat.arcsec, 0],
-                        marker=kwargs['markerstar_style'],
-                        color=kwargs['markerstar_color'],
-                        linestyle='',
-                        markersize=kwargs['markerstar_size'],
-                        mew=kwargs['markerstar_width'],
-                        zorder=kwargs['markerstar_zorder'])
-            else:
-                xs_star = kwargs['vla4a_deg'][0], kwargs['vla4b_deg'][0]
-                ys_star = kwargs['vla4a_deg'][1], kwargs['vla4b_deg'][1]
-                ims[n].plot(xs_star,
-                            ys_star,
-                            marker=kwargs['markerstar_style'],
-                            color=kwargs['markerstar_color'],
-                            linestyle='',
-                            transform=ims[n].get_transform('icrs'),
-                            markersize=kwargs['markerstar_size'],
-                            mew=kwargs['markerstar_width'])
-                if kwargs['star_nax'] is not None:
-                    vla4b_coords = SkyCoord(*kwargs['vla4b_deg'], unit='deg')
-                    vla4a_coords = SkyCoord(*kwargs['vla4a_deg'], unit='deg')
-                    vla4b_pix = skycoord_to_pixel(vla4b_coords, wcs=wcs)
-                    vla4a_pix = skycoord_to_pixel(vla4a_coords, wcs=wcs)
-#                    import pdb; pdb.set_trace()
-                    ims[kwargs['star_nax']].text(vla4b_pix[0]+kwargs['vla4b_offset_label_x'],
-                                                 vla4b_pix[1]+kwargs['vla4b_offset_label_y'],
-                                                 'B',
-                                                 color='w')
-                    ims[kwargs['star_nax']].text(vla4a_pix[0]+kwargs['vla4a_offset_label_x'],
-                                                 vla4a_pix[1]+kwargs['vla4a_offset_label_y'],
-                                                 'A',
-                                                 color='w')
 
         if ellip_dic is not None:
             bb_types_with_chan = [bb_type for bb_type in ellip_dic if channel
