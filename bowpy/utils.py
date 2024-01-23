@@ -130,6 +130,7 @@ default_params = {
     'rotate_ticktext_xaxis': None,
     'display_x_minor_ticks': False,
     'display_y_minor_ticks': False,
+    'ticksdefaults': False,
     'dropticklabels': None,
     'alpha_imshow': None,
     'font_size':20,
