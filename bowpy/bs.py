@@ -1,3 +1,6 @@
+"""
+THIS FILE IS INTENDED TO DISAPPEAR
+"""
 import numpy as np
 
 import matplotlib.pyplot as plt

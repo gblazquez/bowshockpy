@@ -5,6 +5,7 @@ from scipy.integrate import quad
 from scipy.ndimage import rotate, gaussian_filter
 
 import astropy.units as u
+from astropy.io import fits
 
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -12,6 +13,10 @@ from matplotlib import cm
 from matplotlib import colors
 
 import bowpy.utils as ut
+import bowpy.bsutils as bu
+import bowpy.comass as comass
+
+from datetime import datetime
 
 class NJ():
 
@@ -748,6 +753,7 @@ class BowshockCube(ObsModel):
         self.vchanss = np.array([])
 
         self.cube = None
+        self.cubes = {}
 
     def makecube(self, verbose=False):
         self.nrs = self.nzs
@@ -771,14 +777,14 @@ class BowshockCube(ObsModel):
             if verbose:
                 t0 = datetime.now()
                 print(f"Computing: z = {z:.4f} km, v = {self.vs[iz]:.4} km/s, r = {self.rs[iz]:.4} km")
-                print(f"Computing: z = {self.km2arcsec(z):.4f} acsec, v = {self.vs[iz]:.4} km/s, r = {self.km2arcsec(r):.4} arcsec")
+                print(f"Computing: z = {self.km2arcsec(z):.4f} acsec, v = {self.vs[iz]:.4} km/s, r = {self.km2arcsec(self.rs[iz]):.4} arcsec")
 
             if iz != len(self.zs)-1:
                 dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
             else:
                 dmass = self.intmass_analytical(self.dr/2) / self.nphis
 
-            for iphi, phi in enumerate(self.phis):
+            for phi in self.phis:
                 xp = self.rs[iz] * np.cos(phi) * ci + z * si
                 yp = self.rs[iz] * np.sin(phi)
                 vzp = -self.vzp(z, phi)
@@ -793,7 +799,7 @@ class BowshockCube(ObsModel):
 
                     for chan, vchan in enumerate(self.velchans):
                         diffv = np.abs(vzp-vchan)
-                        if True:
+                        if diffv < np.abs(self.vt)*self.tolfactor_vt:
                             normfactor = np.abs(self.chanwidth) / (np.sqrt(np.pi)*np.abs(self.vt))
                             em = dmass * np.exp(-(diffv/self.vt)**2) * normfactor
                             # if (xpix+1<nxs) and (ypix+1<nys):
@@ -811,11 +817,176 @@ class BowshockCube(ObsModel):
                 tf = datetime.now()
                 print(fr"$\Delta t={int((tf-t0).total_seconds()*1000):.1f} ms$")
 
-    def rotate(self):
-        for chan in range(np.shape(self.cube)[0]):
-            self.cube[chan] = rotate(
-                self.cube[chan],
-                angle=-self.pa-90,
+
+
+class CubeProcessing(BowshockCube):
+    default_kwargs = {
+    }
+
+    btypes = {
+        "m": "mass",
+        "I": "Intensity",
+        "Ithin": "Intensity",
+        "NCO": "CO column density",
+        "tau": "Opacity"
+    }
+
+    bunits = {
+        "m": "SolarMass",
+        "I": "Jy/beam",
+        "Ithin": "Jy/beam",
+        "NCO": "cm-2",
+        "tau": "-"
+    }
+
+    def __init__(self, bscube, mpars, **kwargs):
+        self.__dict__ = bscube.__dict__
+        for param in mpars:
+                   setattr(self, param, mpars[param])
+        for kwarg in self.default_kwargs:
+            kwarg_attr = kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
+            setattr(self, kwarg, kwarg_attr)
+
+        self.cubes = {}
+        self.cubes["m"] = self.cube
+        self.refpixs = {}
+        self.refpixs["m"] = self.refpix
+        self.hdrs = {}
+
+        self.areapix_cm = None
+        self.beamarea_sr = None
+        self.calc_beamarea_sr()
+        self.calc_areapix_cm()
+
+    @staticmethod
+    def newck(ck, s):
+        return f"{ck}_{s}" if "_" not in ck else  ck+s
+
+    @staticmethod
+    def q(ck):
+        return ck.split("_")[0] if "_" in ck else ck
+
+    def calc_beamarea_sr(self):
+        self.beamarea_sr = ut.mb_sa_gaussian_f(
+            self.xbeam*u.arcsec,
+            self.ybeam*u.arcsec
+        )
+
+    def calc_areapix_cm(self):
+        self.areapix_cm = ((self.arcsecpix * self.distpc * u.au)**2).to(u.cm**2)
+
+    def calc_NCO(self,):
+        self.cubes["NCO"] = (self.cubes["m"] * u.solMass * self.XCO / self.meanmass / self.areapix_cm).to(u.cm**(-2)).value #* self.NCOfactor
+
+    def calc_tau(self):
+        self.cubes["tau"] = comass.tau_N(
+            nu=comass.freq_caract_CO["3-2"],
+            J=3, 
+            mu=0.112*u.D,
+            Tex=self.Tex*u.K,
+            Tbg=self.Tbg*u.K,
+            dNdv=self.cubes[f"NCO"]*u.cm**(-2) / (self.chanwidth*u.km/u.s),
+        ).to("")
+   
+    def calc_I(self):
+        """
+        Intensity in Jy/beam. no optically thin approximation
+        """
+        self.cubes["I"] = (comass.Inu_tau(
+            nu=comass.freq_caract_CO["3-2"],
+            Tex=self.Tex*u.K,
+            Tbg=self.Tbg*u.K,
+            tau=self.cubes["tau"],
+        )*self.beamarea_sr).to(u.Jy).value
+
+    def calc_Ithin(self):
+        """
+        Intensity in Jy/beam. Optically thin approximation
+        """
+        self.cubes["Ithin"] = (comass.Inu_tau_thin(
+            nu=comass.freq_caract_CO["3-2"],
+            Tex=self.Tex*u.K,
+            Tbg=self.Tbg*u.K,
+            tau=self.cubes["tau"],
+        )*self.beamarea_sr).to(u.Jy).value
+
+    def add_source(self, ck="m", value=None):
+        nck = self.newck(ck, "s")
+        self.cubes[nck] = np.copy(self.cubes[ck])
+        value = value if value is not None else np.max(self.cubes[ck])
+        if self.refpixs[ck][1]>=0 and self.refpixs[ck][0]>=0:
+            self.cubes[nck][:, self.refpix[1], self.refpix[0]] = value 
+        self.refpixs[nck] = self.refpixs[ck]
+
+    def rotate(self, ck="m", forpv=False):
+        nck = self.newck(ck, "r") if ~forpv else self.newck(ck, "R")
+        angle = -self.pa-90 if ~forpv else self.pa+90
+        self.cubes[nck] = np.zeros_like(self.cubes[ck])
+        for chan in range(np.shape(self.cubes[ck])[0]):
+            self.cubes[nck][chan] = rotate(
+                self.cubes[ck][chan],
+                angle=angle,
                 reshape=False,
                 order=1
             )
+        
+        ang = angle * np.pi/180
+        centerx = (self.nxs-1)/2
+        centery = (self.nys-1)/2
+
+        rp_center_x = self.refpix[0] - centerx
+        rp_center_y = self.refpix[1] - centery
+        
+        self.refpixs[nck] = [
+         +rp_center_x*np.cos(ang) + rp_center_y*np.sin(ang) + centerx,
+         -rp_center_x*np.sin(ang) + rp_center_y*np.cos(ang) + centery
+        ]
+    
+    def add_noise(self, ck="m"):
+        nck = self.newck(ck, "n")
+        for chan in range(np.shape(self.cubes[ck])[0]):
+            sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
+                     * np.sqrt(self.x_FWHM*self.y_FWHM) / 2.35    
+            noise_matrix = np.random.normal(0, sigma_noise, size=np.shape(self.cubes[ck][chan]))
+            self.cubes[nck] = self.cubes[ck] + noise_matrix
+
+    def convolve(self, ck="m"):
+        nck = self.newck(ck, "c")
+        self.cubes[nck] = np.zeros_like(self.cubes[ck])
+        for chan in range(np.shape(self.cubes[ck])[0]):
+            self.cubes[nck][chan] = bu.gaussconvolve(
+                self.cubes[ck][chan],
+                x_FWHM=self.x_FWHM,
+                y_FWHM=self.y_FWHM,
+                pa=self.pabeam,
+                return_kernel=False,
+            )
+        self.refpixs[nck] = self.refpixs[ck]
+
+    def savecube(self, ck):
+        self.hdrs[ck] = bu.create_hdr(
+            NAXIS1 = np.shape(self.cubes[ck])[0],
+            NAXIS2 = np.shape(self.cubes[ck])[1],
+            NAXIS3 = np.shape(self.cubes[ck])[2],
+            CRVAL1 = self.ra_source_deg,
+            CRVAL2 = self.dec_source_deg,
+            CRPIX1 = self.refpixs[ck][0],
+            CRPIX2 = self.refpixs[ck][1],
+            CDELT1 = -self.arcsecpix / 3600,
+            CDELT2 = self.arcsecpix  / 3600,
+            BTYPE = self.btypes[self.q(ck)],
+            BUNIT = self.bunits[self.q(ck)],
+            CTYPE3 = "VRAD",
+            CRVAL3 = self.velchans[0],
+            CDELT3 = self.velchans[1] - self.velchans[0],
+            CUNIT3 = "km/s",
+            BMAJ = self.ybeam,
+            BMIN = self.xbeam,
+            BPA = self.pabeam
+        )
+        
+        hdu = fits.PrimaryHDU(self.cubes[ck])
+        hdul = fits.HDUList([hdu])
+        hdu.header = self.hdrs[ck]
+        bu.make_folder(foldername=f'models/{self.modelname}/fits')
+        hdul.writeto(f'models/{self.modelname}/fits/{ck}.fits', overwrite=True)                 
