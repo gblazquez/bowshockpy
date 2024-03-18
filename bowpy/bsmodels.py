@@ -755,6 +755,12 @@ class BowshockCube(ObsModel):
         self.cube = None
         self.cubes = {}
 
+    def cond_populatechan(self, diffv):
+        if self.tolfactor_vt is not None:
+            return diffv < np.abs(self.vt)*self.tolfactor_vt
+        else:
+            return True
+
     def makecube(self, verbose=False):
         self.nrs = self.nzs
         self.rs = np.linspace(self.rbf, self.rj, self.nrs)
@@ -799,10 +805,9 @@ class BowshockCube(ObsModel):
 
                     for chan, vchan in enumerate(self.velchans):
                         diffv = np.abs(vzp-vchan)
-                        if diffv < np.abs(self.vt)*self.tolfactor_vt:
+                        if self.cond_populatechan(diffv):
                             normfactor = np.abs(self.chanwidth) / (np.sqrt(np.pi)*np.abs(self.vt))
                             em = dmass * np.exp(-(diffv/self.vt)**2) * normfactor
-                            # if (xpix+1<nxs) and (ypix+1<nys):
                             self.cube[chan, ypix, xpix] += em * (1-dxpix) * (1-dypix)
                             self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
                             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
@@ -822,7 +827,6 @@ class BowshockCube(ObsModel):
 class CubeProcessing(BowshockCube):
     default_kwargs = {
     }
-
     btypes = {
         "m": "mass",
         "I": "Intensity",
@@ -830,13 +834,18 @@ class CubeProcessing(BowshockCube):
         "NCO": "CO column density",
         "tau": "Opacity"
     }
-
     bunits = {
         "m": "SolarMass",
         "I": "Jy/beam",
         "Ithin": "Jy/beam",
         "NCO": "cm-2",
         "tau": "-"
+    }
+    dos = {
+        "s": "add_source",
+        "r": "rotate",
+        "n": "add_noise",
+        "c": "convolve",
     }
 
     def __init__(self, bscube, mpars, **kwargs):
@@ -876,39 +885,43 @@ class CubeProcessing(BowshockCube):
         self.areapix_cm = ((self.arcsecpix * self.distpc * u.au)**2).to(u.cm**2)
 
     def calc_NCO(self,):
-        self.cubes["NCO"] = (self.cubes["m"] * u.solMass * self.XCO / self.meanmass / self.areapix_cm).to(u.cm**(-2)).value #* self.NCOfactor
+        self.cubes["NCO"] = (
+            self.cubes["m"] * u.solMass * self.XCO \
+            / self.meanmass / self.areapix_cm
+        ).to(u.cm**(-2)).value #* self.NCOfactor
+        self.refpixs["NCO"] = self.refpixs["m"]
 
     def calc_tau(self):
+        if "NCO" not in self.cubes:
+            self.calc_NCO()
         self.cubes["tau"] = comass.tau_N(
             nu=comass.freq_caract_CO["3-2"],
             J=3, 
             mu=0.112*u.D,
             Tex=self.Tex*u.K,
             Tbg=self.Tbg*u.K,
-            dNdv=self.cubes[f"NCO"]*u.cm**(-2) / (self.chanwidth*u.km/u.s),
-        ).to("")
-   
-    def calc_I(self):
+            dNdv=self.cubes["NCO"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s),
+        ).to("").value
+        self.refpixs["tau"] = self.refpixs["m"]
+
+    def calc_I(self, opthin=False):
         """
-        Intensity in Jy/beam. no optically thin approximation
+        Intensity in Jy/beam.
         """
-        self.cubes["I"] = (comass.Inu_tau(
+        if "tau" not in self.cubes:
+            self.calc_tau()
+        func_I = comass.Inu_tau_thin if opthin else comass.Inu_tau
+        ckI = "Ithin" if opthin else comass.Inu_tau
+        self.cubes[ckI] = (func_I(
             nu=comass.freq_caract_CO["3-2"],
             Tex=self.Tex*u.K,
             Tbg=self.Tbg*u.K,
             tau=self.cubes["tau"],
         )*self.beamarea_sr).to(u.Jy).value
+        self.refpixs[ckI] = self.refpixs["m"]
 
     def calc_Ithin(self):
-        """
-        Intensity in Jy/beam. Optically thin approximation
-        """
-        self.cubes["Ithin"] = (comass.Inu_tau_thin(
-            nu=comass.freq_caract_CO["3-2"],
-            Tex=self.Tex*u.K,
-            Tbg=self.Tbg*u.K,
-            tau=self.cubes["tau"],
-        )*self.beamarea_sr).to(u.Jy).value
+        self.calc_I(self, opthin=True)
 
     def add_source(self, ck="m", value=None):
         nck = self.newck(ck, "s")
@@ -929,14 +942,11 @@ class CubeProcessing(BowshockCube):
                 reshape=False,
                 order=1
             )
-        
         ang = angle * np.pi/180
         centerx = (self.nxs-1)/2
         centery = (self.nys-1)/2
-
         rp_center_x = self.refpix[0] - centerx
         rp_center_y = self.refpix[1] - centery
-        
         self.refpixs[nck] = [
          +rp_center_x*np.cos(ang) + rp_center_y*np.sin(ang) + centerx,
          -rp_center_x*np.sin(ang) + rp_center_y*np.cos(ang) + centery
@@ -947,7 +957,9 @@ class CubeProcessing(BowshockCube):
         for chan in range(np.shape(self.cubes[ck])[0]):
             sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
                      * np.sqrt(self.x_FWHM*self.y_FWHM) / 2.35    
-            noise_matrix = np.random.normal(0, sigma_noise, size=np.shape(self.cubes[ck][chan]))
+            noise_matrix = np.random.normal(
+                0, sigma_noise, size=np.shape(self.cubes[ck][chan])
+                )
             self.cubes[nck] = self.cubes[ck] + noise_matrix
 
     def convolve(self, ck="m"):
@@ -962,6 +974,17 @@ class CubeProcessing(BowshockCube):
                 return_kernel=False,
             )
         self.refpixs[nck] = self.refpixs[ck]
+
+    def calc(self, dostrs):
+        for ds in dostrs:
+            _split = ds.split("_")
+            q = _split[0]
+            self.__getattribute__(f"calc_{q}")
+            if len(_split) > 1:
+                ss = _split[1]
+                for i, s in enumerate(ss):
+                    ck = q if i==0 else f"{q}_{ss[:i]}"
+                    self.__getattribute__(self.dos[s])(ck=ck)
 
     def savecube(self, ck):
         self.hdrs[ck] = bu.create_hdr(
@@ -984,7 +1007,6 @@ class CubeProcessing(BowshockCube):
             BMIN = self.xbeam,
             BPA = self.pabeam
         )
-        
         hdu = fits.PrimaryHDU(self.cubes[ck])
         hdul = fits.HDUList([hdu])
         hdu.header = self.hdrs[ck]

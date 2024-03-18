@@ -47,14 +47,16 @@ if len(p.outcubes) != 0:
         "refpix": p.refpix, 
         "xpmax": p.xpmax,    
         "pa": p.pa,
-        "ybeam": p.ybeam * 3600,
-        "xbeam": p.xbeam * 3600,
+        "ybeam": p.ybeam,
+        "xbeam": p.xbeam,
         "pabeam": p.pabeam,
         "Tex": p.Tex,
         "CIC": p.CIC,
+        "tolfactor": p.tolfactor_vt,
     }
     
     pscube["chanwidth"] = (pscube["vchf"] - pscube["vch0"]) / (pscube["nc"]-1)
+    pscube["abschanwidth"] = np.abs(pscube["chanwidth"])
     pscube["vt"] = pscube["vt"] if type(pscube["vt"])!=str \
           else float(pscube["vt"].split("x")[0])*pscube["chanwidth"]
     pscube["arcsecpix"] = pscube["xpmax"] / float(pscube["nxs"])
