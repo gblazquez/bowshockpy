@@ -12,10 +12,6 @@ from matplotlib.gridspec import GridSpec
 from matplotlib import cm
 from matplotlib import colors
 
-# from multiprocessing import Pool
-# from pathos.multiprocessing import ProcessingPool as Pool
-# from multiprocessing.pool import ThreadPool as Pool
-
 from datetime import datetime
 
 import bowpy.utils as ut
@@ -841,18 +837,6 @@ class BowshockCube(ObsModel):
 
                     for chan, vchan in enumerate(self.velchans):
                         self.wxpyp(chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass)
-
-                    # Paralelization does not work :(
-                    # def f(chan):
-                    #     return wxpyp_top(
-                    #         chan=chan,
-                    #         xpix=xpix, ypix=ypix,
-                    #         dxpix=dxpix, dypix=dypix,
-                    #         vzp=vzp, dmass=dmass, velchans=velchans,
-                    #         chanwidth=chanwidth, vt=vt, nxs=nxs, nys=nys
-                    #         )
-                    # with Pool() as pool:
-                    #     self.cubeflatten = np.array(pool.map(f, np.arange(len(self.velchans))))
 
                 else:
                     if outsidegrid_warning:
