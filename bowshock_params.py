@@ -9,7 +9,7 @@ Tabone et al. [2018)
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = "bs1_prueba"
+modelname = "bs1_prueba2"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -136,7 +136,7 @@ xpmax = 3
 pa = 120
 
 # Beam size [arcsec]
-ybeam, xbeam = (1, 0.5)
+ybeam, xbeam = (0.173, 0.091)
 
 # Beam position angle [degrees] 
 pabeam = 30

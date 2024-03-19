@@ -12,11 +12,17 @@ from matplotlib.gridspec import GridSpec
 from matplotlib import cm
 from matplotlib import colors
 
+# from multiprocessing import Pool
+# from pathos.multiprocessing import ProcessingPool as Pool
+# from multiprocessing.pool import ThreadPool as Pool
+
+from datetime import datetime
+
 import bowpy.utils as ut
 import bowpy.bsutils as bu
 import bowpy.comass as comass
 
-from datetime import datetime
+
 
 class NJ():
 
@@ -728,6 +734,22 @@ class Bowshock2DPlots(Bowshock2D):
 #
         # self.fig_model.canvas.draw_idle()
 
+def wxpyp_top(chan, xpix, ypix, dxpix, dypix, vzp, dmass, velchans, chanwidth, vt, nxs, nys):
+    vchan = velchans[chan]
+    diffv = np.abs(vzp-vchan)
+    chancube = np.zeros((nys, nxs))
+    #if self.cond_populatechan(diffv):
+    normfactor = np.abs(chanwidth) / (np.sqrt(np.pi)*np.abs(vt))
+    em = dmass * np.exp(-(diffv/vt)**2) * normfactor
+    chancube[ypix, xpix] += em * (1-dxpix) * (1-dypix)
+    chancube[ypix, xpix+1] += em * dxpix * (1-dypix)
+    chancube[ypix+1, xpix] += em * (1-dxpix) * dypix
+    chancube[ypix+1, xpix+1] += em * dxpix * dypix
+    # else:
+    #     pass
+
+    return chancube
+
 
 class BowshockCube(ObsModel):
     def __init__(self, ps, psobs, pscube, **kwargs):
@@ -760,6 +782,20 @@ class BowshockCube(ObsModel):
             return diffv < np.abs(self.vt)*self.tolfactor_vt
         else:
             return True
+
+    def wvzp(self, diffv, dmass):
+        normfactor = np.abs(self.chanwidth) / (np.sqrt(np.pi)*np.abs(self.vt))
+        em = dmass * np.exp(-(diffv/self.vt)**2) * normfactor
+        return em
+
+    def wxpyp(self, chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass):
+        diffv = np.abs(vzp-vchan)
+        if self.cond_populatechan(diffv):
+            em = self.wvzp(diffv, dmass)
+            self.cube[chan, ypix, xpix] += em * (1-dxpix) * (1-dypix)
+            self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
+            self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
+            self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
 
     def makecube(self, verbose=False):
         self.nrs = self.nzs
@@ -804,16 +840,20 @@ class BowshockCube(ObsModel):
                     dypix = ypixcoord - ypix
 
                     for chan, vchan in enumerate(self.velchans):
-                        diffv = np.abs(vzp-vchan)
-                        if self.cond_populatechan(diffv):
-                            normfactor = np.abs(self.chanwidth) / (np.sqrt(np.pi)*np.abs(self.vt))
-                            em = dmass * np.exp(-(diffv/self.vt)**2) * normfactor
-                            self.cube[chan, ypix, xpix] += em * (1-dxpix) * (1-dypix)
-                            self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
-                            self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
-                            self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
-                        else:
-                            pass
+                        self.wxpyp(chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass)
+
+                    # Paralelization does not work :(
+                    # def f(chan):
+                    #     return wxpyp_top(
+                    #         chan=chan,
+                    #         xpix=xpix, ypix=ypix,
+                    #         dxpix=dxpix, dypix=dypix,
+                    #         vzp=vzp, dmass=dmass, velchans=velchans,
+                    #         chanwidth=chanwidth, vt=vt, nxs=nxs, nys=nys
+                    #         )
+                    # with Pool() as pool:
+                    #     self.cubeflatten = np.array(pool.map(f, np.arange(len(self.velchans))))
+
                 else:
                     if outsidegrid_warning:
                         print("WARNING: Part of the model lie outside the grid!")
@@ -898,8 +938,8 @@ class CubeProcessing(BowshockCube):
             nu=comass.freq_caract_CO["3-2"],
             J=3, 
             mu=0.112*u.D,
-            Tex=self.Tex*u.K,
-            Tbg=self.Tbg*u.K,
+            Tex=self.Tex,
+            Tbg=self.Tbg,
             dNdv=self.cubes["NCO"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s),
         ).to("").value
         self.refpixs["tau"] = self.refpixs["m"]
@@ -911,11 +951,11 @@ class CubeProcessing(BowshockCube):
         if "tau" not in self.cubes:
             self.calc_tau()
         func_I = comass.Inu_tau_thin if opthin else comass.Inu_tau
-        ckI = "Ithin" if opthin else comass.Inu_tau
+        ckI = "Ithin" if opthin else "I"
         self.cubes[ckI] = (func_I(
             nu=comass.freq_caract_CO["3-2"],
-            Tex=self.Tex*u.K,
-            Tbg=self.Tbg*u.K,
+            Tex=self.Tex,
+            Tbg=self.Tbg,
             tau=self.cubes["tau"],
         )*self.beamarea_sr).to(u.Jy).value
         self.refpixs[ckI] = self.refpixs["m"]
@@ -979,12 +1019,14 @@ class CubeProcessing(BowshockCube):
         for ds in dostrs:
             _split = ds.split("_")
             q = _split[0]
-            self.__getattribute__(f"calc_{q}")
+            if q not in self.cubes:
+                self.__getattribute__(f"calc_{q}")()
             if len(_split) > 1:
                 ss = _split[1]
                 for i, s in enumerate(ss):
                     ck = q if i==0 else f"{q}_{ss[:i]}"
-                    self.__getattribute__(self.dos[s])(ck=ck)
+                    if self.newck(ck, s) not in self.cubes:
+                        self.__getattribute__(self.dos[s])(ck=ck)
 
     def savecube(self, ck):
         self.hdrs[ck] = bu.create_hdr(
@@ -1012,3 +1054,7 @@ class CubeProcessing(BowshockCube):
         hdu.header = self.hdrs[ck]
         bu.make_folder(foldername=f'models/{self.modelname}/fits')
         hdul.writeto(f'models/{self.modelname}/fits/{ck}.fits', overwrite=True)                 
+
+    def savecubes(self, cks):
+        for ck in cks:
+            self.savecube(ck)

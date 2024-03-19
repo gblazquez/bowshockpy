@@ -50,9 +50,8 @@ if len(p.outcubes) != 0:
         "ybeam": p.ybeam,
         "xbeam": p.xbeam,
         "pabeam": p.pabeam,
-        "Tex": p.Tex,
         "CIC": p.CIC,
-        "tolfactor": p.tolfactor_vt,
+        "tolfactor_vt": p.tolfactor_vt,
     }
     
     pscube["chanwidth"] = (pscube["vchf"] - pscube["vch0"]) / (pscube["nc"]-1)
@@ -81,47 +80,12 @@ if len(p.outcubes) != 0:
         "muH2": p.muH2,
         "XCO": p.XCO,
         "meanmass": p.muH2 / (6.023*10**23) * u.g,
-        "Tex": p.Tex * u.K,
+        "Tex": p.Tex*u.K,
+        "Tbg": p.Tbg*u.K,
         "ra_source_deg": p.ra_source_deg,
         "dec_source_deg": p.dec_source_deg
     }
 
     bscs = bs.CubeProcessing(bsc, mpars)
-
-    if p.add_source:
-        bscs.add_source()
-
-    bscs.rotate()
-    for ck in p.outcubes:
-        bscs.savecube(ck)
-
-    
-#    areapix_cm = ((pscube["arcsecpix"]*pscube["distpc"]*u.au)**2).to(u.cm**2)
-#    cubes["bs_NCO"] = (cubes["bs_m"] * u.solMass * mpars["XCO"] / mpars["meanmass"] / areapix_cm).to(u.cm**(-2)).value * pars["NCOfactor"]
-#    cubes["bs_tau"] = comass.tau_N(
-#        nu=mf.freq_caract_CO["3-2"],
-#        J=3, 
-#        mu=0.112*u.D,
-#        Tex=Tex,
-#        Tbg=2.7*u.K,
-#        dNdv=cubes[f"bs_NCO"]*u.cm**(-2) / (pars["chanwidth"]*u.km/u.s),
-#    ).to("")
-#    
-#    beamarea_sr = mf.mb_sa_gaussian_f(
-#        pars["xbeam"]*u.arcsec,
-#        pars["ybeam"]*u.arcsec
-#    ).to(u.sr)
-#    
-#    cubes["bs_I"] = (comass.Inu_tau(
-#        nu=mf.freq_caract_CO["3-2"],
-#        Tex=Tex,
-#        Tbg=2.7*u.K,
-#        tau=cubes["bs_tau"],
-#    )*beamarea_sr).to(u.Jy).value
-#    
-#    cubes["bs_Ithin"] = (comass.Inu_tau(
-#        nu=mf.freq_caract_CO["3-2"],
-#        Tex=Tex,
-#        Tbg=2.7*u.K,
-#        tau=cubes["bs_tau"],
-#    )*beamarea_sr).to(u.Jy).value
+    bscs.calc(["I_rc"])
+    bscs.savecubes(["m", "tau", "I_rc", "NCO"])
