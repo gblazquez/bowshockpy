@@ -9,6 +9,7 @@ models/*
 *.ipynb
 
 *workspace
+*old
 
 # Git cannot commit empty folder, so add exceptions .gitkeep files
 !*/.gitkeep

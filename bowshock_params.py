@@ -9,24 +9,34 @@ Tabone et al. [2018)
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = "bs1_prueba3"
+modelname = "imitating1_IIIv0.87"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
 
-# List of the output cube quantites
-# m: Mass
-# NCO: CO column density
-# tau: Opacity
-# I: Intensity
-# Ithin: Intensity taking into account the optically thin approximation. The
-# list can be left empty if no cube is desired
-outcubes = ["m", "m_r", "I_rc", "tau_rc", "NCO_rc", "Ithin_rc"]
+# List of the output cube quantites and operations performed onto the cubes.
+# The string should follow this format: {quantity}_{operations}
+# Available quantities:
+#     m: Mass
+#     NCO: CO column density
+#     tau: Opacity
+#     I: Intensity
+#     Ithin: Intensity taking into account the optically thin approximation. The
+#
+# Available operations:
+#     s: Add source
+#     r: Rotate
+#     n: Add gaussian noise
+#     c: Convolve with beam
+# Operations can be concatenated, e.g, "I_rc" rotates and then convolves the
+# Intensity cube. List can be left empty if no cube is desired
+# Example:
+# outcubes = ["m", "m_r", "I_rc", "tau_rc", "NCO_rc", "Ithin_rc"]
+outcubes = ["I_rc","I_rnc", ]
+
 
 # Verbose messages about the computation? [True/False]
 verbose = True
-
-
 
 
 """
@@ -38,13 +48,13 @@ BOWSHOCK PARAMETERS
 rj = 0
 
 # Characteristic length scale [arcsec]
-L0 = 0.5
+L0 = 0.38
 
 # Distance between the working surface and the source [arcsec]
 zj = 7.31
 
 # Jet velocity
-vj = 108
+vj = 108.014
 
 # Ambient (or wind) velocity [km/s]
 vw = 0
@@ -54,6 +64,7 @@ v0 = 17
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see Tabone et al. 2018)
+# TODO extend bowshock model to a final radius based on observations
 rbf_obs = None
 
 # Total mass of the bowshock [solar masses]
@@ -72,7 +83,6 @@ muH2 = 2.8
 XCO = 8.5 * 10**(-5)
 
 
-
 """
 OBSERVER PARAMETERS
 """
@@ -84,7 +94,7 @@ distpc = 300
 i = 20
 
 # Systemic velocity of the source [km/s]
-vsys = 0
+vsys = 9.33
 
 # Source coordinates [deg, deg]
 ra_source_deg, dec_source_deg = 52.26570167, 31.26771556
@@ -100,8 +110,7 @@ refpix = None
 add_source = True 
 
 # Noise of the map
-target_noise = 1 * 10**(-3)
-
+maxcube2noise = 10 
 
 
 """
@@ -109,43 +118,43 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model
-nzs = 500
+nzs = 700
 
 # Number of azimuthal angle phi to calculate the bowshock solution
-nphis = 500
+nphis = 700
 
 # Number of spectral channel maps 
-nc = 50
+nc = 151
 
 # Central velocity of the first channel map [km/s]
-vch0 = 0
+vch0 = -30
 
 # Central velocity of the last channel map [km/s]
-vchf = -150
+vchf = -110
 
 # Number of pixels in the x and y axes 
-nxs, nys = (250, 250)
+nxs, nys = (500, 500)
 
 # Reference pixel where the physical center (the source) is found
 refpix = [-25, 125]
 
 # Size of the channel maps along the x axis [arcsec]
-xpmax = 3
+xpmax = 4
 
 # Position angle of the jet axis [degrees]
-pa = 120
+pa = 160
 
 # Beam size [arcsec]
 bmaj, bmin = (0.173, 0.091)
 
 # Beam position angle [degrees] 
-pabeam = 30
+pabeam = 2.2
 
 # Thermal+turbulent line-of-sight velocity dispersion [km/s] If
 # thermal+turbulent line-of-sight velocity dispersion is smaller than the
 # instrumental spectral resolution, vt should be the spectral resolution.
 # It can be also set to a integer times the channel width (e.g., "2xchannel")
-vt = "2xchannel"
+vt = 0.866 #"2xchannel"
 
 # Cloud in Cell interpolation? [True/False]
 CIC = True
@@ -155,4 +164,4 @@ CIC = True
 # this factor times vt. The lower the factor, the quicker will be the code, but
 # the total mass will be underestimated. If vt is not None, compare the total
 # mass of the output cube with the 'mass' parameter that the user has defined
-tolfactor_vt = 3
+tolfactor_vt = 5

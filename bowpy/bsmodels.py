@@ -781,9 +781,9 @@ class BowshockCube(ObsModel):
     def makecube(self, ):
         if self.verbose:
             print(f"""
- ----------------------
+ ---------------------
  Starting making cube
- ----------------------
+ ---------------------
  Channel width: {self.abschanwidth:.3} km/s
  Pixel size: {self.arcsecpix:.4} arcsec/pix\n
  """)
@@ -837,12 +837,13 @@ class BowshockCube(ObsModel):
                         outsidegrid_warning = False
             if self.verbose:
                 tf = datetime.now()
-                print(fr"$\Delta t={int((tf-t0).total_seconds()*1000):.1f} ms$")
+                print(fr"$ dt={int((tf-t0).total_seconds()*1000):.1f} ms")
+                print(f"Progress: {iz/len(self.zs)} %")
         if self.verbose:
             print(f"""
-----------------------
-Cube finnished
-----------------------
+------------------------------------
+The spectral cube has been generated 
+------------------------------------
             """)
 
 
@@ -987,13 +988,17 @@ class CubeProcessing(BowshockCube):
     
     def add_noise(self, ck="m"):
         nck = self.newck(ck, "n")
+        self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
-            sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
-                     * np.sqrt(self.x_FWHM*self.y_FWHM) / 2.35    
+            # sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
+            #          * np.sqrt(self.x_FWHM*self.y_FWHM) / 2.35    
+            sigma_noise = np.max(self.cubes[ck]) / self.maxcube2noise
             noise_matrix = np.random.normal(
-                0, sigma_noise, size=np.shape(self.cubes[ck][chan])
+                0, sigma_noise,
+                size=np.shape(self.cubes[ck][chan])
                 )
-            self.cubes[nck] = self.cubes[ck] + noise_matrix
+            self.cubes[nck][chan] = self.cubes[ck][chan] + noise_matrix
+        self.refpixs[nck] = self.refpixs[ck]
 
     def convolve(self, ck="m"):
         nck = self.newck(ck, "c")

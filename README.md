@@ -13,7 +13,7 @@ bowshockpy requires:
 * numpy
 * scipy 
 
-It has been tested with `python == 3.10`, but it could work with lower versions.
+It has been tested with `python == 3.10`, but it could work with previous versions.
 
 ## Installation
 

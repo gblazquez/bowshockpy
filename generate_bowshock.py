@@ -42,6 +42,7 @@ if len(p.outcubes) != 0:
         "pabeam": p.pabeam,
         "CIC": p.CIC,
         "tolfactor_vt": p.tolfactor_vt,
+        "maxcube2noise": p.maxcube2noise,
         "verbose": p.verbose,
     }
     pscube["chanwidth"] = (pscube["vchf"] - pscube["vch0"]) / (pscube["nc"]-1)
