@@ -730,22 +730,6 @@ class Bowshock2DPlots(Bowshock2D):
 #
         # self.fig_model.canvas.draw_idle()
 
-def wxpyp_top(chan, xpix, ypix, dxpix, dypix, vzp, dmass, velchans, chanwidth, vt, nxs, nys):
-    vchan = velchans[chan]
-    diffv = np.abs(vzp-vchan)
-    chancube = np.zeros((nys, nxs))
-    #if self.cond_populatechan(diffv):
-    normfactor = np.abs(chanwidth) / (np.sqrt(np.pi)*np.abs(vt))
-    em = dmass * np.exp(-(diffv/vt)**2) * normfactor
-    chancube[ypix, xpix] += em * (1-dxpix) * (1-dypix)
-    chancube[ypix, xpix+1] += em * dxpix * (1-dypix)
-    chancube[ypix+1, xpix] += em * (1-dxpix) * dypix
-    chancube[ypix+1, xpix+1] += em * dxpix * dypix
-    # else:
-    #     pass
-
-    return chancube
-
 
 class BowshockCube(ObsModel):
     def __init__(self, ps, psobs, pscube, **kwargs):
@@ -773,6 +757,7 @@ class BowshockCube(ObsModel):
         self.cube = None
         self.cubes = {}
 
+
     def cond_populatechan(self, diffv):
         if self.tolfactor_vt is not None:
             return diffv < np.abs(self.vt)*self.tolfactor_vt
@@ -793,7 +778,15 @@ class BowshockCube(ObsModel):
             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
             self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
 
-    def makecube(self, verbose=False):
+    def makecube(self, ):
+        if self.verbose:
+            print(f"""
+ ----------------------
+ Starting making cube
+ ----------------------
+ Channel width: {self.abschanwidth:.3} km/s
+ Pixel size: {self.arcsecpix:.4} arcsec/pix\n
+ """)
         self.nrs = self.nzs
         self.rs = np.linspace(self.rbf, self.rj, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
@@ -812,7 +805,7 @@ class BowshockCube(ObsModel):
 
         outsidegrid_warning = True
         for iz, z in enumerate(self.zs):
-            if verbose:
+            if self.verbose:
                 t0 = datetime.now()
                 print(f"Computing: z = {z:.4f} km, v = {self.vs[iz]:.4} km/s, r = {self.rs[iz]:.4} km")
                 print(f"Computing: z = {self.km2arcsec(z):.4f} acsec, v = {self.vs[iz]:.4} km/s, r = {self.km2arcsec(self.rs[iz]):.4} arcsec")
@@ -842,9 +835,15 @@ class BowshockCube(ObsModel):
                     if outsidegrid_warning:
                         print("WARNING: Part of the model lie outside the grid!")
                         outsidegrid_warning = False
-            if verbose:
+            if self.verbose:
                 tf = datetime.now()
                 print(fr"$\Delta t={int((tf-t0).total_seconds()*1000):.1f} ms$")
+        if self.verbose:
+            print(f"""
+----------------------
+Cube finnished
+----------------------
+            """)
 
 
 
@@ -901,8 +900,8 @@ class CubeProcessing(BowshockCube):
 
     def calc_beamarea_sr(self):
         self.beamarea_sr = ut.mb_sa_gaussian_f(
-            self.xbeam*u.arcsec,
-            self.ybeam*u.arcsec
+            self.bmaj*u.arcsec,
+            self.bmin*u.arcsec
         )
 
     def calc_areapix_cm(self):
@@ -914,6 +913,8 @@ class CubeProcessing(BowshockCube):
             / self.meanmass / self.areapix_cm
         ).to(u.cm**(-2)).value #* self.NCOfactor
         self.refpixs["NCO"] = self.refpixs["m"]
+        if self.verbose:
+            print(f"\nCO column densities has been calculated\n")
 
     def calc_tau(self):
         if "NCO" not in self.cubes:
@@ -927,6 +928,8 @@ class CubeProcessing(BowshockCube):
             dNdv=self.cubes["NCO"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s),
         ).to("").value
         self.refpixs["tau"] = self.refpixs["m"]
+        if self.verbose:
+            print(f"\nOpacities has been calculated\n")
 
     def calc_I(self, opthin=False):
         """
@@ -943,6 +946,8 @@ class CubeProcessing(BowshockCube):
             tau=self.cubes["tau"],
         )*self.beamarea_sr).to(u.Jy).value
         self.refpixs[ckI] = self.refpixs["m"]
+        if self.verbose:
+            print(f"\nIntensities has been calculated\n")
 
     def calc_Ithin(self):
         self.calc_I(self, opthin=True)
@@ -954,6 +959,8 @@ class CubeProcessing(BowshockCube):
         if self.refpixs[ck][1]>=0 and self.refpixs[ck][0]>=0:
             self.cubes[nck][:, self.refpix[1], self.refpix[0]] = value 
         self.refpixs[nck] = self.refpixs[ck]
+        if self.verbose:
+            print(f"\n{nck} has been added a source in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n")
 
     def rotate(self, ck="m", forpv=False):
         nck = self.newck(ck, "r") if ~forpv else self.newck(ck, "R")
@@ -975,6 +982,8 @@ class CubeProcessing(BowshockCube):
          +rp_center_x*np.cos(ang) + rp_center_y*np.sin(ang) + centerx,
          -rp_center_x*np.sin(ang) + rp_center_y*np.cos(ang) + centery
         ]
+        if self.verbose:
+            print(f"\n{nck} has been rotated to a PA = {self.pa} deg\n")
     
     def add_noise(self, ck="m"):
         nck = self.newck(ck, "n")
@@ -998,6 +1007,8 @@ class CubeProcessing(BowshockCube):
                 return_kernel=False,
             )
         self.refpixs[nck] = self.refpixs[ck]
+        if self.verbose:
+            print(f"\n{nck} has been convolved with a gaussian kernel [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix\n")
 
     def calc(self, dostrs):
         for ds in dostrs:
@@ -1029,8 +1040,8 @@ class CubeProcessing(BowshockCube):
             CRVAL3 = self.velchans[0],
             CDELT3 = self.velchans[1] - self.velchans[0],
             CUNIT3 = "km/s",
-            BMAJ = self.ybeam,
-            BMIN = self.xbeam,
+            BMAJ = self.bmaj/3600,
+            BMIN = self.bmin/3600,
             BPA = self.pabeam
         )
         hdu = fits.PrimaryHDU(self.cubes[ck])
@@ -1038,6 +1049,8 @@ class CubeProcessing(BowshockCube):
         hdu.header = self.hdrs[ck]
         bu.make_folder(foldername=f'models/{self.modelname}/fits')
         hdul.writeto(f'models/{self.modelname}/fits/{ck}.fits', overwrite=True)                 
+        if self.verbose:
+            print(f'models/{self.modelname}/fits/{ck}.fits saved')
 
     def savecubes(self, cks):
         for ck in cks:

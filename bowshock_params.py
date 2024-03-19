@@ -9,7 +9,7 @@ Tabone et al. [2018)
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = "bs1_prueba2"
+modelname = "bs1_prueba3"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -21,10 +21,10 @@ bs2Dplot = True
 # I: Intensity
 # Ithin: Intensity taking into account the optically thin approximation. The
 # list can be left empty if no cube is desired
-outcubes = ["m", "m_r"]#"I", "tau", "NCO", "Ithin"]
+outcubes = ["m", "m_r", "I_rc", "tau_rc", "NCO_rc", "Ithin_rc"]
 
-# Add noise [True/False]
-addnoise = True
+# Verbose messages about the computation? [True/False]
+verbose = True
 
 
 
@@ -136,7 +136,7 @@ xpmax = 3
 pa = 120
 
 # Beam size [arcsec]
-ybeam, xbeam = (0.173, 0.091)
+bmaj, bmin = (0.173, 0.091)
 
 # Beam position angle [degrees] 
 pabeam = 30

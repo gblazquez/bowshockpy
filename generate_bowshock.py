@@ -19,22 +19,12 @@ ps = {
  'rbf_obs': None, # TODO: (p.rbf_obs * p.distpc * u.au).to(u.km).value,
  'mass': p.mass,   
 }
-
-bsm = bs.NJ(ps)
-
 psobs = { 
  'i': p.i * np.pi / 180,
  'vsys': p.vsys,
  'distpc': p.distpc,
  "nzs": p.nzs,
 }
-
-bsmobs = bs.ObsModel(ps, psobs)
-if p.bs2Dplot:
-    bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
-    bu.make_folder(f"models/{ps['modelname']}")
-    bs2Dplot.fig_model.savefig(f"models/{ps['modelname']}/2D.pdf")
-
 if len(p.outcubes) != 0:
     pscube = {
         "nphis": p.nphis,   
@@ -47,20 +37,20 @@ if len(p.outcubes) != 0:
         "refpix": p.refpix, 
         "xpmax": p.xpmax,    
         "pa": p.pa,
-        "ybeam": p.ybeam,
-        "xbeam": p.xbeam,
+        "bmaj": p.bmaj,
+        "bmin": p.bmin,
         "pabeam": p.pabeam,
         "CIC": p.CIC,
         "tolfactor_vt": p.tolfactor_vt,
+        "verbose": p.verbose,
     }
-    
     pscube["chanwidth"] = (pscube["vchf"] - pscube["vch0"]) / (pscube["nc"]-1)
     pscube["abschanwidth"] = np.abs(pscube["chanwidth"])
     pscube["vt"] = pscube["vt"] if type(pscube["vt"])!=str \
           else float(pscube["vt"].split("x")[0])*pscube["chanwidth"]
     pscube["arcsecpix"] = pscube["xpmax"] / float(pscube["nxs"])
-    pscube["x_FWHM"] = pscube["xbeam"] / pscube["arcsecpix"]
-    pscube["y_FWHM"] = pscube["ybeam"] / pscube["arcsecpix"]
+    pscube["x_FWHM"] = pscube["bmin"] / pscube["arcsecpix"]
+    pscube["y_FWHM"] = pscube["bmaj"] / pscube["arcsecpix"]
     pscube["beamarea"] = np.pi * pscube["y_FWHM"] * pscube["x_FWHM"] / (4 * np.log(2))
     if pscube["refpix"] == None:
         if pscube["nxs"]%2 == 0:
@@ -72,10 +62,6 @@ if len(p.outcubes) != 0:
         else: 
             yref = (pscube["nys"]-1) / 2       
         pscube["refpix"] = [xref, yref]
-
-    bsc = bs.BowshockCube(ps, psobs, pscube)
-    bsc.makecube()
-
     mpars = {
         "muH2": p.muH2,
         "XCO": p.XCO,
@@ -86,6 +72,17 @@ if len(p.outcubes) != 0:
         "dec_source_deg": p.dec_source_deg
     }
 
+
+bsm = bs.NJ(ps)
+bsmobs = bs.ObsModel(ps, psobs)
+if p.bs2Dplot:
+    bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
+    bu.make_folder(f"models/{ps['modelname']}")
+    bs2Dplot.fig_model.savefig(f"models/{ps['modelname']}/2D.pdf")
+
+if len(p.outcubes) != 0:
+    bsc = bs.BowshockCube(ps, psobs, pscube)
+    bsc.makecube()
     bscs = bs.CubeProcessing(bsc, mpars)
-    bscs.calc(["I_rc"])
-    bscs.savecubes(["m", "tau", "I_rc", "NCO"])
+    bscs.calc(p.outcubes)
+    bscs.savecubes(p.outcubes)
