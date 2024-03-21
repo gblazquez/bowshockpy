@@ -9,7 +9,7 @@ Tabone et al. [2018)
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = "imitating1_IIIv0.87"
+modelname = "bs1_prueba3"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -32,7 +32,7 @@ bs2Dplot = True
 # Intensity cube. List can be left empty if no cube is desired
 # Example:
 # outcubes = ["m", "m_r", "I_rc", "tau_rc", "NCO_rc", "Ithin_rc"]
-outcubes = ["I_rc","I_rnc", ]
+outcubes = ["I_rnc", ]
 
 
 # Verbose messages about the computation? [True/False]
@@ -48,13 +48,13 @@ BOWSHOCK PARAMETERS
 rj = 0
 
 # Characteristic length scale [arcsec]
-L0 = 0.38
+L0 = 0.5
 
 # Distance between the working surface and the source [arcsec]
 zj = 7.31
 
 # Jet velocity
-vj = 108.014
+vj = 108
 
 # Ambient (or wind) velocity [km/s]
 vw = 0
@@ -64,7 +64,6 @@ v0 = 17
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see Tabone et al. 2018)
-# TODO extend bowshock model to a final radius based on observations
 rbf_obs = None
 
 # Total mass of the bowshock [solar masses]
@@ -94,7 +93,7 @@ distpc = 300
 i = 20
 
 # Systemic velocity of the source [km/s]
-vsys = 9.33
+vsys = 0
 
 # Source coordinates [deg, deg]
 ra_source_deg, dec_source_deg = 52.26570167, 31.26771556
@@ -118,43 +117,43 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model
-nzs = 700
+nzs = 500
 
 # Number of azimuthal angle phi to calculate the bowshock solution
-nphis = 700
+nphis = 500
 
 # Number of spectral channel maps 
-nc = 151
+nc = 50
 
 # Central velocity of the first channel map [km/s]
-vch0 = -30
+vch0 = 0
 
 # Central velocity of the last channel map [km/s]
-vchf = -110
+vchf = -150
 
 # Number of pixels in the x and y axes 
-nxs, nys = (500, 500)
+nxs, nys = (250, 250)
 
 # Reference pixel where the physical center (the source) is found
 refpix = [-25, 125]
 
 # Size of the channel maps along the x axis [arcsec]
-xpmax = 4
+xpmax = 3
 
 # Position angle of the jet axis [degrees]
-pa = 160
+pa = 120
 
 # Beam size [arcsec]
 bmaj, bmin = (0.173, 0.091)
 
 # Beam position angle [degrees] 
-pabeam = 2.2
+pabeam = 30
 
 # Thermal+turbulent line-of-sight velocity dispersion [km/s] If
 # thermal+turbulent line-of-sight velocity dispersion is smaller than the
 # instrumental spectral resolution, vt should be the spectral resolution.
 # It can be also set to a integer times the channel width (e.g., "2xchannel")
-vt = 0.866 #"2xchannel"
+vt = "2xchannel"
 
 # Cloud in Cell interpolation? [True/False]
 CIC = True
@@ -164,4 +163,4 @@ CIC = True
 # this factor times vt. The lower the factor, the quicker will be the code, but
 # the total mass will be underestimated. If vt is not None, compare the total
 # mass of the output cube with the 'mass' parameter that the user has defined
-tolfactor_vt = 5
+tolfactor_vt = 3

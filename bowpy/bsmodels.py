@@ -780,6 +780,7 @@ class BowshockCube(ObsModel):
 
     def makecube(self, ):
         if self.verbose:
+            ts = []
             print(f"""
  ---------------------
  Starting making cube
@@ -787,6 +788,7 @@ class BowshockCube(ObsModel):
  Channel width: {self.abschanwidth:.3} km/s
  Pixel size: {self.arcsecpix:.4} arcsec/pix\n
  """)
+
         self.nrs = self.nzs
         self.rs = np.linspace(self.rbf, self.rj, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
@@ -802,6 +804,7 @@ class BowshockCube(ObsModel):
         self.cube = np.zeros((self.nc, self.nys, self.nxs))
         ci = np.cos(self.i)
         si = np.sin(self.i)
+
 
         outsidegrid_warning = True
         for iz, z in enumerate(self.zs):
@@ -837,8 +840,10 @@ class BowshockCube(ObsModel):
                         outsidegrid_warning = False
             if self.verbose:
                 tf = datetime.now()
-                print(fr"$ dt={int((tf-t0).total_seconds()*1000):.1f} ms")
-                print(f"Progress: {iz/len(self.zs)} %")
+                print(fr"dt = {(tf-t0).total_seconds()*1000:.2f} ms")
+                ts.append((tf-t0).total_seconds())
+                print(fr"Time = {np.sum(ts):.2f} s")
+                print(f"Progress: {iz/len(self.zs)*100:.2f} %")
         if self.verbose:
             print(f"""
 ------------------------------------
