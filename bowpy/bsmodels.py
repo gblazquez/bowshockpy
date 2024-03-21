@@ -1029,7 +1029,7 @@ class CubeProcessing(BowshockCube):
             )
         self.refpixs[nck] = self.refpixs[ck]
         if self.verbose:
-            print(f"{nck} has been convolved with a gaussian kernel [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and a PA of {self.pabeam:.2f}\n")
+            print(f"{nck} has been convolved with a gaussian kernel [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and a PA of {self.pabeam:.2f}deg\n")
 
     def calc(self, dostrs):
         for ds in dostrs:
