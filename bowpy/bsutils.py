@@ -24,6 +24,16 @@ user = result.stdout.decode().strip()
 
 import bowpy.moments as moments
 
+def progressbar_bowshock(
+        iteration, total, timelapsed, intervaltime,
+        decimals = 1, length = 100, fill = '─', printend = "\r"
+        ):
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + ')' + ' ' * (length - filledLength)
+    print(f'  0{bar}{percent}% | {timelapsed:.0f}/{intervaltime*total:.0f}s', end = printend)
+    if iteration == total: 
+        print()
 
 path = Path(__file__).parent / "header_default.txt"
 with path.open() as f:

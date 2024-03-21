@@ -730,7 +730,6 @@ class Bowshock2DPlots(Bowshock2D):
 #
         # self.fig_model.canvas.draw_idle()
 
-
 class BowshockCube(ObsModel):
     def __init__(self, ps, psobs, pscube, **kwargs):
         super().__init__(ps, psobs, **kwargs)
@@ -782,11 +781,9 @@ class BowshockCube(ObsModel):
         if self.verbose:
             ts = []
             print(f"""
- ---------------------
- Starting making cube
- ---------------------
  Channel width: {self.abschanwidth:.3} km/s
- Pixel size: {self.arcsecpix:.4} arcsec/pix\n
+ Pixel size: {self.arcsecpix:.4} arcsec/pix
+ Generating bowshock...
  """)
 
         self.nrs = self.nzs
@@ -807,11 +804,12 @@ class BowshockCube(ObsModel):
 
 
         outsidegrid_warning = True
+        bu.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
         for iz, z in enumerate(self.zs):
             if self.verbose:
                 t0 = datetime.now()
-                print(f"Computing: z = {z:.4f} km, v = {self.vs[iz]:.4} km/s, r = {self.rs[iz]:.4} km")
-                print(f"Computing: z = {self.km2arcsec(z):.4f} acsec, v = {self.vs[iz]:.4} km/s, r = {self.km2arcsec(self.rs[iz]):.4} arcsec")
+#                print(f"Computing: z = {z:.4f} km, v = {self.vs[iz]:.4} km/s, r = {self.rs[iz]:.4} km")
+#                print(f"Computing: z = {self.km2arcsec(z):.4f} acsec, v = {self.vs[iz]:.4} km/s, r = {self.km2arcsec(self.rs[iz]):.4} arcsec")
 
             if iz != len(self.zs)-1:
                 dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
@@ -836,20 +834,17 @@ class BowshockCube(ObsModel):
 
                 else:
                     if outsidegrid_warning:
-                        print("WARNING: Part of the model lie outside the grid!")
+                        print("WARNING: Part of the model lie outside the grid!\n")
                         outsidegrid_warning = False
             if self.verbose:
                 tf = datetime.now()
-                print(fr"dt = {(tf-t0).total_seconds()*1000:.2f} ms")
-                ts.append((tf-t0).total_seconds())
-                print(fr"Time = {np.sum(ts):.2f} s")
-                print(f"Progress: {iz/len(self.zs)*100:.2f} %")
-        if self.verbose:
-            print(f"""
-------------------------------------
-The spectral cube has been generated 
-------------------------------------
-            """)
+                intervaltime = (tf-t0).total_seconds()
+                ts.append(intervaltime)
+                bu.progressbar_bowshock(iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
+                # print(f"\n dt = {(tf-t0).total_seconds()*1000:.2f} ms")
+                # ts.append((tf-t0).total_seconds())
+                # print(f"Time = {np.sum(ts):.2f} s")
+                # print(f"Progress: {iz/len(self.zs)*100:.2f} %")
 
 
 
@@ -914,17 +909,21 @@ class CubeProcessing(BowshockCube):
         self.areapix_cm = ((self.arcsecpix * self.distpc * u.au)**2).to(u.cm**2)
 
     def calc_NCO(self,):
+        if self.verbose:
+            print(f"\nCalculating column densities...")
         self.cubes["NCO"] = (
             self.cubes["m"] * u.solMass * self.XCO \
             / self.meanmass / self.areapix_cm
         ).to(u.cm**(-2)).value #* self.NCOfactor
         self.refpixs["NCO"] = self.refpixs["m"]
         if self.verbose:
-            print(f"\nCO column densities has been calculated\n")
+            print(f"CO column densities has been calculated\n")
 
     def calc_tau(self):
         if "NCO" not in self.cubes:
             self.calc_NCO()
+        if self.verbose:
+            print(f"\nCalculating opacities...")
         self.cubes["tau"] = comass.tau_N(
             nu=comass.freq_caract_CO["3-2"],
             J=3, 
@@ -935,7 +934,7 @@ class CubeProcessing(BowshockCube):
         ).to("").value
         self.refpixs["tau"] = self.refpixs["m"]
         if self.verbose:
-            print(f"\nOpacities has been calculated\n")
+            print(f"Opacities has been calculated\n")
 
     def calc_I(self, opthin=False):
         """
@@ -943,6 +942,8 @@ class CubeProcessing(BowshockCube):
         """
         if "tau" not in self.cubes:
             self.calc_tau()
+        if self.verbose:
+            print(f"\nCalculating intensities...")
         func_I = comass.Inu_tau_thin if opthin else comass.Inu_tau
         ckI = "Ithin" if opthin else "I"
         self.cubes[ckI] = (func_I(
@@ -953,23 +954,27 @@ class CubeProcessing(BowshockCube):
         )*self.beamarea_sr).to(u.Jy).value
         self.refpixs[ckI] = self.refpixs["m"]
         if self.verbose:
-            print(f"\nIntensities has been calculated\n")
+            print(f"Intensities has been calculated\n")
 
     def calc_Ithin(self):
         self.calc_I(self, opthin=True)
 
     def add_source(self, ck="m", value=None):
         nck = self.newck(ck, "s")
+        if self.verbose:
+            print(f"\nAdding source to {nck}...")
         self.cubes[nck] = np.copy(self.cubes[ck])
         value = value if value is not None else np.max(self.cubes[ck])
         if self.refpixs[ck][1]>=0 and self.refpixs[ck][0]>=0:
             self.cubes[nck][:, self.refpix[1], self.refpix[0]] = value 
         self.refpixs[nck] = self.refpixs[ck]
         if self.verbose:
-            print(f"\n{nck} has been added a source in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n")
+            print(f"{nck} has been added a source in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n")
 
     def rotate(self, ck="m", forpv=False):
         nck = self.newck(ck, "r") if ~forpv else self.newck(ck, "R")
+        if self.verbose:
+            print(f"\nRotaitng {nck}...")
         angle = -self.pa-90 if ~forpv else self.pa+90
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
@@ -989,10 +994,12 @@ class CubeProcessing(BowshockCube):
          -rp_center_x*np.sin(ang) + rp_center_y*np.cos(ang) + centery
         ]
         if self.verbose:
-            print(f"\n{nck} has been rotated to a PA = {self.pa} deg\n")
+            print(f"{nck} has been rotated to a PA = {self.pa} deg\n")
     
     def add_noise(self, ck="m"):
         nck = self.newck(ck, "n")
+        if self.verbose:
+            print(f"\nAdding noise to {nck}...")
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
             # sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
@@ -1004,9 +1011,13 @@ class CubeProcessing(BowshockCube):
                 )
             self.cubes[nck][chan] = self.cubes[ck][chan] + noise_matrix
         self.refpixs[nck] = self.refpixs[ck]
+        if self.verbose:
+            print(f"Noise added to {nck}\n")
 
     def convolve(self, ck="m"):
         nck = self.newck(ck, "c")
+        if self.verbose:
+            print(f"\nConvolving {nck}... ")
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
             self.cubes[nck][chan] = bu.gaussconvolve(
@@ -1018,7 +1029,7 @@ class CubeProcessing(BowshockCube):
             )
         self.refpixs[nck] = self.refpixs[ck]
         if self.verbose:
-            print(f"\n{nck} has been convolved with a gaussian kernel [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix\n")
+            print(f"{nck} has been convolved with a gaussian kernel [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and a PA of {self.pabeam:.2f}\n")
 
     def calc(self, dostrs):
         for ds in dostrs:
