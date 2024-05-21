@@ -3,28 +3,34 @@ import numpy as np
 import astropy.units as u
 import astropy.constants as c
 
-import bowshock_params as p
+import bowshock_params_L1448 as p
 
 from bowpy import bsmodels as bs
 from bowpy import bsutils as bu
 
-ps = {
- "modelname": p.modelname,
- 'rj': (p.rj * p.distpc * u.au).to(u.km).value,
- 'L0': (p.L0 * p.distpc * u.au).to(u.km).value,
- 'zj': (p.zj * p.distpc * u.au).to(u.km).value,
- 'vj': p.vj,
- 'vw': p.vw,
- 'v0': p.v0,
- 'rbf_obs': None, # TODO: (p.rbf_obs * p.distpc * u.au).to(u.km).value,
- 'mass': p.mass,
-}
+pss = []
+for i in range(p.nbowshocks):
+    pss += [{
+     "modelname": p.modelname,
+     'rj':      (p.__getattribute__(f"rj_{i+1}") * p.distpc * u.au).to(u.km).value,
+     'L0':      (p.__getattribute__(f"L0_{i+1}") * p.distpc * u.au).to(u.km).value,
+     'zj':      (p.__getattribute__(f"zj_{i+1}") * p.distpc * u.au).to(u.km).value,
+     'vj':       p.__getattribute__(f"vj_{i+1}"),
+     'vw':       p.__getattribute__(f"vw_{i+1}"),
+     'v0':       p.__getattribute__(f"v0_{i+1}"),
+     'rbf_obs': (p.__getattribute__(f"rbf_obs_{i+1}") * p.distpc * u.au).to(u.km).value 
+         if p.__getattribute__(f"rbf_obs_{i+1}") is not None 
+         else p.__getattribute__(f"rbf_obs_{i+1}"),
+     'mass':     p.__getattribute__(f"mass_{i+1}"),
+    }]
+
 psobs = {
  'i': p.i * np.pi / 180,
  'vsys': p.vsys,
  'distpc': p.distpc,
  "nzs": p.nzs,
 }
+
 if len(p.outcubes) != 0:
     pscube = {
         "nphis": p.nphis,
@@ -74,16 +80,25 @@ if len(p.outcubes) != 0:
     }
 
 
-bsm = bs.NJ(ps)
-bsmobs = bs.ObsModel(ps, psobs)
-if p.bs2Dplot:
-    bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
-    bu.make_folder(f"models/{ps['modelname']}")
-    bs2Dplot.fig_model.savefig(f"models/{ps['modelname']}/2D.pdf")
+bscs = []
+for i, ps in enumerate(pss):
+    bsm = bs.NJ(ps)
+    bsmobs = bs.ObsModel(ps, psobs)
+    if p.bs2Dplot:
+        bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
+        if i == 0:
+            bu.make_folder(f"models/{ps['modelname']}")
+        bs2Dplot.fig_model.savefig(f"models/{ps['modelname']}/2D_{i}.pdf")
+    
+    if len(p.outcubes) != 0:
+        if i == 0:
+            bscs += [bs.BowshockCube(ps, psobs, pscube)]
+            bscs[i].makecube()
+        else:
+            bscs += [bs.BowshockCube(ps, psobs, pscube)]
+#            import pdb; pdb.set_trace()
+            bscs[i].makecube(fromcube=bscs[i-1].cube)
 
-if len(p.outcubes) != 0:
-    bsc = bs.BowshockCube(ps, psobs, pscube)
-    bsc.makecube()
-    bscs = bs.CubeProcessing(bsc, mpars)
-    bscs.calc(p.outcubes)
-    bscs.savecubes(p.outcubes)
+bscp = bs.CubeProcessing(bscs[-1], mpars)
+bscp.calc(p.outcubes)
+bscp.savecubes(p.outcubes)

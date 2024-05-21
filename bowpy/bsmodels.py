@@ -14,6 +14,8 @@ from matplotlib import colors
 
 from datetime import datetime
 
+import sys
+
 import bowpy.utils as ut
 import bowpy.bsutils as bu
 import bowpy.comass as comass
@@ -777,7 +779,7 @@ class BowshockCube(ObsModel):
             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
             self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
 
-    def makecube(self, ):
+    def makecube(self, fromcube=None):
         if self.verbose:
             ts = []
             print(f"""
@@ -798,10 +800,20 @@ class BowshockCube(ObsModel):
         self.vs = np.array([self.vtot(zb) for zb in self.zs])
         self.velchans = np.linspace(self.vch0, self.vchf, self.nc)
 
-        self.cube = np.zeros((self.nc, self.nys, self.nxs))
+        if fromcube is None:
+            self.cube = np.zeros((self.nc, self.nys, self.nxs))
+        elif (fromcube is not None) and np.shape(fromcube)==((self.nc, self.nys, self.nxs)):
+            self.cube = fromcube
+        else:
+            sys.exit(f"""
+The provided cube into which the model is to be build has dimensions
+{np.shape(fromcube)} but the dimensions of the desired model cube is {(self.nc,
+self.nys, self.nxs)}. Please, provide a cube with the right dimensions or do not
+provide any cube.
+""")
+
         ci = np.cos(self.i)
         si = np.sin(self.i)
-
 
         outsidegrid_warning = True
         bu.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)

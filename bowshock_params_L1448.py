@@ -9,7 +9,7 @@ Tabone et al. [2018)
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = "bs1_prueba4"
+modelname = "L1448"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -48,31 +48,8 @@ verbose = True
 BOWSHOCK PARAMETERS
 """
 
-# Jet radius. Set this parameter to zero, the channel maps generator
-# are not yet generalized for jet radius>0 [arcsec]
-rj = 0
-
-# Characteristic length scale [arcsec]
-L0 = 0.5
-
-# Distance between the working surface and the source [arcsec]
-zj = 7.31
-
-# Jet velocity
-vj = 108
-
-# Ambient (or wind) velocity [km/s]
-vw = 0
-
-# Velocity at which the material is ejected from the internal working surface [km/s]
-v0 = 17
-
-# Final radius of the bowshock [arcsec]. Set None if you want to end the
-# bowshock model at the theoretical final radius (see Tabone et al. 2018)
-rbf_obs = None
-
-# Total mass of the bowshock [solar masses]
-mass = 0.00031
+# Number of bowshocks to model
+nbowshocks = 2
 
 # Excitation temperature [K]
 Tex = 100
@@ -87,6 +64,68 @@ muH2 = 2.8
 XCO = 8.5 * 10**(-5)
 
 
+# The individual bowshock parameters must end in _{bowshock_number}. For example, the jet
+# velocity for the third bowshock is vj_3
+
+"""
+bowshock 1
+"""
+# Jet radius. Set this parameter to zero, the channel maps generator
+# are not yet generalized for jet radius>0 [arcsec]
+rj_1 = 0
+
+# Characteristic length scale [arcsec]
+L0_1 = 0.5
+
+# Distance between the working surface and the source [arcsec]
+zj_1 = 4.
+
+# Jet velocity
+vj_1 = 100
+
+# Ambient (or wind) velocity [km/s]
+vw_1 = 0
+
+# Velocity at which the material is ejected from the internal working surface [km/s]
+v0_1 = 10
+
+# Final radius of the bowshock [arcsec]. Set None if you want to end the
+# bowshock model at the theoretical final radius (see Tabone et al. 2018)
+rbf_obs_1 = None
+
+# Total mass of the bowshock [solar masses]
+mass_1 = 0.00031
+
+"""
+bowshock 2
+"""
+# Jet radius. Set this parameter to zero, the channel maps generator
+# are not yet generalized for jet radius>0 [arcsec]
+rj_2 = 0
+
+# Characteristic length scale [arcsec]
+L0_2 = 0.5
+
+# Distance between the working surface and the source [arcsec]
+zj_2 = 5.
+
+# Jet velocity
+vj_2 = 100
+
+# Ambient (or wind) velocity [km/s]
+vw_2 = 0
+
+# Velocity at which the material is ejected from the internal working surface [km/s]
+v0_2 = 10
+
+# Final radius of the bowshock [arcsec]. Set None if you want to end the
+# bowshock model at the theoretical final radius (see Tabone et al. 2018)
+rbf_obs_2 = None
+
+# Total mass of the bowshock [solar masses]
+mass_2 = 0.00031
+
+
 """
 OBSERVER PARAMETERS
 """
@@ -95,13 +134,13 @@ OBSERVER PARAMETERS
 distpc = 300
 
 # Jet inclination angle with respect to the line of sight [degrees]
-i = 20
+i = 180-45
 
 # Systemic velocity of the source [km/s]
 vsys = 0
 
 # Source coordinates [deg, deg]
-ra_source_deg, dec_source_deg = 52.26570167, 31.26771556
+ra_source_deg, dec_source_deg = 51.41198333, 30.73479833
 
 # Reference pixel [[int, int] or None]
 # The x'y' pixel coordinates of the source. The x'y' is the plane of the sky,
@@ -134,25 +173,25 @@ nc = 50
 vch0 = 0
 
 # Central velocity of the last channel map [km/s]
-vchf = -150
+vchf = +100
 
 # Number of pixels in the x and y axes
-nxs, nys = (250, 250)
+nxs, nys = (200, 200)
 
 # Reference pixel where the physical center (the source) is found
-refpix = [-25, 125]
+refpix = [0, 125]
 
 # Size of the channel maps along the x axis [arcsec]
-xpmax = 3
+xpmax = 4
 
 # Position angle of the jet axis [degrees]
-pa = 120
+pa = 161.5
 
 # Beam size [arcsec]
 bmaj, bmin = (0.173, 0.091)
 
 # Beam position angle [degrees]
-pabeam = 30
+pabeam = -17.2 
 
 # Thermal+turbulent line-of-sight velocity dispersion [km/s] If
 # thermal+turbulent line-of-sight velocity dispersion is smaller than the
