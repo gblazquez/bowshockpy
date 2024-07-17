@@ -9,12 +9,17 @@ import os
 import importlib
 
 bpf_str = input(
-    """
-    Enter the name of the file where the parameters are defined (default: bowshock_params): 
-    """
+"""
+Enter the name of the file where the parameters are defined (default: bowshock_params): 
+"""
 )
-bpf_str = bpf_str if bpf_str is not "" else "bowshock_params"
+bpf_str = bpf_str if bpf_str!="" else "bowshock_params"
 p = importlib.import_module(bpf_str.strip(".py"))
+print(
+f"""
+Parameters read from {bpf_str}.py
+"""
+)
 
 from bowpy import bsmodels as bs
 from bowpy import bsutils as bu
@@ -117,4 +122,4 @@ bscp.calc(p.outcubes)
 bscp.savecubes(p.outcubes)
 
 # Save the file with all the parameters used to generate the bowshocks
-os.system("cp {bpf_str.strip('.py')}.py models/{p.modelname}")
+os.system(f"cp {bpf_str.strip('.py')}.py models/{p.modelname}")

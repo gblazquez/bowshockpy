@@ -1,5 +1,7 @@
 import numpy as np
 
+from datetime import datetime
+
 """
 Use this file to define all the the parameters needed to run bowshock.py.
 
@@ -11,7 +13,7 @@ Tabone et al. [2018)
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = "L1448_i35_vw"
+modelname = f"L1448_{datetime.now().strftime('%y%m%d_%H%M%S')}"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -53,7 +55,7 @@ OBSERVER PARAMETERS
 distpc = 300
 
 # Jet inclination angle with respect to the line of sight [degrees]
-i = 180-35
+i = 180-70
 
 # Systemic velocity of the source [km/s]
 vsys = + 5
@@ -106,7 +108,7 @@ bowshock 1 [red]
 rj_1 = 0
 
 # Characteristic length scale [arcsec]
-L0_1 = 1.
+L0_1 = 0.5
 
 # Distance between the working surface and the source [arcsec]
 zj_1 = 1. / np.sin(i*np.pi/180)
@@ -115,14 +117,14 @@ zj_1 = 1. / np.sin(i*np.pi/180)
 vj_1 = (53-vsys) / (-np.cos(i*np.pi/180))
 
 # Ambient (or wind) velocity [km/s]
-vw_1 = 5
+vw_1 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_1 = 5
+v0_1 = 20
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see Tabone et al. 2018)
-rbf_obs_1 = 1.25 
+rbf_obs_1 = 1 
 
 # Total mass of the bowshock [solar masses]
 mass_1 = 0.00031
@@ -135,7 +137,7 @@ bowshock 2 [red]
 rj_2 = 0
 
 # Characteristic length scale [arcsec]
-L0_2 = 1.
+L0_2 = 0.5
 
 # Distance between the working surface and the source [arcsec]
 zj_2 = 3.38 / np.sin(i*np.pi/180)
@@ -144,14 +146,14 @@ zj_2 = 3.38 / np.sin(i*np.pi/180)
 vj_2 = (56-vsys) / (-np.cos(i*np.pi/180))
 
 # Ambient (or wind) velocity [km/s]
-vw_2 = 5
+vw_2 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_2 = 5
+v0_2 = 20
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see Tabone et al. 2018)
-rbf_obs_2 = 1.5
+rbf_obs_2 = 1
 
 # Total mass of the bowshock [solar masses]
 mass_2 = 0.00031 * 1.25
@@ -164,7 +166,7 @@ bowshock 3 [red]
 rj_3 = 0
 
 # Characteristic length scale [arcsec]
-L0_3 = 1.
+L0_3 = 0.5
 
 # Distance between the working surface and the source [arcsec]
 zj_3 = 5.6 / np.sin(i*np.pi/180)
@@ -173,14 +175,14 @@ zj_3 = 5.6 / np.sin(i*np.pi/180)
 vj_3 = (60-vsys) / (-np.cos(i*np.pi/180))
 
 # Ambient (or wind) velocity [km/s]
-vw_3 = 5
+vw_3 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_3 = 5
+v0_3 = 20
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see Tabone et al. 2018)
-rbf_obs_3 = 1.75
+rbf_obs_3 = 1
 
 # Total mass of the bowshock [solar masses]
 mass_3 = 0.00031 * 1.5
@@ -194,7 +196,7 @@ bowshock 4 [red]
 rj_4 = 0
 
 # Characteristic length scale [arcsec]
-L0_4 = 1.
+L0_4 = 0.5
 
 # Distance between the working surface and the source [arcsec]
 zj_4 = 8 / np.sin(i*np.pi/180)
@@ -203,14 +205,14 @@ zj_4 = 8 / np.sin(i*np.pi/180)
 vj_4 = (63-vsys) / (-np.cos(i*np.pi/180))
 
 # Ambient (or wind) velocity [km/s]
-vw_4 = 5
+vw_4 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_4 = 5
+v0_4 = 20
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see Tabone et al. 2018)
-rbf_obs_4 = 2 
+rbf_obs_4 = 1 
 
 # Total mass of the bowshock [solar masses]
 mass_4 = 0.00031 * 1.75
@@ -224,7 +226,7 @@ bowshock 5 [red]
 rj_5 = 0
 
 # Characteristic length scale [arcsec]
-L0_5 = 1.
+L0_5 = 0.5
 
 # Distance between the working surface and the source [arcsec]
 zj_5 = 10.4 / np.sin(i*np.pi/180)
@@ -233,14 +235,14 @@ zj_5 = 10.4 / np.sin(i*np.pi/180)
 vj_5 = (65-vsys) / (-np.cos(i*np.pi/180))
 
 # Ambient (or wind) velocity [km/s]
-vw_5 = 5
+vw_5 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_5 = 5
+v0_5 = 20
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see Tabone et al. 2018)
-rbf_obs_5 = 2.25 
+rbf_obs_5 = 1
 
 # Total mass of the bowshock [solar masses]
 mass_5 = 0.00031 *2
