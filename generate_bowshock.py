@@ -107,19 +107,22 @@ for i, ps in enumerate(pss):
     
     if len(p.outcubes) != 0:
         print(f"""
+
 Generating bowshock {i+1}/{p.nbowshocks}
               """)
         if i == 0:
             bscs += [bs.BowshockCube(ps, psobs, pscube)]
-            bscs[i].makecube()
+            bscs[i].makecube(verbosebs=True)
         else:
             bscs += [bs.BowshockCube(ps, psobs, pscube)]
 #            import pdb; pdb.set_trace()
-            bscs[i].makecube(fromcube=bscs[i-1].cube)
+            bscs[i].makecube(fromcube=bscs[i-1].cube, verbosebs=False)
 
 bscp = bs.CubeProcessing(bscs[-1], mpars)
 bscp.calc(p.outcubes)
 bscp.savecubes(p.outcubes)
+for ck in p.momentsandpv:
+    bscp.momentsandpv(ck, savefits=True, saveplot=True)
 
 # Save the file with all the parameters used to generate the bowshocks
 os.system(f"cp {bpf_str.strip('.py')}.py models/{p.modelname}")

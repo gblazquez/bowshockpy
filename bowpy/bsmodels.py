@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib import cm
 from matplotlib import colors
+from matplotlib.colors import TwoSlopeNorm, ListedColormap
+from matplotlib import colormaps
 
 from datetime import datetime
 
@@ -19,7 +21,7 @@ import sys
 import bowpy.utils as ut
 import bowpy.bsutils as bu
 import bowpy.comass as comass
-
+import bowpy.moments as moments
 
 
 class NJ():
@@ -779,13 +781,12 @@ class BowshockCube(ObsModel):
             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
             self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
 
-    def makecube(self, fromcube=None):
-        if self.verbose:
-            ts = []
+    def makecube(self, fromcube=None, verbosebs=False):
+        ts = []
+        if self.verbose and verbosebs:
             print(f"""
  Channel width: {self.abschanwidth:.3} km/s
  Pixel size: {self.arcsecpix:.4} arcsec/pix
- Generating bowshock...
  """)
 
         self.nrs = self.nzs
@@ -846,7 +847,7 @@ provide any cube.
 
                 else:
                     if outsidegrid_warning:
-                        print("WARNING: Part of the model lie outside the grid!\n")
+                        print("WARNING: Part of the model lie outside the grid! Try to make the image bigger by increasing the number of pixels (parameters nxs and nys), or try to change the reference pixel where the physical center (the source) is found (parameter refpix)\n")
                         outsidegrid_warning = False
             if self.verbose:
                 tf = datetime.now()
@@ -905,11 +906,14 @@ class CubeProcessing(BowshockCube):
 
     @staticmethod
     def newck(ck, s):
-        return f"{ck}_{s}" if "_" not in ck else  ck+s
+        return f"{ck}_{s}" if "_" not in ck else ck+s
 
     @staticmethod
     def q(ck):
         return ck.split("_")[0] if "_" in ck else ck
+    
+    def getunitlabel(self, ck):
+        return f"{self.btypes[self.q(ck)]} [{self.bunits[self.q(ck)]}]" 
 
     def calc_beamarea_sr(self):
         self.beamarea_sr = ut.mb_sa_gaussian_f(
@@ -984,10 +988,10 @@ class CubeProcessing(BowshockCube):
             print(f"{nck} has been added a source in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n")
 
     def rotate(self, ck="m", forpv=False):
-        nck = self.newck(ck, "r") if ~forpv else self.newck(ck, "R")
+        nck = self.newck(ck, "r") if not forpv else self.newck(ck, "R")
         if self.verbose:
             print(f"\nRotaitng {nck}...")
-        angle = -self.pa-90 if ~forpv else self.pa+90
+        angle = -self.pa-90 if not forpv else self.pa+90
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
             self.cubes[nck][chan] = rotate(
@@ -999,8 +1003,8 @@ class CubeProcessing(BowshockCube):
         ang = angle * np.pi/180
         centerx = (self.nxs-1)/2
         centery = (self.nys-1)/2
-        rp_center_x = self.refpix[0] - centerx
-        rp_center_y = self.refpix[1] - centery
+        rp_center_x = self.refpixs[ck][0] - centerx
+        rp_center_y = self.refpixs[ck][1] - centery
         self.refpixs[nck] = [
          +rp_center_x*np.cos(ang) + rp_center_y*np.sin(ang) + centerx,
          -rp_center_x*np.sin(ang) + rp_center_y*np.cos(ang) + centery
@@ -1088,3 +1092,693 @@ class CubeProcessing(BowshockCube):
     def savecubes(self, cks):
         for ck in cks:
             self.savecube(ck)
+
+    def pvalongz(self, ck, halfwidth=0, save=False):
+        pvimage = moments.pv(
+            self.cubes[ck],
+            int(self.refpixs[ck][1]),
+            halfwidth=halfwidth,
+            axis=1
+        )
+        if save:
+            hdrpv = bu.create_hdr(
+                NAXIS1 = np.shape(self.cubes[ck])[1],
+                NAXIS2 = np.shape(self.cubes[ck])[0],
+                BMAJ = self.bmaj/3600,
+                BMIN = self.bmin/3600,
+                BPA = self.pabeam,
+                BTYPE = self.btypes[self.q(ck)],
+                BUNIT = self.bunits[self.q(ck)],
+                CTYPE1 = "OFFSET",
+                CRVAL1 = 0,
+                CDELT1 = self.arcsecpix,
+                CRPIX1 = self.refpixs[ck][0] + 1,
+                CUNIT1 = "arcsec",
+                CTYPE2 = "VELOCITY",
+                CRVAL2 = self.velchans[0],
+                CDELT2 = self.chanwidth,
+                CRPIX2 = 1,
+                CUNIT2 = "km/s"
+            )
+            hdu = fits.PrimaryHDU(pvimage)
+            hdul = fits.HDUList([hdu])
+            hdu.header = hdrpv
+            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_pv.fits', overwrite=True)                 
+        if self.verbose:
+            print(f'models/{self.modelname}/fits/{ck}_pv.fits saved')
+        return pvimage 
+
+    def sumint(self, ck, chan_range=None, save=False):
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        sumintimage = moments.sumint(
+            self.cubes[ck],
+            chan_range=chan_range
+        )
+        if save:
+            hdr = bu.create_hdr(
+                NAXIS1 = np.shape(self.cubes[ck])[1],
+                NAXIS2 = np.shape(self.cubes[ck])[0],
+                BMAJ = self.bmaj/3600,
+                BMIN = self.bmin/3600,
+                BPA = self.pabeam,
+                BTYPE = self.btypes[self.q(ck)],
+                BUNIT = self.bunits[self.q(ck)],
+                CTYPE1 = "OFFSET",
+                CRVAL1 = 0,
+                CDELT1 = self.arcsecpix,
+                CRPIX1 = self.refpixs[ck][0] + 1,
+                CUNIT1 = "arcsec",
+                CTYPE2 = "OFFSET",
+                CRVAL2 = 0,
+                CDELT2 = self.arcsecpix,
+                CRPIX2 = self.refpixs[ck][1] + 1,
+                CUNIT2 = "arcsec"
+            )
+            hdu = fits.PrimaryHDU(sumintimage)
+            hdul = fits.HDUList([hdu])
+            hdu.header = hdr
+            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_sumint.fits', overwrite=True)                 
+        if self.verbose:
+            print(f'models/{self.modelname}/fits/{ck}_sumint.fits saved')
+        return sumintimage
+    
+    def mom0(self, ck, chan_range=None, save=False):
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
+        mom0 = moments.mom0(
+            self.cubes[ck],
+            chan_vels=chan_vels,
+            chan_range=chan_range,
+            )
+        if save:
+            hdr = bu.create_hdr(
+                NAXIS1 = np.shape(self.cubes[ck])[1],
+                NAXIS2 = np.shape(self.cubes[ck])[0],
+                BMAJ = self.bmaj/3600,
+                BMIN = self.bmin/3600,
+                BPA = self.pabeam,
+                BTYPE = self.btypes[self.q(ck)],
+                BUNIT = self.bunits[self.q(ck)],
+                CTYPE1 = "OFFSET",
+                CRVAL1 = 0,
+                CDELT1 = self.arcsecpix,
+                CRPIX1 = self.refpixs[ck][0] + 1,
+                CUNIT1 = "arcsec",
+                CTYPE2 = "OFFSET",
+                CRVAL2 = 0,
+                CDELT2 = self.arcsecpix,
+                CRPIX2 = self.refpixs[ck][1] + 1,
+                CUNIT2 = "arcsec"
+            )
+            hdu = fits.PrimaryHDU(mom0)
+            hdul = fits.HDUList([hdu])
+            hdu.header = hdr
+            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom0.fits', overwrite=True)                 
+        if self.verbose:
+            print(f'models/{self.modelname}/fits/{ck}_mom0.fits saved')
+        return mom0
+    
+    def mom1(self, ck, chan_range=None, clipping=0, save=False):
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
+        cube_clipped = np.copy(self.cubes[ck])
+        cube_clipped[cube_clipped<clipping] = 0
+        mom1 = np.nan_to_num(
+                moments.mom1(
+                    cube_clipped,
+                    chan_vels=chan_vels,
+                    chan_range=chan_range
+                )
+            )
+        if save:
+            hdr = bu.create_hdr(
+                NAXIS1 = np.shape(self.cubes[ck])[1],
+                NAXIS2 = np.shape(self.cubes[ck])[0],
+                BMAJ = self.bmaj/3600,
+                BMIN = self.bmin/3600,
+                BPA = self.pabeam,
+                BTYPE = self.btypes[self.q(ck)],
+                BUNIT = self.bunits[self.q(ck)],
+                CTYPE1 = "OFFSET",
+                CRVAL1 = 0,
+                CDELT1 = self.arcsecpix,
+                CRPIX1 = self.refpixs[ck][0] + 1,
+                CUNIT1 = "arcsec",
+                CTYPE2 = "OFFSET",
+                CRVAL2 = 0,
+                CDELT2 = self.arcsecpix,
+                CRPIX2 = self.refpixs[ck][1] + 1,
+                CUNIT2 = "arcsec"
+            )
+            hdu = fits.PrimaryHDU(mom1)
+            hdul = fits.HDUList([hdu])
+            hdu.header = hdr
+            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom1.fits', overwrite=True)                 
+        if self.verbose:
+            print(f'models/{self.modelname}/fits/{ck}_mom1.fits saved')
+        return mom1
+
+    def mom2(self, ck, chan_range=None, clipping=0, save=False):
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
+        cube_clipped = np.copy(self.cubes[ck])
+        cube_clipped[cube_clipped<clipping] = 0
+        mom2 = np.nan_to_num(
+                moments.mom2(
+                    cube_clipped,
+                    chan_vels=chan_vels,
+                    chan_range=chan_range
+                )
+            )
+        if save:
+            hdr = bu.create_hdr(
+                NAXIS1 = np.shape(self.cubes[ck])[1],
+                NAXIS2 = np.shape(self.cubes[ck])[0],
+                BMAJ = self.bmaj/3600,
+                BMIN = self.bmin/3600,
+                BPA = self.pabeam,
+                BTYPE = self.btypes[self.q(ck)],
+                BUNIT = self.bunits[self.q(ck)],
+                CTYPE1 = "OFFSET",
+                CRVAL1 = 0,
+                CDELT1 = self.arcsecpix,
+                CRPIX1 = self.refpixs[ck][0] + 1,
+                CUNIT1 = "arcsec",
+                CTYPE2 = "OFFSET",
+                CRVAL2 = 0,
+                CDELT2 = self.arcsecpix,
+                CRPIX2 = self.refpixs[ck][1] + 1,
+                CUNIT2 = "arcsec"
+            )
+            hdu = fits.PrimaryHDU(mom2)
+            hdul = fits.HDUList([hdu])
+            hdu.header = hdr
+            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom2.fits', overwrite=True)                 
+        if self.verbose:
+            print(f'models/{self.modelname}/fits/{ck}_mom2.fits saved')
+        return mom2
+    
+    def mom8(self, ck, chan_range=None, clipping=0, save=False):
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
+        cube_clipped = np.copy(self.cubes[ck])
+        cube_clipped[cube_clipped<clipping] = 0
+        mom8 = np.nan_to_num(
+                moments.mom8(
+                    cube_clipped,
+                    chan_range=chan_range,
+                )
+            )
+        if save:
+            hdr = bu.create_hdr(
+                NAXIS1 = np.shape(self.cubes[ck])[1],
+                NAXIS2 = np.shape(self.cubes[ck])[0],
+                BMAJ = self.bmaj/3600,
+                BMIN = self.bmin/3600,
+                BPA = self.pabeam,
+                BTYPE = self.btypes[self.q(ck)],
+                BUNIT = self.bunits[self.q(ck)],
+                CTYPE1 = "OFFSET",
+                CRVAL1 = 0,
+                CDELT1 = self.arcsecpix,
+                CRPIX1 = self.refpixs[ck][0] + 1,
+                CUNIT1 = "arcsec",
+                CTYPE2 = "OFFSET",
+                CRVAL2 = 0,
+                CDELT2 = self.arcsecpix,
+                CRPIX2 = self.refpixs[ck][1] + 1,
+                CUNIT2 = "arcsec"
+            )
+            hdu = fits.PrimaryHDU(mom8)
+            hdul = fits.HDUList([hdu])
+            hdu.header = hdr
+            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom8.fits', overwrite=True)                 
+        if self.verbose:
+            print(f'models/{self.modelname}/fits/{ck}_mom8.fits saved')
+        return mom8
+
+    # def allmoments(self, ck, chan_range=None):
+    def plotpv(self, pvimage, rangex, chan_vels, ax=None, cbax=None,
+            vmax=None, vcenter=None, vmin=None,
+            cmap="nipy_spectral", interpolation="bilinear", cbarlabel="Intensity [Jy/beam]",
+            ):
+        if ax is None or cbax is None:
+            plt.figure(figsize=(5,5))
+            gs = GridSpec(
+                2, 1, 
+                height_ratios=[0.05, 1],
+                width_ratios=[1],
+                hspace=0.1,
+                wspace=0.00,
+            )
+            ax = plt.subplot(gs[1,0])
+            cbax = plt.subplot(gs[0, 0])
+        else:
+            pass
+        vmax = vmax if vmax is not None else np.max(pvimage[~np.isnan(pvimage)])
+        vmin = vmin if vmin is not None else np.min(pvimage[~np.isnan(pvimage)])
+        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+        chanwidth = chan_vels[1] - chan_vels[0]
+        im = ax.imshow(
+            pvimage,
+            origin="lower",
+            extent=[
+                rangex[0], rangex[1],
+                chan_vels[0]-chanwidth/2,
+                chan_vels[-1]+chanwidth/2
+                ],
+            norm=norm,
+            cmap=cmap,
+            interpolation=interpolation,
+            )
+        ax.set_aspect("auto")
+        ax.set_ylabel("Velocity [km/s]")
+        ax.set_xlabel("Distance [arcsec]")
+        ax.minorticks_on()
+        ax.tick_params(
+            which="both",
+            direction="in",
+            top=True,
+            right=True,
+            color="w",
+        )
+        plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
+        cbax.tick_params(
+            axis="x", top=True, bottom=False,
+            labelbottom=False, labeltop=True,
+            direction="in",
+            )
+        cbax.set_xlabel(cbarlabel)
+        cbax.xaxis.set_label_position("top")
+    
+    def plotsumint(self, sumint, ax=None, cbax=None, extent=None,
+                   vmax=None, vcenter=None, vmin=None,
+                   interpolation="bilinear", cbarlabel="Intensity", ):
+    
+        if ax is None or cbax is None:
+            plt.figure(figsize=(5,5.5))
+            gs = GridSpec(
+                2, 1, 
+                height_ratios=[0.05, 1],
+                width_ratios=[1],
+                hspace=0.1,
+                wspace=0.00,
+            )
+            ax = plt.subplot(gs[1, 0])
+            cbax = plt.subplot(gs[0, 0])
+        else:
+            pass
+        vmax = vmax if vmax is not None else np.max(sumint[~np.isnan(sumint)])
+        vmin = vmin if vmin is not None else np.min(sumint[~np.isnan(sumint)])
+        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+        im = ax.imshow(
+            sumint,
+            origin="lower",
+            cmap="inferno",
+            norm=norm,
+            interpolation=interpolation,
+            extent=extent,
+            )
+        if extent is None:
+            ax.set_ylabel("Dec. [pixel]")
+            ax.set_xlabel("R.A. [pixel]")
+        else:
+            ax.set_ylabel("Dec. [arcsec]")
+            ax.set_xlabel("R.A. [arcsec]")
+        ax.minorticks_on()
+        ax.tick_params(
+            which="both",
+            direction="in",
+            top=True,
+            right=True,
+            color="w",
+        )
+        ax.set_aspect("equal")
+        plt.colorbar(im, cax=cbax, orientation="horizontal")
+        cbax.tick_params(
+            axis="x", top=True, bottom=False,
+            labelbottom=False, labeltop=True,
+            direction="in",
+            )
+        cbax.set_xlabel(rf"$\sum\mathrm{{{cbarlabel}}}_i$")
+        cbax.xaxis.set_label_position("top")
+    
+    def plotmom0(self, mom0, ax=None, cbax=None, extent=None,
+                vmax=None, vcenter=None, vmin=None, 
+                interpolation="bilinear", cbarlabel="Moment 0 [Jy/beam km/s]",):
+    
+        if ax is None or cbax is None:
+            plt.figure(figsize=(5,5.5))
+            gs = GridSpec(
+                2, 1, 
+                height_ratios=[0.05, 1],
+                width_ratios=[1],
+                hspace=0.1,
+                wspace=0.00,
+            )
+            ax = plt.subplot(gs[1, 0])
+            cbax = plt.subplot(gs[0, 0])
+        else:
+            pass
+     
+        vmax = vmax if vmax is not None else np.max(mom0[~np.isnan(mom0)])
+        vmin = vmin if vmin is not None else np.min(mom0[~np.isnan(mom0)])
+        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+        im = ax.imshow(
+            mom0,
+            origin="lower",
+            cmap="inferno",
+            norm=norm,
+            interpolation=interpolation,
+            extent=extent,
+            )
+        if extent is None:
+            ax.set_ylabel("Dec. [pixel]")
+            ax.set_xlabel("R.A. [pixel]")
+        else:
+            ax.set_ylabel("Dec. [arcsec]")
+            ax.set_xlabel("R.A. [arcsec]")
+        ax.minorticks_on()
+        ax.tick_params(
+            which="both",
+            direction="in",
+            top=True,
+            right=True,
+            color="w",
+        )
+        ax.set_aspect("equal")
+        plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
+        cbax.tick_params(
+            axis="x", top=True, bottom=False,
+            labelbottom=False, labeltop=True,
+            direction="in",
+            )
+        cbax.xaxis.set_label_position("top")
+    
+    
+    def plotmom1(self, mom1, ax=None, cbax=None, extent=None,
+                  vmin=None, vmax=None, vcenter=None,
+                  extend_cbar="max", return_velcmap=False,
+                  bg="black", cmap_ref='jet_r',
+                  interpolation="bilinear", cbarlabel="Moment 1 [km/s]"):
+        """
+        Moment 1
+        """
+        if ax is None or cbax is None:
+            plt.figure(figsize=(5,5.5))
+            gs = GridSpec(
+                2, 1, 
+                height_ratios=[0.05, 1],
+                width_ratios=[1],
+                hspace=0.1,
+                wspace=0.00,
+            )
+            ax = plt.subplot(gs[1, 0])
+            cbax = plt.subplot(gs[0, 0])
+        else:
+            pass
+     
+        if type(cmap_ref) is str:
+            cmap = colormaps[cmap_ref]
+        else:
+            cmap = cmap_ref
+        velcolors = cmap(np.linspace(0, 1, 256))
+        if bg == "black":
+            bgcolor = np.array([0/256, 0/256, 0/256, 1])
+        elif bg == "white":
+            bgcolor = np.array([256/256, 256/256, 256/256, 1])
+        velcolors[:1, :] = bgcolor
+    
+        velcmap = ListedColormap(velcolors)
+    
+        if extend_cbar == "max":
+            velcmap = ListedColormap(velcolors[::-1])
+        
+        vmin = vmin if vmin is not None else np.min(mom1[~np.isnan(mom1)])
+        vmax = vmin if vmax is not None else np.max(mom1[~np.isnan(mom1)])
+        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+        norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
+        im = ax.imshow(
+            mom1,
+            origin="lower",
+            extent=extent,
+            norm=norm,
+            cmap=velcmap,
+            interpolation=interpolation,
+        )
+        if extent is None:
+            ax.set_ylabel("Dec. [pixel]")
+            ax.set_xlabel("R.A. [pixel]")
+        else:
+            ax.set_ylabel("Dec. [arcsec]")
+            ax.set_xlabel("R.A. [arcsec]")
+        ax.set_aspect("equal")
+        plt.colorbar(im, cax=cbax, orientation="horizontal",
+                     extend=extend_cbar, label=cbarlabel)
+        cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
+                         labeltop=True,)
+        cbax.xaxis.set_label_position("top")
+    
+        if return_velcmap:
+            return velcmap
+        else:
+            pass
+    
+    def plotmom2(self, mom2, ax=None, cbax=None, extent=None,
+                  vmin=None, vmax=None, vcenter=None,
+                  extend_cbar="max", return_velcmap=False,
+                  bg="black", cmap_ref='jet_r', cbarlabel="Moment 2 [km$^2$/s$^2$]",
+                  interpolation=None):
+        """
+        Moment 1
+        """
+        if ax is None or cbax is None:
+            plt.figure(figsize=(5,5.5))
+            gs = GridSpec(
+                2, 1, 
+                height_ratios=[0.05, 1],
+                width_ratios=[1],
+                hspace=0.1,
+                wspace=0.00,
+            )
+            ax = plt.subplot(gs[1, 0])
+            cbax = plt.subplot(gs[0, 0])
+        else:
+            pass
+     
+        if type(cmap_ref) is str:
+            cmap = colormaps[cmap_ref]
+        else:
+            cmap = cmap_ref
+        velcolors = cmap(np.linspace(0, 1, 256))
+        if bg == "black":
+            bgcolor = np.array([0/256, 0/256, 0/256, 1])
+        elif bg == "white":
+            bgcolor = np.array([256/256, 256/256, 256/256, 1])
+        velcolors[:1, :] = bgcolor
+        velcmap = ListedColormap(velcolors)
+        if extend_cbar == "max":
+            velcmap = ListedColormap(velcolors[::-1])
+        vmin = vmin if vmin is not None else np.min(mom2[~np.isnan(mom2)])
+        vmax = vmin if vmax is not None else np.max(mom2[~np.isnan(mom2)])
+        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+        norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
+        im = ax.imshow(
+            mom2,
+            origin="lower",
+            extent=extent,
+            norm=norm,
+            cmap=velcmap,
+            interpolation=interpolation,
+        )
+        if extent is None:
+            ax.set_ylabel("Dec. [pixel]")
+            ax.set_xlabel("R.A. [pixel]")
+        else:
+            ax.set_ylabel("Dec. [arcsec]")
+            ax.set_xlabel("R.A. [arcsec]")
+        ax.set_aspect("equal")
+        plt.colorbar(im, cax=cbax, orientation="horizontal",
+                    extend=extend_cbar, label=cbarlabel)
+        cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
+                         labeltop=True,)
+        cbax.xaxis.set_label_position("top")
+        if return_velcmap:
+            return velcmap
+        else:
+            pass
+    
+    def plotmom8(self, mom8, ax=None, cbax=None, extent=None,
+                vmax=None, vcenter=None, vmin=None,
+                interpolation="bilinear", cbarlabel="Moment 8"):
+    
+        if ax is None or cbax is None:
+            plt.figure(figsize=(5,5.5))
+            gs = GridSpec(
+                2, 1, 
+                height_ratios=[0.05, 1],
+                width_ratios=[1],
+                hspace=0.1,
+                wspace=0.00,
+            )
+            ax = plt.subplot(gs[1, 0])
+            cbax = plt.subplot(gs[0, 0])
+        else:
+            pass
+     
+        vmax = vmax if vmax is not None else np.max(mom8[~np.isnan(mom8)])
+        vmin = vmin if vmin is not None else np.min(mom8[~np.isnan(mom8)])
+        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+        im = ax.imshow(
+            mom8,
+            origin="lower",
+            cmap="inferno",
+            norm=norm,
+            interpolation=interpolation,
+            extent=extent,
+            )
+        if extent is None:
+            ax.set_ylabel("Dec. [pixel]")
+            ax.set_xlabel("R.A. [pixel]")
+        else:
+            ax.set_ylabel("Dec. [arcsec]")
+            ax.set_xlabel("R.A. [arcsec]")
+        ax.minorticks_on()
+        ax.tick_params(
+            which="both",
+            direction="in",
+            top=True,
+            right=True,
+            color="w",
+        )
+        ax.set_aspect("equal")
+        plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
+        cbax.tick_params(
+            axis="x", top=True, bottom=False,
+            labelbottom=False, labeltop=True,
+            direction="in",
+            )
+        cbax.xaxis.set_label_position("top")
+
+    def momentsandpv(self, ck, savefits=False, saveplot=False):
+        ckpv = ck + "R" 
+        if ckpv not in self.cubes:
+            self.rotate(ck, forpv=True)
+
+        fig = plt.figure(figsize=(17,9))
+        gs = GridSpec(
+            2, 4,
+            hspace=0.2,
+            wspace=0.2,
+        )
+    
+        axs = {}
+        cbaxs = {}
+        gss = {}
+    
+        for i, ik in enumerate(["mom0", "mom1", "mom8", "pv"]):
+            gss[ik] = gs[0,i].subgridspec(
+                2, 1,
+                height_ratios=[0.05, 1],
+                width_ratios=[1],
+                hspace=0.05,
+            )
+            axs[ik] = plt.subplot(gss[ik][1,0])
+            cbaxs[ik] = plt.subplot(gss[ik][0,0])
+    
+        ak = "mom0"
+        mom0 = self.mom0(
+            ck,
+            chan_range=[0, self.nc],
+            save=savefits,
+            )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom0(
+            mom0,
+            extent=extent,
+            interpolation=None,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Integrated " + self.getunitlabel(ck).rstrip("]") + " km/s]"
+            )
+    
+        ak = "mom1"
+        mom1 = self.mom1(
+                    ck,
+                    chan_range=[0, self.nc], 
+                    save=savefits,
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom1(
+            mom1,
+            extent=extent,
+            interpolation=None,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Mean velocity [km/s]"
+            )
+    
+        ak = "pv"
+        pvimage = self.pvalongz(
+            ckpv,
+            halfwidth=0,
+            save=savefits
+            )
+        rangex = np.array([0, self.arcsecpix*np.shape(pvimage)[1]])
+        chan_vels = self.velchans
+        self.plotpv(
+            pvimage,
+            rangex=rangex,
+            chan_vels=chan_vels,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel=self.getunitlabel(ckpv),
+            )
+    
+        ak = "mom8"
+        mom8 = self.mom8(
+                    ck,
+                    chan_range=[0, self.nc],
+                    save=savefits
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom8(
+            mom8,
+            extent=extent,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Peak " + self.getunitlabel(ck)
+            )
+        if saveplot:
+            fig.savefig(
+                f"models/{self.modelname}/momentsandpv.pdf",
+                bbox_inches="tight",
+                )
+
+
+

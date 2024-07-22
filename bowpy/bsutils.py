@@ -1,5 +1,5 @@
 """
-SOME THINGS FROM THIS FILE IS INTENDED TO DISAPPEAR
+SOME THINGS FROM THIS FILE ARE INTENDED TO DISAPPEAR
 Usefull things from bs.py should be moved here
 """
 
@@ -143,14 +143,14 @@ def channels_plot(cube, axs, ax_cbar, pars, chan_vels, nrow, ncol,
     plt.colorbar(im, cax=ax_cbar, extend="max")
     ax_cbar.set_ylabel("Intensity")
 
-def pv_plot(cube, ax, cbax, chan_vels, rangex=None, width_pv=3, xpv=None,
+def pv_plot(cube, ax, cbax, chan_vels, rangex=None, halfwidth=3, xpv=None,
             fmaxlim=0.4, fvcenter=0.2, vmax=None, vcenter=None, vmin=None,
             cmap="inferno", interpolation="bilinear", normalize=False):
     """
     PV
     """
     xpv = xpv if xpv is not None else int(np.shape(cube)[-1]/2)
-    bowshock_pv = moments.pv(cube, xpv=xpv, width=width_pv)
+    bowshock_pv = moments.pv(cube, xpv=xpv, halfwidth=halfwidth)
     normfactor = np.max(bowshock_pv[:, ::-1]) if normalize else 1
     data = bowshock_pv[:, ::-1] / normfactor
     rangex = rangex if rangex is not None else [-0.5, np.shape(data)[1]-0.5]
@@ -161,7 +161,6 @@ def pv_plot(cube, ax, cbax, chan_vels, rangex=None, width_pv=3, xpv=None,
         vmin = vmin if vmin is not None else 0
         vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
         norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-
 
     im = ax.imshow(
         data,

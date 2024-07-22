@@ -41,7 +41,9 @@ bs2Dplot = True
 # The list can be left empty if no cube is desired
 # Example of outcubes:
 # outcubes = ["m", "m_r", "I_rc", "tau_rc", "NCO_rc", "Ithin_rc"]
-outcubes = ["I_srnc", ]
+outcubes = ["I_rnc", ]
+
+momentsandpv = ["I_rnc"]
 
 
 # Verbose messages about the computation? [True/False]
@@ -55,7 +57,7 @@ OBSERVER PARAMETERS
 distpc = 300
 
 # Jet inclination angle with respect to the line of sight [degrees]
-i = 180-70
+i = 180-20
 
 # Systemic velocity of the source [km/s]
 vsys = + 5
@@ -63,26 +65,13 @@ vsys = + 5
 # Source coordinates [deg, deg]
 ra_source_deg, dec_source_deg = 51.41198333, 30.73479833
 
-# Reference pixel [[int, int] or None]
-# The x'y' pixel coordinates of the source. The x'y' is the plane of the sky,
-# being x' the projection of the symmetry axis z onto the plane of the sky. In
-# the model output cube, previous to any rotation defined by the PA angle of the
-# x' axis, x' is the abscisa axis and y' is the ordinate axis.
-refpix = None
-
-# Add source to the image at the reference pixel? [True/False]
-add_source = True
-
-# Noise of the map
-maxcube2noise = 10
-
 
 """
 BOWSHOCK PARAMETERS
 """
 
 # Number of bowshocks to model
-nbowshocks = 5
+nbowshocks = 4
 
 # Excitation temperature [K]
 Tex = 100
@@ -218,34 +207,34 @@ rbf_obs_4 = 1
 mass_4 = 0.00031 * 1.75
 
 
-"""
-bowshock 5 [red]
-"""
-# Jet radius. Set this parameter to zero, the channel maps generator
-# are not yet generalized for jet radius>0 [arcsec]
-rj_5 = 0
-
-# Characteristic length scale [arcsec]
-L0_5 = 0.5
-
-# Distance between the working surface and the source [arcsec]
-zj_5 = 10.4 / np.sin(i*np.pi/180)
-
-# Jet velocity
-vj_5 = (65-vsys) / (-np.cos(i*np.pi/180))
-
-# Ambient (or wind) velocity [km/s]
-vw_5 = 0
-
-# Velocity at which the material is ejected from the internal working surface [km/s]
-v0_5 = 20
-
-# Final radius of the bowshock [arcsec]. Set None if you want to end the
-# bowshock model at the theoretical final radius (see Tabone et al. 2018)
-rbf_obs_5 = 1
-
-# Total mass of the bowshock [solar masses]
-mass_5 = 0.00031 *2
+# """
+# bowshock 5 [red]
+# """
+# # Jet radius. Set this parameter to zero, the channel maps generator
+# # are not yet generalized for jet radius>0 [arcsec]
+# rj_5 = 0
+# 
+# # Characteristic length scale [arcsec]
+# L0_5 = 0.5
+# 
+# # Distance between the working surface and the source [arcsec]
+# zj_5 = 10.4 / np.sin(i*np.pi/180)
+# 
+# # Jet velocity
+# vj_5 = (65-vsys) / (-np.cos(i*np.pi/180))
+# 
+# # Ambient (or wind) velocity [km/s]
+# vw_5 = 0
+# 
+# # Velocity at which the material is ejected from the internal working surface [km/s]
+# v0_5 = 20
+# 
+# # Final radius of the bowshock [arcsec]. Set None if you want to end the
+# # bowshock model at the theoretical final radius (see Tabone et al. 2018)
+# rbf_obs_5 = 1
+# 
+# # Total mass of the bowshock [solar masses]
+# mass_5 = 0.00031 *2
 
 
 
@@ -302,3 +291,17 @@ CIC = True
 # the total mass will be underestimated. If vt is not None, compare the total
 # mass of the output cube with the 'mass' parameter that the user has defined
 tolfactor_vt = 3
+
+# Reference pixel [[int, int] or None]
+# The x'y' pixel coordinates of the source. The x'y' is the plane of the sky,
+# being x' the projection of the symmetry axis z onto the plane of the sky. In
+# the model output cube, previous to any rotation defined by the PA angle of the
+# x' axis, x' is the abscisa axis and y' is the ordinate axis.
+refpix = None
+
+# Add source to the image at the reference pixel? [True/False]
+# add_source = True
+
+# Noise of the map
+maxcube2noise = 10
+
