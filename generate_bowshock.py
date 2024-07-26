@@ -25,6 +25,7 @@ from bowpy import bsmodels as bs
 from bowpy import bsutils as bu
 
 pss = []
+psobss = []
 for i in range(p.nbowshocks):
     pss += [{
      "modelname": p.modelname,
@@ -40,12 +41,12 @@ for i in range(p.nbowshocks):
      'mass':     p.__getattribute__(f"mass_{i+1}"),
     }]
 
-psobs = {
- 'i': p.i * np.pi / 180,
- 'vsys': p.vsys,
- 'distpc': p.distpc,
- "nzs": p.nzs,
-}
+    psobss += [{
+     'i': p.__getattribute__(f"i_{i+1}") * np.pi / 180,
+     'vsys': p.vsys,
+     'distpc': p.distpc,
+     "nzs": p.nzs,
+    }]
 
 if len(p.outcubes) != 0:
     pscube = {
@@ -77,13 +78,13 @@ if len(p.outcubes) != 0:
     pscube["beamarea"] = np.pi * pscube["y_FWHM"] * pscube["x_FWHM"] / (4 * np.log(2))
     if pscube["refpix"] == None:
         if pscube["nxs"]%2 == 0:
-            xref = pscube["nxs"] / 2
+            xref = int(pscube["nxs"] / 2)
         else:
-            xref = (pscube["nxs"]-1) / 2
+            xref = int((pscube["nxs"]-1) / 2)
         if pscube["nys"]%2 == 0:
-            yref = pscube["nys"] / 2
+            yref = int(pscube["nys"] / 2)
         else:
-            yref = (pscube["nys"]-1) / 2
+            yref = int((pscube["nys"]-1) / 2)
         pscube["refpix"] = [xref, yref]
     mpars = {
         "muH2": p.muH2,
@@ -96,7 +97,7 @@ if len(p.outcubes) != 0:
     }
 
 bscs = []
-for i, ps in enumerate(pss):
+for i, (ps,psobs) in enumerate(zip(pss,psobss)):
     bsm = bs.NJ(ps)
     bsmobs = bs.ObsModel(ps, psobs)
     if p.bs2Dplot:
@@ -112,17 +113,49 @@ Generating bowshock {i+1}/{p.nbowshocks}
               """)
         if i == 0:
             bscs += [bs.BowshockCube(ps, psobs, pscube)]
-            bscs[i].makecube(verbosebs=True)
+            bscs[i].makecube()
+            print(f"""
+ Channel width: {pscube['abschanwidth']:.3} km/s
+ Pixel size: {pscube['arcsecpix']:.4} arcsec/pix
+ """)
+
         else:
             bscs += [bs.BowshockCube(ps, psobs, pscube)]
 #            import pdb; pdb.set_trace()
-            bscs[i].makecube(fromcube=bscs[i-1].cube, verbosebs=False)
+            bscs[i].makecube(fromcube=bscs[i-1].cube)
 
 bscp = bs.CubeProcessing(bscs[-1], mpars)
 bscp.calc(p.outcubes)
 bscp.savecubes(p.outcubes)
 for ck in p.momentsandpv:
-    bscp.momentsandpv(ck, savefits=True, saveplot=True)
+    # bscp.momentsandpv(
+    #     ck,
+    #     savefits=p.savefits,
+    #     saveplot=p.saveplot,
+    #     mom1clipping=p.mom1clipping,
+    #     mom2clipping=p.mom2clipping,
+    #     mom0values=p.mom0values,
+    #     mom1values=p.mom1values,
+    #     mom2values=p.mom2values,
+    #     mom8values=p.mom8values,
+    #     pvvalues=p.pvvalues,
+    #     )
+
+    bscp.momentsandpv_and_params(
+        ck,
+        bscs,
+        savefits=p.savefits,
+        saveplot=p.saveplot,
+        mom1clipping=p.mom1clipping,
+        mom2clipping=p.mom2clipping,
+        mom0values=p.mom0values,
+        mom1values=p.mom1values,
+        mom2values=p.mom2values,
+        mom8values=p.mom8values,
+        pvvalues=p.pvvalues,
+        )
+
+
 
 # Save the file with all the parameters used to generate the bowshocks
 os.system(f"cp {bpf_str.strip('.py')}.py models/{p.modelname}")

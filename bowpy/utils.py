@@ -267,6 +267,11 @@ default_params = {
     'models': None,
 }
 
+def list2str(a, precision=2):
+    _list = [float(f'{i:.{precision}f}') for i in a]
+    _str = str(_list) if len(_list)>1 else str(_list[0])
+    return _str
+
 def get_color(vel_range, vel, cmap, norm="linear"):
     """
     Gets the color that corresponds in a colormap linearly interpolated taking

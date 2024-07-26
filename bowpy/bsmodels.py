@@ -1,8 +1,8 @@
 import numpy as np
 
-from scipy.optimize import minimize, minimize_scalar
+from scipy.optimize import minimize_scalar
 from scipy.integrate import quad
-from scipy.ndimage import rotate, gaussian_filter
+from scipy.ndimage import rotate
 
 import astropy.units as u
 from astropy.io import fits
@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib import cm
 from matplotlib import colors
-from matplotlib.colors import TwoSlopeNorm, ListedColormap
-from matplotlib import colormaps
 
 from datetime import datetime
 
@@ -703,7 +701,12 @@ class Bowshock2DPlots(Bowshock2D):
                 marker="o",
                 color=c
             )
-        self.axs[3].invert_yaxis()
+        allvelsarray = np.array([self.vzps_phi0, self.vzps_phi180]).ravel()
+        argmaxvelpv = np.argmax(np.abs(allvelsarray))
+        if allvelsarray[argmaxvelpv]<0:
+            self.axs[3].invert_yaxis()
+        else:
+            pass
         self.axs[3].set_xlabel("$x_p$ [arcsec]")
         self.axs[3].set_ylabel("$v_{z'}$ [km/s]")
 
@@ -781,13 +784,10 @@ class BowshockCube(ObsModel):
             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
             self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
 
-    def makecube(self, fromcube=None, verbosebs=False):
-        ts = []
-        if self.verbose and verbosebs:
-            print(f"""
- Channel width: {self.abschanwidth:.3} km/s
- Pixel size: {self.arcsecpix:.4} arcsec/pix
- """)
+    def makecube(self, fromcube=None):
+        if self.verbose:
+            ts = []
+            print("\nComputing masses...")
 
         self.nrs = self.nzs
         self.rs = np.linspace(self.rbf, self.rj, self.nrs)
@@ -895,6 +895,10 @@ class CubeProcessing(BowshockCube):
 
         self.cubes = {}
         self.cubes["m"] = self.cube
+        self.sigma_noises = {}
+        self.sigma_noises["m"] = 0
+        self.noisychans = {}
+        self.noisychans["m"] = np.zeros_like(self.cube[0])
         self.refpixs = {}
         self.refpixs["m"] = self.refpix
         self.hdrs = {}
@@ -926,12 +930,14 @@ class CubeProcessing(BowshockCube):
 
     def calc_NCO(self,):
         if self.verbose:
-            print(f"\nCalculating column densities...")
+            print(f"\nComputing column densities...")
         self.cubes["NCO"] = (
             self.cubes["m"] * u.solMass * self.XCO \
             / self.meanmass / self.areapix_cm
         ).to(u.cm**(-2)).value #* self.NCOfactor
         self.refpixs["NCO"] = self.refpixs["m"]
+        self.noisychans["NCO"] = self.noisychans["m"]
+        self.sigma_noises["NCO"] = self.sigma_noises["m"]
         if self.verbose:
             print(f"CO column densities has been calculated\n")
 
@@ -939,7 +945,7 @@ class CubeProcessing(BowshockCube):
         if "NCO" not in self.cubes:
             self.calc_NCO()
         if self.verbose:
-            print(f"\nCalculating opacities...")
+            print(f"\nComputing opacities...")
         self.cubes["tau"] = comass.tau_N(
             nu=comass.freq_caract_CO["3-2"],
             J=3, 
@@ -949,6 +955,8 @@ class CubeProcessing(BowshockCube):
             dNdv=self.cubes["NCO"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s),
         ).to("").value
         self.refpixs["tau"] = self.refpixs["m"]
+        self.noisychans["tau"] = self.noisychans["m"]
+        self.sigma_noises["tau"] = self.sigma_noises["m"]
         if self.verbose:
             print(f"Opacities has been calculated\n")
 
@@ -959,7 +967,7 @@ class CubeProcessing(BowshockCube):
         if "tau" not in self.cubes:
             self.calc_tau()
         if self.verbose:
-            print(f"\nCalculating intensities...")
+            print(f"\nComputing intensities...")
         func_I = comass.Inu_tau_thin if opthin else comass.Inu_tau
         ckI = "Ithin" if opthin else "I"
         self.cubes[ckI] = (func_I(
@@ -969,6 +977,8 @@ class CubeProcessing(BowshockCube):
             tau=self.cubes["tau"],
         )*self.beamarea_sr).to(u.Jy).value
         self.refpixs[ckI] = self.refpixs["m"]
+        self.noisychans[ckI] = self.noisychans["m"]
+        self.sigma_noises[ckI] = self.sigma_noises["m"]
         if self.verbose:
             print(f"Intensities has been calculated\n")
 
@@ -984,13 +994,18 @@ class CubeProcessing(BowshockCube):
         if self.refpixs[ck][1]>=0 and self.refpixs[ck][0]>=0:
             self.cubes[nck][:, self.refpix[1], self.refpix[0]] = value 
         self.refpixs[nck] = self.refpixs[ck]
+        self.noisychans[nck] = self.noisychans[ck]
+        self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
             print(f"{nck} has been added a source in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n")
 
     def rotate(self, ck="m", forpv=False):
         nck = self.newck(ck, "r") if not forpv else self.newck(ck, "R")
         if self.verbose:
-            print(f"\nRotaitng {nck}...")
+            if forpv:
+                print(f"\nRotatng {nck} in order to compute the PV diagram...")
+            else:
+                print(f"\nRotatng {nck}...")
         angle = -self.pa-90 if not forpv else self.pa+90
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
@@ -1009,6 +1024,13 @@ class CubeProcessing(BowshockCube):
          +rp_center_x*np.cos(ang) + rp_center_y*np.sin(ang) + centerx,
          -rp_center_x*np.sin(ang) + rp_center_y*np.cos(ang) + centery
         ]
+        self.noisychans[nck] = rotate(
+            self.noisychans[ck],
+            angle=angle,
+            reshape=False,
+            order=1,
+        )
+        self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
             print(f"{nck} has been rotated to a PA = {self.pa} deg\n")
     
@@ -1027,6 +1049,8 @@ class CubeProcessing(BowshockCube):
                 )
             self.cubes[nck][chan] = self.cubes[ck][chan] + noise_matrix
         self.refpixs[nck] = self.refpixs[ck]
+        self.noisychans[nck] = noise_matrix
+        self.sigma_noises[nck] = sigma_noise
         if self.verbose:
             print(f"Noise added to {nck}\n")
 
@@ -1044,8 +1068,19 @@ class CubeProcessing(BowshockCube):
                 return_kernel=False,
             )
         self.refpixs[nck] = self.refpixs[ck]
+        self.noisychans[nck] = bu.gaussconvolve(
+            self.noisychans[ck],
+            x_FWHM=self.x_FWHM,
+            y_FWHM=self.y_FWHM,
+            pa=self.pabeam,
+            return_kernel=False,
+        )
+        self.sigma_noises[nck] = np.std(self.noisychans[nck])
         if self.verbose:
             print(f"{nck} has been convolved with a gaussian kernel [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and a PA of {self.pabeam:.2f}deg\n")
+            if "n" in nck:
+                print(f"The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.q(nck)]}\n")
+
 
     def calc(self, dostrs):
         for ds in dostrs:
@@ -1125,8 +1160,8 @@ class CubeProcessing(BowshockCube):
             hdu.header = hdrpv
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_pv.fits', overwrite=True)                 
-        if self.verbose:
-            print(f'models/{self.modelname}/fits/{ck}_pv.fits saved')
+            if self.verbose:
+                print(f'models/{self.modelname}/fits/{ck}_pv.fits saved')
         return pvimage 
 
     def sumint(self, ck, chan_range=None, save=False):
@@ -1160,8 +1195,8 @@ class CubeProcessing(BowshockCube):
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_sumint.fits', overwrite=True)                 
-        if self.verbose:
-            print(f'models/{self.modelname}/fits/{ck}_sumint.fits saved')
+            if self.verbose:
+                print(f'models/{self.modelname}/fits/{ck}_sumint.fits saved')
         return sumintimage
     
     def mom0(self, ck, chan_range=None, save=False):
@@ -1197,8 +1232,8 @@ class CubeProcessing(BowshockCube):
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom0.fits', overwrite=True)                 
-        if self.verbose:
-            print(f'models/{self.modelname}/fits/{ck}_mom0.fits saved')
+            if self.verbose:
+                print(f'models/{self.modelname}/fits/{ck}_mom0.fits saved')
         return mom0
     
     def mom1(self, ck, chan_range=None, clipping=0, save=False):
@@ -1238,8 +1273,8 @@ class CubeProcessing(BowshockCube):
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom1.fits', overwrite=True)                 
-        if self.verbose:
-            print(f'models/{self.modelname}/fits/{ck}_mom1.fits saved')
+            if self.verbose:
+                print(f'models/{self.modelname}/fits/{ck}_mom1.fits saved')
         return mom1
 
     def mom2(self, ck, chan_range=None, clipping=0, save=False):
@@ -1279,8 +1314,8 @@ class CubeProcessing(BowshockCube):
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom2.fits', overwrite=True)                 
-        if self.verbose:
-            print(f'models/{self.modelname}/fits/{ck}_mom2.fits saved')
+            if self.verbose:
+                print(f'models/{self.modelname}/fits/{ck}_mom2.fits saved')
         return mom2
     
     def mom8(self, ck, chan_range=None, clipping=0, save=False):
@@ -1319,374 +1354,59 @@ class CubeProcessing(BowshockCube):
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom8.fits', overwrite=True)                 
-        if self.verbose:
-            print(f'models/{self.modelname}/fits/{ck}_mom8.fits saved')
+            if self.verbose:
+                print(f'models/{self.modelname}/fits/{ck}_mom8.fits saved')
         return mom8
 
-    # def allmoments(self, ck, chan_range=None):
-    def plotpv(self, pvimage, rangex, chan_vels, ax=None, cbax=None,
-            vmax=None, vcenter=None, vmin=None,
-            cmap="nipy_spectral", interpolation="bilinear", cbarlabel="Intensity [Jy/beam]",
-            ):
-        if ax is None or cbax is None:
-            plt.figure(figsize=(5,5))
-            gs = GridSpec(
-                2, 1, 
-                height_ratios=[0.05, 1],
-                width_ratios=[1],
-                hspace=0.1,
-                wspace=0.00,
-            )
-            ax = plt.subplot(gs[1,0])
-            cbax = plt.subplot(gs[0, 0])
-        else:
-            pass
-        vmax = vmax if vmax is not None else np.max(pvimage[~np.isnan(pvimage)])
-        vmin = vmin if vmin is not None else np.min(pvimage[~np.isnan(pvimage)])
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-        chanwidth = chan_vels[1] - chan_vels[0]
-        im = ax.imshow(
-            pvimage,
-            origin="lower",
-            extent=[
-                rangex[0], rangex[1],
-                chan_vels[0]-chanwidth/2,
-                chan_vels[-1]+chanwidth/2
-                ],
-            norm=norm,
-            cmap=cmap,
-            interpolation=interpolation,
-            )
-        ax.set_aspect("auto")
-        ax.set_ylabel("Velocity [km/s]")
-        ax.set_xlabel("Distance [arcsec]")
-        ax.minorticks_on()
-        ax.tick_params(
-            which="both",
-            direction="in",
-            top=True,
-            right=True,
-            color="w",
-        )
-        plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
-        cbax.tick_params(
-            axis="x", top=True, bottom=False,
-            labelbottom=False, labeltop=True,
-            direction="in",
-            )
-        cbax.set_xlabel(cbarlabel)
-        cbax.xaxis.set_label_position("top")
+    def plotpv(self, pvimage, rangex, chan_vels, **kwargs):
+            return bu.plotpv(pvimage, rangex, chan_vels, **kwargs)
     
-    def plotsumint(self, sumint, ax=None, cbax=None, extent=None,
-                   vmax=None, vcenter=None, vmin=None,
-                   interpolation="bilinear", cbarlabel="Intensity", ):
+    def plotsumint(self, sumint, **kwargs):
+            return bu.plotsumint(sumint, **kwargs)
     
-        if ax is None or cbax is None:
-            plt.figure(figsize=(5,5.5))
-            gs = GridSpec(
-                2, 1, 
-                height_ratios=[0.05, 1],
-                width_ratios=[1],
-                hspace=0.1,
-                wspace=0.00,
-            )
-            ax = plt.subplot(gs[1, 0])
-            cbax = plt.subplot(gs[0, 0])
-        else:
-            pass
-        vmax = vmax if vmax is not None else np.max(sumint[~np.isnan(sumint)])
-        vmin = vmin if vmin is not None else np.min(sumint[~np.isnan(sumint)])
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-        im = ax.imshow(
-            sumint,
-            origin="lower",
-            cmap="inferno",
-            norm=norm,
-            interpolation=interpolation,
-            extent=extent,
-            )
-        if extent is None:
-            ax.set_ylabel("Dec. [pixel]")
-            ax.set_xlabel("R.A. [pixel]")
-        else:
-            ax.set_ylabel("Dec. [arcsec]")
-            ax.set_xlabel("R.A. [arcsec]")
-        ax.minorticks_on()
-        ax.tick_params(
-            which="both",
-            direction="in",
-            top=True,
-            right=True,
-            color="w",
-        )
-        ax.set_aspect("equal")
-        plt.colorbar(im, cax=cbax, orientation="horizontal")
-        cbax.tick_params(
-            axis="x", top=True, bottom=False,
-            labelbottom=False, labeltop=True,
-            direction="in",
-            )
-        cbax.set_xlabel(rf"$\sum\mathrm{{{cbarlabel}}}_i$")
-        cbax.xaxis.set_label_position("top")
+    def plotmom0(self, mom0, **kwargs):
+                return bu.plotmom0(mom0, **kwargs)
     
-    def plotmom0(self, mom0, ax=None, cbax=None, extent=None,
-                vmax=None, vcenter=None, vmin=None, 
-                interpolation="bilinear", cbarlabel="Moment 0 [Jy/beam km/s]",):
-    
-        if ax is None or cbax is None:
-            plt.figure(figsize=(5,5.5))
-            gs = GridSpec(
-                2, 1, 
-                height_ratios=[0.05, 1],
-                width_ratios=[1],
-                hspace=0.1,
-                wspace=0.00,
-            )
-            ax = plt.subplot(gs[1, 0])
-            cbax = plt.subplot(gs[0, 0])
-        else:
-            pass
-     
-        vmax = vmax if vmax is not None else np.max(mom0[~np.isnan(mom0)])
-        vmin = vmin if vmin is not None else np.min(mom0[~np.isnan(mom0)])
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-        im = ax.imshow(
-            mom0,
-            origin="lower",
-            cmap="inferno",
-            norm=norm,
-            interpolation=interpolation,
-            extent=extent,
-            )
-        if extent is None:
-            ax.set_ylabel("Dec. [pixel]")
-            ax.set_xlabel("R.A. [pixel]")
-        else:
-            ax.set_ylabel("Dec. [arcsec]")
-            ax.set_xlabel("R.A. [arcsec]")
-        ax.minorticks_on()
-        ax.tick_params(
-            which="both",
-            direction="in",
-            top=True,
-            right=True,
-            color="w",
-        )
-        ax.set_aspect("equal")
-        plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
-        cbax.tick_params(
-            axis="x", top=True, bottom=False,
-            labelbottom=False, labeltop=True,
-            direction="in",
-            )
-        cbax.xaxis.set_label_position("top")
-    
-    
-    def plotmom1(self, mom1, ax=None, cbax=None, extent=None,
-                  vmin=None, vmax=None, vcenter=None,
-                  extend_cbar="max", return_velcmap=False,
-                  bg="black", cmap_ref='jet_r',
-                  interpolation="bilinear", cbarlabel="Moment 1 [km/s]"):
-        """
-        Moment 1
-        """
-        if ax is None or cbax is None:
-            plt.figure(figsize=(5,5.5))
-            gs = GridSpec(
-                2, 1, 
-                height_ratios=[0.05, 1],
-                width_ratios=[1],
-                hspace=0.1,
-                wspace=0.00,
-            )
-            ax = plt.subplot(gs[1, 0])
-            cbax = plt.subplot(gs[0, 0])
-        else:
-            pass
-     
-        if type(cmap_ref) is str:
-            cmap = colormaps[cmap_ref]
-        else:
-            cmap = cmap_ref
-        velcolors = cmap(np.linspace(0, 1, 256))
-        if bg == "black":
-            bgcolor = np.array([0/256, 0/256, 0/256, 1])
-        elif bg == "white":
-            bgcolor = np.array([256/256, 256/256, 256/256, 1])
-        velcolors[:1, :] = bgcolor
-    
-        velcmap = ListedColormap(velcolors)
-    
-        if extend_cbar == "max":
-            velcmap = ListedColormap(velcolors[::-1])
-        
-        vmin = vmin if vmin is not None else np.min(mom1[~np.isnan(mom1)])
-        vmax = vmin if vmax is not None else np.max(mom1[~np.isnan(mom1)])
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
-        norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
-        im = ax.imshow(
-            mom1,
-            origin="lower",
-            extent=extent,
-            norm=norm,
-            cmap=velcmap,
-            interpolation=interpolation,
-        )
-        if extent is None:
-            ax.set_ylabel("Dec. [pixel]")
-            ax.set_xlabel("R.A. [pixel]")
-        else:
-            ax.set_ylabel("Dec. [arcsec]")
-            ax.set_xlabel("R.A. [arcsec]")
-        ax.set_aspect("equal")
-        plt.colorbar(im, cax=cbax, orientation="horizontal",
-                     extend=extend_cbar, label=cbarlabel)
-        cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                         labeltop=True,)
-        cbax.xaxis.set_label_position("top")
-    
-        if return_velcmap:
-            return velcmap
-        else:
-            pass
-    
-    def plotmom2(self, mom2, ax=None, cbax=None, extent=None,
-                  vmin=None, vmax=None, vcenter=None,
-                  extend_cbar="max", return_velcmap=False,
-                  bg="black", cmap_ref='jet_r', cbarlabel="Moment 2 [km$^2$/s$^2$]",
-                  interpolation=None):
-        """
-        Moment 1
-        """
-        if ax is None or cbax is None:
-            plt.figure(figsize=(5,5.5))
-            gs = GridSpec(
-                2, 1, 
-                height_ratios=[0.05, 1],
-                width_ratios=[1],
-                hspace=0.1,
-                wspace=0.00,
-            )
-            ax = plt.subplot(gs[1, 0])
-            cbax = plt.subplot(gs[0, 0])
-        else:
-            pass
-     
-        if type(cmap_ref) is str:
-            cmap = colormaps[cmap_ref]
-        else:
-            cmap = cmap_ref
-        velcolors = cmap(np.linspace(0, 1, 256))
-        if bg == "black":
-            bgcolor = np.array([0/256, 0/256, 0/256, 1])
-        elif bg == "white":
-            bgcolor = np.array([256/256, 256/256, 256/256, 1])
-        velcolors[:1, :] = bgcolor
-        velcmap = ListedColormap(velcolors)
-        if extend_cbar == "max":
-            velcmap = ListedColormap(velcolors[::-1])
-        vmin = vmin if vmin is not None else np.min(mom2[~np.isnan(mom2)])
-        vmax = vmin if vmax is not None else np.max(mom2[~np.isnan(mom2)])
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
-        norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
-        im = ax.imshow(
-            mom2,
-            origin="lower",
-            extent=extent,
-            norm=norm,
-            cmap=velcmap,
-            interpolation=interpolation,
-        )
-        if extent is None:
-            ax.set_ylabel("Dec. [pixel]")
-            ax.set_xlabel("R.A. [pixel]")
-        else:
-            ax.set_ylabel("Dec. [arcsec]")
-            ax.set_xlabel("R.A. [arcsec]")
-        ax.set_aspect("equal")
-        plt.colorbar(im, cax=cbax, orientation="horizontal",
-                    extend=extend_cbar, label=cbarlabel)
-        cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                         labeltop=True,)
-        cbax.xaxis.set_label_position("top")
-        if return_velcmap:
-            return velcmap
-        else:
-            pass
-    
-    def plotmom8(self, mom8, ax=None, cbax=None, extent=None,
-                vmax=None, vcenter=None, vmin=None,
-                interpolation="bilinear", cbarlabel="Moment 8"):
-    
-        if ax is None or cbax is None:
-            plt.figure(figsize=(5,5.5))
-            gs = GridSpec(
-                2, 1, 
-                height_ratios=[0.05, 1],
-                width_ratios=[1],
-                hspace=0.1,
-                wspace=0.00,
-            )
-            ax = plt.subplot(gs[1, 0])
-            cbax = plt.subplot(gs[0, 0])
-        else:
-            pass
-     
-        vmax = vmax if vmax is not None else np.max(mom8[~np.isnan(mom8)])
-        vmin = vmin if vmin is not None else np.min(mom8[~np.isnan(mom8)])
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-        im = ax.imshow(
-            mom8,
-            origin="lower",
-            cmap="inferno",
-            norm=norm,
-            interpolation=interpolation,
-            extent=extent,
-            )
-        if extent is None:
-            ax.set_ylabel("Dec. [pixel]")
-            ax.set_xlabel("R.A. [pixel]")
-        else:
-            ax.set_ylabel("Dec. [arcsec]")
-            ax.set_xlabel("R.A. [arcsec]")
-        ax.minorticks_on()
-        ax.tick_params(
-            which="both",
-            direction="in",
-            top=True,
-            right=True,
-            color="w",
-        )
-        ax.set_aspect("equal")
-        plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
-        cbax.tick_params(
-            axis="x", top=True, bottom=False,
-            labelbottom=False, labeltop=True,
-            direction="in",
-            )
-        cbax.xaxis.set_label_position("top")
+    def plotmom1(self, mom1, **kwargs):
+                return bu.plotmom1(mom1, **kwargs)
 
-    def momentsandpv(self, ck, savefits=False, saveplot=False):
+    def plotmom2(self, mom2, **kwargs):
+                return bu.plotmom2(mom2, **kwargs)
+
+    def plotmom8(self, mom8, **kwargs):
+                return bu.plotmom8(mom8, **kwargs)
+    
+    def momentsandpv(self, ck, savefits=False, saveplot=False,
+                      mom1clipping=0, mom2clipping=0, verbose=True,
+                      mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      mom8values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      ):
+        if verbose:
+            print(
+"""
+\nComputing moments and the PV-diagram along the jet axis
+"""
+            )
+
         ckpv = ck + "R" 
         if ckpv not in self.cubes:
             self.rotate(ck, forpv=True)
 
-        fig = plt.figure(figsize=(17,9))
+        fig = plt.figure(figsize=(22,9))
         gs = GridSpec(
-            2, 4,
+            2, 5,
+            width_ratios=[0.9]*4 + [1],
             hspace=0.2,
             wspace=0.2,
         )
-    
         axs = {}
         cbaxs = {}
         gss = {}
     
-        for i, ik in enumerate(["mom0", "mom1", "mom8", "pv"]):
+        for i, ik in enumerate(["mom0", "mom1", "mom2", "mom8", "pv"]):
             gss[ik] = gs[0,i].subgridspec(
                 2, 1,
                 height_ratios=[0.05, 1],
@@ -1714,14 +1434,18 @@ class CubeProcessing(BowshockCube):
             interpolation=None,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel="Integrated " + self.getunitlabel(ck).rstrip("]") + " km/s]"
+            cbarlabel="Integrated " + self.getunitlabel(ck).rstrip("]") + " km/s]",
+            **mom0values,
             )
     
         ak = "mom1"
+        clipping = float(mom1clipping.split("x")[0]) * self.sigma_noises[ck] \
+            if mom1clipping !=0 else 0
         mom1 = self.mom1(
                     ck,
                     chan_range=[0, self.nc], 
                     save=savefits,
+                    clipping=clipping,
                 )
         extent = np.array([
             -(-0.5-self.refpixs[ck][0]),
@@ -1735,7 +1459,33 @@ class CubeProcessing(BowshockCube):
             interpolation=None,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel="Mean velocity [km/s]"
+            cbarlabel="Mean velocity [km/s]",
+            **mom1values,
+            )
+        
+        ak = "mom2"
+        clipping = float(mom2clipping.split("x")[0]) * self.sigma_noises[ck]\
+            if mom1clipping !=0 else 0
+        mom2 = self.mom2(
+                    ck,
+                    chan_range=[0, self.nc], 
+                    save=savefits,
+                    clipping=clipping,
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom2(
+            mom2,
+            extent=extent,
+            interpolation=None,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
+            **mom2values,
             )
     
         ak = "pv"
@@ -1744,7 +1494,10 @@ class CubeProcessing(BowshockCube):
             halfwidth=0,
             save=savefits
             )
-        rangex = np.array([0, self.arcsecpix*np.shape(pvimage)[1]])
+        rangex = np.array([
+            -0.5-self.refpixs[ckpv][0],
+            self.nxs-0.5-self.refpixs[ckpv][0]
+            ]) * self.arcsecpix
         chan_vels = self.velchans
         self.plotpv(
             pvimage,
@@ -1753,6 +1506,7 @@ class CubeProcessing(BowshockCube):
             ax=axs[ak],
             cbax=cbaxs[ak],
             cbarlabel=self.getunitlabel(ckpv),
+            **pvvalues,
             )
     
         ak = "mom8"
@@ -1772,7 +1526,8 @@ class CubeProcessing(BowshockCube):
             extent=extent,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel="Peak " + self.getunitlabel(ck)
+            cbarlabel="Peak " + self.getunitlabel(ck),
+            **mom8values,
             )
         if saveplot:
             fig.savefig(
@@ -1780,5 +1535,247 @@ class CubeProcessing(BowshockCube):
                 bbox_inches="tight",
                 )
 
+    def momentsandpv_and_params(self, ck, bscs, savefits=False, saveplot=False,
+                      mom1clipping=0, mom2clipping=0, verbose=True,
+                      mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      mom8values={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
+                      ):
+        if verbose:
+            print(
+"""
+\nComputing moments and the PV-diagram along the jet axis
+"""
+            )
 
+      
+        ckpv = ck + "R" 
+        if ckpv not in self.cubes:
+            self.rotate(ck, forpv=True)
+        
+        fig = plt.figure(figsize=(14,10))
+        gs = GridSpec(
+            2, 3,
+            width_ratios=[1]*3, # + [0.85]*2,
+            height_ratios=[1]*2,
+            hspace=0.3,
+            wspace=0.25,
+        )
+        axs = {}
+        cbaxs = {}
+        gss = {}
+       
+        ik = "text"
+        axs[ik] = plt.subplot(gs[0,0])
+        axs[ik].set_axis_off()
+        
+        ik = "mom0"
+        gss[ik] = gs[0,1].subgridspec(
+                 2, 1,
+                 height_ratios=[0.05, 1],
+                 width_ratios=[1],
+                 hspace=0.05,
+             )
+        axs[ik] = plt.subplot(gss[ik][1,0])
+        cbaxs[ik] = plt.subplot(gss[ik][0,0])
+        
+        ik = "mom8"
+        gss[ik] = gs[0,2].subgridspec(
+                 2, 1,
+                 height_ratios=[0.05, 1],
+                 width_ratios=[1],
+                 hspace=0.05,
+             )
+        axs[ik] = plt.subplot(gss[ik][1,0])
+        cbaxs[ik] = plt.subplot(gss[ik][0,0])
+        
+        ik = "pv"
+        gss[ik] = gs[1,0].subgridspec(
+                 2, 1,
+                 height_ratios=[0.05, 1],
+                 width_ratios=[1],
+                 hspace=0.05,
+             )
+        axs[ik] = plt.subplot(gss[ik][1,0])
+        cbaxs[ik] = plt.subplot(gss[ik][0,0])
+        
+        
+        ik = "mom1"
+        gss[ik] = gs[1,1].subgridspec(
+                 2, 1,
+                 height_ratios=[0.05, 1],
+                 width_ratios=[1],
+                 hspace=0.05,
+             )
+        axs[ik] = plt.subplot(gss[ik][1,0])
+        cbaxs[ik] = plt.subplot(gss[ik][0,0])
+        
+        ik = "mom2"
+        gss[ik] = gs[1,2].subgridspec(
+                 2, 1,
+                 height_ratios=[0.05, 1],
+                 width_ratios=[1],
+                 hspace=0.05,
+             )
+        axs[ik] = plt.subplot(gss[ik][1,0])
+        cbaxs[ik] = plt.subplot(gss[ik][0,0])
+        
+        ak = "text"
+        ies = [bsc.i*180/np.pi for bsc in bscs]
+        #rjs = [bsc.rj for bsc in bscs]
+        L0s = [bsc.L0_arcsec for bsc in bscs]
+        zjs = [bsc.zj_arcsec for bsc in bscs]
+        vjs = [bsc.vj for bsc in bscs]
+        vws = [bsc.vw for bsc in bscs]
+        v0s = [bsc.v0 for bsc in bscs]
+        rbfs = [bsc.rbf_arcsec for bsc in bscs]
+        tjs = [bsc.tj_yr for bsc in bscs]
+        masss = [bsc.mass*10**4 for bsc in bscs]
+        rhows = [bsc.rhow_gcm3*10**20 for bsc in bscs]
+        m0s = [bsc.mp0_solmassyr*10**6 for bsc in bscs]
+        mwfs = [bsc.mpamb_f_solmassyr*10**6 for bsc in bscs]
+    
+        showtext = \
+        fr"""
+        {bscs[0].modelname}
+        Number of bowshocks: {len(bscs)}
+        Tex = {self.Tex.value} K
+        $i = {{{ut.list2str(ies)}}}^\circ$
+        $V_\mathrm{{jet}} = {{{ut.list2str(vjs)}}}$ km/s
+        $V_0 = {{{ut.list2str(v0s)}}}$ km/s
+        $V_w = {{{ut.list2str(vws)}}}$ km/s
+        $L_0 = {{{ut.list2str(L0s)}}}$ arcsec
+        $z_\mathrm{{jet}} = {{{ut.list2str(zjs)}}}$ arcsec
+        $r_\mathrm{{b,f}} = {{{ut.list2str(rbfs)}}}$ arcsec
+        $t_\mathrm{{jet}} = {{{ut.list2str(tjs)}}}$ yr
+        mass $= {{{ut.list2str(masss)}}}\times 10^{{-4}}$ M$_\odot$
+        $\rho_w = {{{ut.list2str(rhows)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+        $\dot{{m}}_0 = {{{ut.list2str(m0s)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+        $\dot{{m}}_{{w,f}} = {{{ut.list2str(mwfs)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+        """
+        for n, line in enumerate(showtext.split("\n")):
+            axs["text"].text(0, 0.99-0.07*n, line, fontsize=12-len(bscs),
+                              transform=axs["text"].transAxes)
+        
+        ak = "mom0"
+        mom0 = self.mom0(
+            ck,
+            chan_range=[0, self.nc],
+            save=savefits,
+            )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom0(
+            mom0,
+            extent=extent,
+            interpolation=None,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Integrated " + self.getunitlabel(ck).rstrip("]") + " km/s]",
+            **mom0values,
+            )
+        
+        ak = "mom1"
+        clipping = float(mom1clipping.split("x")[0]) * self.sigma_noises[ck] \
+            if mom1clipping !=0 else 0
+        mom1 = self.mom1(
+                    ck,
+                    chan_range=[0, self.nc], 
+                    save=savefits,
+                    clipping=clipping,
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom1(
+            mom1,
+            extent=extent,
+            interpolation=None,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Mean velocity [km/s]",
+            **mom1values,
+            )
+        
+        ak = "mom2"
+        clipping = float(mom2clipping.split("x")[0]) * self.sigma_noises[ck]\
+            if mom1clipping !=0 else 0
+        mom2 = self.mom2(
+                    ck,
+                    chan_range=[0, self.nc], 
+                    save=savefits,
+                    clipping=clipping,
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom2(
+            mom2,
+            extent=extent,
+            interpolation=None,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
+            **mom2values,
+            )
+        
+        ak = "pv"
+        pvimage = self.pvalongz(
+            ckpv,
+            halfwidth=0,
+            save=savefits,
+            )
+        rangex = np.array([
+            -0.5-self.refpixs[ckpv][0],
+            self.nxs-0.5-self.refpixs[ckpv][0]
+            ]) * self.arcsecpix
+        chan_vels = self.velchans
+        self.plotpv(
+            pvimage,
+            rangex=rangex,
+            chan_vels=chan_vels,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel=self.getunitlabel(ckpv),
+            **pvvalues,
+            )
+        #axs[ak].set_aspect(np.abs(np.diff(rangex))/np.abs((chan_vels[0]-chan_vels[-1])) * 0.9)
+        
+        ak = "mom8"
+        mom8 = self.mom8(
+                    ck,
+                    chan_range=[0, self.nc],
+                    save=savefits,
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        self.plotmom8(
+            mom8,
+            extent=extent,
+            ax=axs[ak],
+            cbax=cbaxs[ak],
+            cbarlabel="Peak " + self.getunitlabel(ck),
+            **mom8values,
+            )
+        if saveplot:
+            fig.savefig(
+                f"models/{self.modelname}/momentsandpv_and_params.pdf",
+                bbox_inches="tight",
+                )
 

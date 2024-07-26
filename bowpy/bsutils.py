@@ -6,8 +6,11 @@ Usefull things from bs.py should be moved here
 import numpy as np
 
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 from matplotlib.colors import TwoSlopeNorm, ListedColormap
-from matplotlib import cm
+from matplotlib import colormaps
+
+
 
 from astropy.io import fits
 from astropy.convolution import Gaussian2DKernel, convolve
@@ -143,126 +146,191 @@ def channels_plot(cube, axs, ax_cbar, pars, chan_vels, nrow, ncol,
     plt.colorbar(im, cax=ax_cbar, extend="max")
     ax_cbar.set_ylabel("Intensity")
 
-def pv_plot(cube, ax, cbax, chan_vels, rangex=None, halfwidth=3, xpv=None,
-            fmaxlim=0.4, fvcenter=0.2, vmax=None, vcenter=None, vmin=None,
-            cmap="inferno", interpolation="bilinear", normalize=False):
-    """
-    PV
-    """
-    xpv = xpv if xpv is not None else int(np.shape(cube)[-1]/2)
-    bowshock_pv = moments.pv(cube, xpv=xpv, halfwidth=halfwidth)
-    normfactor = np.max(bowshock_pv[:, ::-1]) if normalize else 1
-    data = bowshock_pv[:, ::-1] / normfactor
-    rangex = rangex if rangex is not None else [-0.5, np.shape(data)[1]-0.5]
-    if vmax is None:
-        maxlim = np.max(data) * fmaxlim
-        norm = TwoSlopeNorm(vcenter=maxlim*fvcenter, vmax=maxlim, vmin=0)
+def plotpv(pvimage, rangex, chan_vels, ax=None, cbax=None,
+        vmax=None, vcenter=None, vmin=None,
+        cmap="nipy_spectral", interpolation="bilinear", cbarlabel="Intensity [Jy/beam]",
+        ):
+    if ax is None or cbax is None:
+        plt.figure(figsize=(5,5))
+        gs = GridSpec(
+            2, 1, 
+            height_ratios=[0.05, 1],
+            width_ratios=[1],
+            hspace=0.1,
+            wspace=0.00,
+        )
+        ax = plt.subplot(gs[1,0])
+        cbax = plt.subplot(gs[0, 0])
     else:
-        vmin = vmin if vmin is not None else 0
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-
+        pass
+    vmax = vmax if vmax is not None else np.max(pvimage[~np.isnan(pvimage)])
+    vmin = vmin if vmin is not None else np.min(pvimage[~np.isnan(pvimage)])
+    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+    norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+    chanwidth = chan_vels[1] - chan_vels[0]
     im = ax.imshow(
-        data,
+        pvimage,
         origin="lower",
-        extent=[rangex[0], rangex[1],
-                chan_vels[0]-np.abs(chan_vels[0]-chan_vels[1])/2.,
-                chan_vels[-1]-np.abs(chan_vels[0]-chan_vels[1])/2.],
+        extent=[
+            rangex[0], rangex[1],
+            chan_vels[0]-chanwidth/2,
+            chan_vels[-1]+chanwidth/2
+            ],
         norm=norm,
         cmap=cmap,
-        interpolation=interpolation)
-
-    plt.colorbar(im, cax=cbax, orientation="horizontal", extend="max")
-    cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                     labeltop=True,)
-    cbax.set_xlabel("Intensity")
+        interpolation=interpolation,
+        )
+    ax.set_aspect(np.abs(rangex[0]-rangex[-1]) / np.abs(chan_vels[0]-chan_vels[-1]) )
+    ax.set_ylabel("Velocity [km/s]")
+    ax.set_xlabel("Distance [arcsec]")
+    ax.minorticks_on()
+    ax.tick_params(
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        color="w",
+    )
+    plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
+    cbax.tick_params(
+        axis="x", top=True, bottom=False,
+        labelbottom=False, labeltop=True,
+        direction="in",
+        )
+    cbax.set_xlabel(cbarlabel)
     cbax.xaxis.set_label_position("top")
-    ax.set_aspect("auto")
-    ax.set_ylabel("Velocity (km/s)")
-    ax.set_xlabel("Distance (arcsec)")
-    return data
 
-def sumint_plot(cube, ax, cbax, pars, chan0=None, chanf=None,
-                fmaxlim=0.4, fvcenter=0.2, vmax=None, vcenter=None,
-                vmin=None):
-    """
-    Sumint
-    """
-    chan0 = chan0 if chan0 is not None else 0
-    chanf = chanf if chanf is not None else np.shape(cube)[0]
-    data = moments.sumint(cube,
-                         chan_range=[chan0, chanf])
-    if vmax is None:
-        uplim = np.max(data) * fmaxlim
-        norm = TwoSlopeNorm(vcenter=uplim*fvcenter, vmax=uplim, vmin=0)
+def plotsumint(sumint, ax=None, cbax=None, extent=None,
+               vmax=None, vcenter=None, vmin=None,
+               interpolation="bilinear", cbarlabel="Intensity", ):
+
+    if ax is None or cbax is None:
+        plt.figure(figsize=(5,5.5))
+        gs = GridSpec(
+            2, 1, 
+            height_ratios=[0.05, 1],
+            width_ratios=[1],
+            hspace=0.1,
+            wspace=0.00,
+        )
+        ax = plt.subplot(gs[1, 0])
+        cbax = plt.subplot(gs[0, 0])
     else:
-        vmin = vmin if vmin is not None else 0
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-    im = ax.imshow(data,
-              origin="lower",
-              cmap="inferno",
-              norm=norm,
-              interpolation="bilinear")
-
-    plt.colorbar(im, cax=cbax, orientation="horizontal", extend="max",)
-    cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                     labeltop=True,)
-    cbax.set_xlabel(r"$\sum\mathrm{I}_i$", labelpad=10, fontsize=12)
-    cbax.xaxis.set_label_position("top")
-    ax.set_aspect("auto")
-    ax.set_ylabel("Dec (pixel)")
-    ax.set_xlabel("Ra (pixel)")
-
-    ax.set_aspect("equal")
-    return data
-
-def mom0_plot(cube, ax, cbax, pars, chan_vels,
-              chan0=None, chanf=None, fmaxlim=0.4, fvcenter=0.2,
-              vmax=None, vcenter=None, vmin=None):
-    """
-    Moment 0
-    """
-    chan0 = chan0 if chan0 is not None else 0
-    chanf = chanf if chanf is not None else np.shape(cube)[0]
-
-    data = moments.mom0(cube,
-                     chan_vels=chan_vels,
-                     chan_range=[chan0, chanf])
-    if vmax is None:
-        uplim = np.max(data) * fmaxlim
-        norm = TwoSlopeNorm(vcenter=uplim*fvcenter, vmax=uplim, vmin=0)
+        pass
+    vmax = vmax if vmax is not None else np.max(sumint[~np.isnan(sumint)])
+    vmin = vmin if vmin is not None else np.min(sumint[~np.isnan(sumint)])
+    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+    norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+    im = ax.imshow(
+        sumint,
+        origin="lower",
+        cmap="inferno",
+        norm=norm,
+        interpolation=interpolation,
+        extent=extent,
+        )
+    if extent is None:
+        ax.set_ylabel("Dec. [pixel]")
+        ax.set_xlabel("R.A. [pixel]")
     else:
-        vmin = vmin if vmin is not None else 0
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-    im = ax.imshow(data,
-              origin="lower",
-              cmap="inferno",
-              norm=norm,
-              interpolation="bilinear")
-    plt.colorbar(im, cax=cbax, orientation="horizontal", extend="max",)
-    cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                     labeltop=True,)
-    cbax.set_xlabel(r"Moment 0", labelpad=10, fontsize=12)
-    cbax.xaxis.set_label_position("top")
-    ax.set_aspect("auto")
-    ax.set_ylabel("Dec (pixel)")
-    ax.set_xlabel("Ra (pixel)")
-
+        ax.set_ylabel("Dec. [arcsec]")
+        ax.set_xlabel("R.A. [arcsec]")
+    ax.minorticks_on()
+    ax.tick_params(
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        color="w",
+    )
     ax.set_aspect("equal")
-    return data
+    plt.colorbar(im, cax=cbax, orientation="horizontal")
+    cbax.tick_params(
+        axis="x", top=True, bottom=False,
+        labelbottom=False, labeltop=True,
+        direction="in",
+        )
+    cbax.set_xlabel(rf"$\sum\mathrm{{{cbarlabel}}}_i$")
+    cbax.xaxis.set_label_position("top")
 
-def mom1_plot(cube, ax, cbax, pars, chan_vels,
-              chan0=None, chanf=None, vmin=-100, vmax=20, vcenter=-50,
-              extend_cbar="max", clipping=0, return_velcmap=False,
-              show_plot=True, bg="black", cmap_ref='jet_r',
-              interpolation=None):
+def plotmom0(mom0, ax=None, cbax=None, extent=None,
+            vmax=None, vcenter=None, vmin=None, 
+            interpolation="bilinear", cbarlabel="Moment 0 [Jy/beam km/s]",):
+
+    if ax is None or cbax is None:
+        plt.figure(figsize=(5,5.5))
+        gs = GridSpec(
+            2, 1, 
+            height_ratios=[0.05, 1],
+            width_ratios=[1],
+            hspace=0.1,
+            wspace=0.00,
+        )
+        ax = plt.subplot(gs[1, 0])
+        cbax = plt.subplot(gs[0, 0])
+    else:
+        pass
+ 
+    vmax = vmax if vmax is not None else np.max(mom0[~np.isnan(mom0)])
+    vmin = vmin if vmin is not None else np.min(mom0[~np.isnan(mom0)])
+    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+    norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+    im = ax.imshow(
+        mom0,
+        origin="lower",
+        cmap="inferno",
+        norm=norm,
+        interpolation=interpolation,
+        extent=extent,
+        )
+    if extent is None:
+        ax.set_ylabel("Dec. [pixel]")
+        ax.set_xlabel("R.A. [pixel]")
+    else:
+        ax.set_ylabel("Dec. [arcsec]")
+        ax.set_xlabel("R.A. [arcsec]")
+    ax.minorticks_on()
+    ax.tick_params(
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        color="w",
+    )
+    ax.set_aspect("equal")
+    plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
+    cbax.tick_params(
+        axis="x", top=True, bottom=False,
+        labelbottom=False, labeltop=True,
+        direction="in",
+        )
+    cbax.xaxis.set_label_position("top")
+
+
+def plotmom1(mom1, ax=None, cbax=None, extent=None,
+              vmin=None, vmax=None, vcenter=None,
+              extend_cbar="max", return_velcmap=False,
+              bg="black", cmap_ref='jet_r',
+              interpolation="bilinear", cbarlabel="Moment 1 [km/s]"):
     """
     Moment 1
     """
+    if ax is None or cbax is None:
+        plt.figure(figsize=(5,5.5))
+        gs = GridSpec(
+            2, 1, 
+            height_ratios=[0.05, 1],
+            width_ratios=[1],
+            hspace=0.1,
+            wspace=0.00,
+        )
+        ax = plt.subplot(gs[1, 0])
+        cbax = plt.subplot(gs[0, 0])
+    else:
+        pass
+ 
     if type(cmap_ref) is str:
-        cmap = cm.get_cmap(cmap_ref, 256)
+        cmap = colormaps[cmap_ref]
     else:
         cmap = cmap_ref
     velcolors = cmap(np.linspace(0, 1, 256))
@@ -274,172 +342,169 @@ def mom1_plot(cube, ax, cbax, pars, chan_vels,
 
     velcmap = ListedColormap(velcolors)
 
-    chan0 = chan0 if chan0 is not None else 0
-    chanf = chanf if chanf is not None else np.shape(cube)[0]
-    cube_clipped = np.copy(cube)
-    cube_clipped[cube_clipped<clipping] = 0
-    data = np.nan_to_num(
-              moments.mom1(
-                 cube_clipped,
-                 chan_vels=chan_vels,
-                 chan_range=[chan0, chanf])
-                 )
-
     if extend_cbar == "max":
         velcmap = ListedColormap(velcolors[::-1])
-    if show_plot:
-        im = ax.imshow(
-            data,
-            origin="lower",
-            norm=TwoSlopeNorm(vmin=vmin, vcenter=vcenter, vmax=vmax),
-            cmap=velcmap,
-            interpolation=interpolation,
-        )
+    
+    vmin = vmin if vmin is not None else np.min(mom1[~np.isnan(mom1)])
+    vmax = vmin if vmax is not None else np.max(mom1[~np.isnan(mom1)])
+    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+    norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
+    im = ax.imshow(
+        mom1,
+        origin="lower",
+        extent=extent,
+        norm=norm,
+        cmap=velcmap,
+        interpolation=interpolation,
+    )
+    ax.minorticks_on()
+    ax.tick_params(
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        color="w",
+    )
+    if extent is None:
+        ax.set_ylabel("Dec. [pixel]")
+        ax.set_xlabel("R.A. [pixel]")
+    else:
+        ax.set_ylabel("Dec. [arcsec]")
+        ax.set_xlabel("R.A. [arcsec]")
+    ax.set_aspect("equal")
+    plt.colorbar(im, cax=cbax, orientation="horizontal",
+                 extend=extend_cbar, label=cbarlabel)
+    cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
+                     labeltop=True, direction="in")
+    cbax.xaxis.set_label_position("top")
 
-        plt.colorbar(im, cax=cbax, orientation="horizontal", extend=extend_cbar,)
-        cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                         labeltop=True,)
-        cbax.set_xlabel(r"Moment 1 (km/s)", labelpad=10, fontsize=12)
-        cbax.xaxis.set_label_position("top")
-
-        ax.set_aspect("auto")
-        ax.set_ylabel("Dec (pixel)")
-        ax.set_xlabel("Ra (pixel)")
-
-        ax.set_aspect("equal")
+    if return_velcmap:
+        return velcmap
     else:
         pass
-    if return_velcmap:
-        return data, velcmap
-    else:
-        return data
 
-def mom2_plot(cube, ax, cbax, pars, chan_vels,
-              chan0=None, chanf=None, vmin=1, vcenter=10,
-              vmax=15, extend_cbar="both", clipping=0):
-    """
-    Moment 2
-    """
-    cmap = cm.get_cmap('jet_r', 256)
-    velcolors = cmap(np.linspace(0, 1, 256))
-    blackcolor = np.array([0/256, 0/256, 0/256, 1])
-    velcolors[:1, :] = blackcolor
-    velcmap = ListedColormap(velcolors)
-
-    chan0 = chan0 if chan0 is not None else 0
-    chanf = chanf if chanf is not None else np.shape(cube)[0]
-    cube_clipped = np.copy(cube)
-    cube_clipped[cube_clipped<clipping] = 0
-    data =  np.nan_to_num(
-                moments.mom2(
-                    cube_clipped,
-                    chan_vels=chan_vels,
-                    chan_range=[chan0, chanf])
-                    )
-    # if data[np.where(np.abs(data)==np.max(np.abs(data)))] >= 0:
-    #     uplim = np.max(data)
-    #     lowlim = uplim * fminlim
-    #     extend_cbar="min"
-    # else:
-    #     lowlim = np.min(data)
-    #     uplim = lowlim * fminlim
-    #     velcmap = ListedColormap(velcolors[::-1])
-    #     extend_cbar="max"
-    im = ax.imshow(
-        data,
-        norm=TwoSlopeNorm(vmin=vmin, vcenter=vcenter, vmax=vmax),
-        origin="lower",
-        cmap=velcmap
-    )
-    plt.colorbar(im, cax=cbax, orientation="horizontal", extend=extend_cbar,)
-    cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                     labeltop=True,)
-    cbax.set_xlabel(r"Moment 2 (km/s)", labelpad=10, fontsize=12)
-    cbax.xaxis.set_label_position("top")
-    ax.set_aspect("auto")
-    ax.set_ylabel("Dec (pixel)")
-    ax.set_xlabel("Ra (pixel)")
-
-    ax.set_aspect("equal")
-    return data
-
-def mom8_plot(cube, ax, cbax, pars, chan0=None, chanf=None,
-              fmaxlim=0.4, fvcenter=0.2, vmax=None, vcenter=None,
-              vmin=None):
-    """
-    Moment 8
-    """
-    chan0 = chan0 if chan0 is not None else 0
-    chanf = chanf if chanf is not None else np.shape(cube)[0]
-    data = moments.mom8(cube,
-                         chan_range=[chan0, chanf])
-    if vmax is None:
-        uplim = np.max(data) * fmaxlim
-        norm = TwoSlopeNorm(vcenter=uplim*fvcenter, vmax=uplim, vmin=0)
-    else:
-        vmin = vmin if vmin is not None else 0
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-    im = ax.imshow(data,
-              origin="lower",
-              norm=norm,
-              cmap="inferno")
-    plt.colorbar(im, cax=cbax, orientation="horizontal", extend="max",)
-    cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
-                     labeltop=True,)
-    cbax.set_xlabel(r"Moment 8", labelpad=10, fontsize=12)
-    cbax.xaxis.set_label_position("top")
-    ax.set_aspect("auto")
-    ax.set_ylabel("Dec (pixel)")
-    ax.set_xlabel("Ra (pixel)")
-
-    ax.set_aspect("equal")
-    return data
-
-
-def moments_sheet(cube, axs, cbaxs, pars, chan_vels,
-                  fmaxlim_pv=0.4, fvcenter_pv=0.2,
-                  fmaxlim_sumint=0.4, fvcenter_sumint=0.2,
-                  fmaxlim_mom0=0.4, fvcenter_mom0=0.2,
-                  fminlim_mom1=0.2, fvcenter_mom1=0.6,
-                  fminlim_mom2=0.2, fvcenter_mom2=3.2,
-                  fmaxlim_mom8=0.4, fvcenter_mom8=0.2):
-    """
-    Generate a sheet with a PV, mom0, mom1, mom2 and mom8
-    """
-
-    """
-    PV
-    """
-    _ = pv_plot(cube, axs[0], cbaxs[0], chan_vels,
-                fmaxlim=fmaxlim_pv, fvcenter=fvcenter_pv)
-
-    """
-    Intintens
-    """
-    _ = sumint_plot(cube, axs[1], cbaxs[1], pars,
-                    fmaxlim=fmaxlim_sumint, fvcenter=fvcenter_sumint)
-
-    """
-    Moment 0
-    """
-    _ = mom0_plot(cube, axs[2], cbaxs[2], pars, chan_vels,
-                    fmaxlim=fmaxlim_mom0, fvcenter=fvcenter_mom0)
-
+def plotmom2(mom2, ax=None, cbax=None, extent=None,
+              vmin=None, vmax=None, vcenter=None,
+              extend_cbar="max", return_velcmap=False,
+              bg="black", cmap_ref='jet_r', cbarlabel="Moment 2 [km$^2$/s$^2$]",
+              interpolation=None):
     """
     Moment 1
     """
-    _ = mom1_plot(cube, axs[3], cbaxs[3], pars, chan_vels,
-                    fminlim=fminlim_mom1, fvcenter=fvcenter_mom1)
+    if ax is None or cbax is None:
+        plt.figure(figsize=(5,5.5))
+        gs = GridSpec(
+            2, 1, 
+            height_ratios=[0.05, 1],
+            width_ratios=[1],
+            hspace=0.1,
+            wspace=0.00,
+        )
+        ax = plt.subplot(gs[1, 0])
+        cbax = plt.subplot(gs[0, 0])
+    else:
+        pass
+ 
+    if type(cmap_ref) is str:
+        cmap = colormaps[cmap_ref]
+    else:
+        cmap = cmap_ref
+    velcolors = cmap(np.linspace(0, 1, 256))
+    if bg == "black":
+        bgcolor = np.array([0/256, 0/256, 0/256, 1])
+    elif bg == "white":
+        bgcolor = np.array([256/256, 256/256, 256/256, 1])
+    velcolors[:1, :] = bgcolor
+    velcmap = ListedColormap(velcolors)
+    if extend_cbar == "max":
+        velcmap = ListedColormap(velcolors[::-1])
+    vmin = vmin if vmin is not None else np.min(mom2[~np.isnan(mom2)])
+    vmax = vmin if vmax is not None else np.max(mom2[~np.isnan(mom2)])
+    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+    norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
+    im = ax.imshow(
+        mom2,
+        origin="lower",
+        extent=extent,
+        norm=norm,
+        cmap=velcmap,
+        interpolation=interpolation,
+    )
+    ax.minorticks_on()
+    ax.tick_params(
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        color="w",
+    )
+    if extent is None:
+        ax.set_ylabel("Dec. [pixel]")
+        ax.set_xlabel("R.A. [pixel]")
+    else:
+        ax.set_ylabel("Dec. [arcsec]")
+        ax.set_xlabel("R.A. [arcsec]")
+    ax.set_aspect("equal")
+    plt.colorbar(im, cax=cbax, orientation="horizontal",
+                extend=extend_cbar, label=cbarlabel)
+    cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
+                     labeltop=True, direction="in")
+    cbax.xaxis.set_label_position("top")
+    if return_velcmap:
+        return velcmap
+    else:
+        pass
 
-    """
-    Moment 2
-    """
-    _ = mom2_plot(cube, axs[4], cbaxs[4], pars, chan_vels,
-                    fminlim=fminlim_mom2, fvcenter=fvcenter_mom2)
+def plotmom8(mom8, ax=None, cbax=None, extent=None,
+            vmax=None, vcenter=None, vmin=None,
+            interpolation="bilinear", cbarlabel="Moment 8"):
 
-    """
-    Moment 8
-    """
-    _ = mom8_plot(cube, axs[5], cbaxs[5], pars,
-                    fmaxlim=fmaxlim_mom8, fvcenter=fvcenter_mom8)
+    if ax is None or cbax is None:
+        plt.figure(figsize=(5,5.5))
+        gs = GridSpec(
+            2, 1, 
+            height_ratios=[0.05, 1],
+            width_ratios=[1],
+            hspace=0.1,
+            wspace=0.00,
+        )
+        ax = plt.subplot(gs[1, 0])
+        cbax = plt.subplot(gs[0, 0])
+    else:
+        pass
+ 
+    vmax = vmax if vmax is not None else np.max(mom8[~np.isnan(mom8)])
+    vmin = vmin if vmin is not None else np.min(mom8[~np.isnan(mom8)])
+    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
+    norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+    im = ax.imshow(
+        mom8,
+        origin="lower",
+        cmap="inferno",
+        norm=norm,
+        interpolation=interpolation,
+        extent=extent,
+        )
+    if extent is None:
+        ax.set_ylabel("Dec. [pixel]")
+        ax.set_xlabel("R.A. [pixel]")
+    else:
+        ax.set_ylabel("Dec. [arcsec]")
+        ax.set_xlabel("R.A. [arcsec]")
+    ax.minorticks_on()
+    ax.tick_params(
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        color="w",
+    )
+    ax.set_aspect("equal")
+    plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
+    cbax.tick_params(
+        axis="x", top=True, bottom=False,
+        labelbottom=False, labeltop=True,
+        direction="in",
+        )
+    cbax.xaxis.set_label_position("top")
+
