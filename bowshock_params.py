@@ -13,7 +13,7 @@ Tabone et al. (2018)
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"L1448_{datetime.now().strftime('%y%m%d_%H%M%S')}"
+modelname = f"example_{datetime.now().strftime('%y%m%d_%H%M%S')}"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -73,7 +73,7 @@ BOWSHOCK PARAMETERS
 """
 
 # Number of bowshocks to model
-nbowshocks = 5
+nbowshocks = 1
 
 # Excitation temperature [K]
 Tex = 100
@@ -110,7 +110,7 @@ L0_1 = 0.7
 zj_1 = 1. / np.sin(i_1*np.pi/180)
 
 # Jet velocity
-vj_1 = (53-vsys) / (-np.cos(i_1*np.pi/180))
+vj_1 = (73-vsys) / (-np.cos(i_1*np.pi/180))
 
 # Ambient (or wind) velocity [km/s]
 vw_1 = 0
@@ -121,64 +121,10 @@ v0_1 = 5
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
 # 2018)
-rbf_obs_1 = 2
+rbf_obs_1 = 1
 
 # Total mass of the bowshock [solar masses]
 mass_1 = 0.00031 * 1.5
-
-"""
-bowshock 2 [red]
-"""
-i_2 = 180-35
-rj_2 = 0
-L0_2 = 0.7
-zj_2 = 3.38 / np.sin(i_2*np.pi/180)
-vj_2 = (53-vsys) / (-np.cos(i_2*np.pi/180)) #(56-vsys) / (-np.cos(i*np.pi/180))
-vw_2 = 0
-v0_2 = 5
-rbf_obs_2 = 2
-mass_2 = 0.00031 * 1.75
- 
-"""
-bowshock 3 [red]
-"""
-i_3 = 180-55
-rj_3 = 0
-L0_3 = 0.7
-zj_3 = 5.6 / np.sin(i_3*np.pi/180)
-vj_3 = (53-vsys) / (-np.cos(i_3*np.pi/180)) #(60-vsys) / (-np.cos(i*np.pi/180))
-vw_3 = 0
-v0_3 = 5
-rbf_obs_3 = 2
-mass_3 = 0.00031 * 2
-
-
-"""
-bowshock 4 [red]
-"""
-i_4 = 180-65
-rj_4 = 0
-L0_4 = 0.7
-zj_4 = 8 / np.sin(i_4*np.pi/180)
-vj_4 = (53-vsys) / (-np.cos(i_4*np.pi/180)) #(63-vsys) / (-np.cos(i*np.pi/180))
-vw_4 = 0
-v0_4 = 5
-rbf_obs_4 = 2
-mass_4 = 0.00031 * 2.25
-
-
-"""
-bowshock 5 [red]
-"""
-i_5 = 180-80
-rj_5 = 0
-L0_5 = 0.7
-zj_5 = 10.4 / np.sin(i_5*np.pi/180)
-vj_5 = (53-vsys) / (-np.cos(i_5*np.pi/180)) #(65-vsys) / (-np.cos(i*np.pi/180))
-vw_5 = 0
-v0_5 = 5
-rbf_obs_5 = 2
-mass_5 = 0.00031 * 2.5
 
 
 
@@ -205,7 +151,7 @@ vchf = +100
 nxs, nys = (250, 250)
 
 # Size of the channel maps along the x axis [arcsec]
-xpmax = 15
+xpmax = 5
 
 # Position angle of the jet axis [degrees]
 pa = 161.5
