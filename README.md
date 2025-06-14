@@ -30,4 +30,5 @@ Within a python evironment:
  ```bash
  (pyenv)$ python generate_bowshock.py
  ```
+- Your model will be saved in model folder
 
