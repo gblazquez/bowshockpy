@@ -2,12 +2,22 @@ x Generalize for a rbf based on observations
 
 x Compute for several bowshocks
 
-- Make channel plots, moments 0 and 1
+x Make channel plots, moments 0 and 1
 
 - Generalize for a non zero jet radius
 
-- PA for each bowshock
+x PA for each bowshock: Rotate the model instead of rotate the image
 
-- change the limits in the PV
+x change the limits in the PV
 
 - fix vsys
+
+- erease bs.py (it is deprecated)
+
+- clean codes that have your paths written on it 
+
+- clean functions/variables unused
+
+- erease bowshock fitter? leave it?
+
+- extrapolable to other CO transitions?

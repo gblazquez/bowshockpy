@@ -39,6 +39,7 @@ for i in range(p.nbowshocks):
          if p.__getattribute__(f"rbf_obs_{i+1}") is not None 
          else p.__getattribute__(f"rbf_obs_{i+1}"),
      'mass':     p.__getattribute__(f"mass_{i+1}"),
+     'pa':       p.__getattribute__(f"pa_{i+1}") * np.pi / 180,
     }]
 
     psobss += [{
@@ -59,7 +60,8 @@ if len(p.outcubes) != 0:
         "nys": p.nys,
         "refpix": p.refpix,
         "xpmax": p.xpmax,
-        "pa": p.pa,
+        "parot": p.parot,
+        "papv": p.papv,
         "bmaj": p.bmaj,
         "bmin": p.bmin,
         "pabeam": p.pabeam,

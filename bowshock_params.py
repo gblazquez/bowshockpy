@@ -29,21 +29,20 @@ bs2Dplot = True
 #
 # Available operations:
 #     s: Add source at the origin (just for spatial reference purposes)
-#     r: Rotate the cube in order to orient the jet to the specified position angle
+#     r: Rotate the cube
 #     n: Add gaussian noise
 #     c: Convolve with the specified beam
 # Operations can be combined, and will be performed following the order of the
-# symbols in the string.
-# Some examples of the string elements that could be included in the list
-# outcubes are:
+# symbols in the string (from left to right).
+# Some examples of the strings that could be included in the list outcubes are:
 #    "m": Compute the masses in every pixel and channel.
-#    "tau_r": Compute the opacities in every pixel and channel, and rotate the model.
+#    "tau_c": Compute the opacities in every pixel and channel, and convolves.
 #    "I_rnc": Compute the intensities in every pixel and channel, rotate, add
 #    noise, and convolve.
 # The list can be left empty if no output cube is desired
 # Example of outcubes:
-# outcubes = ["m", "m_r", "I_rc", "I_rnc", "tau_rc", "NCO_rc", "Ithin_rc"]
-outcubes = ["I_rnc"]
+# outcubes = ["m", "m_r", "I_c", "I_nc", "tau_rc", "NCO_rc", "Ithin_rc"]
+outcubes = ["I_nc", "I_rnc"]
 
 # List of the cubes to which the position-velocity diagrams and moments (0, 1,
 # 2, and peak intensity) are going to be performed.
@@ -73,7 +72,7 @@ BOWSHOCK PARAMETERS
 """
 
 # Number of bowshocks to model
-nbowshocks = 1
+nbowshocks = 2
 
 # Excitation temperature [K]
 Tex = 100
@@ -87,7 +86,6 @@ muH2 = 2.8
 # CO abundance
 XCO = 8.5 * 10**(-5)
 
-
 # The individual bowshock parameters must end in _{bowshock_number}. For example, the jet
 # velocity for the third bowshock is vj_3
 
@@ -97,7 +95,7 @@ bowshock 1 [red]
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
 # redshifted, if i<90, it will be blueshifted. [degrees]
-i_1 = 180-25
+i_1 = 180-45
 
 # Jet radius. Set this parameter to zero, the channel maps generator
 # are not yet generalized for jet radius>0 [arcsec]
@@ -107,7 +105,7 @@ rj_1 = 0
 L0_1 = 0.7
 
 # Distance between the working surface and the source [arcsec]
-zj_1 = 1. / np.sin(i_1*np.pi/180)
+zj_1 = 3.5 / np.sin(i_1*np.pi/180)
 
 # Jet velocity
 vj_1 = (73-vsys) / (-np.cos(i_1*np.pi/180))
@@ -126,6 +124,47 @@ rbf_obs_1 = 1
 # Total mass of the bowshock [solar masses]
 mass_1 = 0.00031 * 1.5
 
+# Position angle [deg]
+pa_1 = -20
+
+
+"""
+bowshock 2 [blue]
+"""
+
+# Jet inclination angle with respect to the line of sight. If i>90, the jet is
+# redshifted, if i<90, it will be blueshifted. [degrees]
+i_2 = 45
+
+# Jet radius. Set this parameter to zero, the channel maps generator
+# are not yet generalized for jet radius>0 [arcsec]
+rj_2 = 0
+
+# Characteristic length scale [arcsec]
+L0_2 = 0.7
+
+# Distance between the working surface and the source [arcsec]
+zj_2 = 3.5 / np.sin(i_1*np.pi/180)
+
+# Jet velocity
+vj_2 = (73-vsys) / (-np.cos(i_1*np.pi/180))
+
+# Ambient (or wind) velocity [km/s]
+vw_2 = 0
+
+# Velocity at which the material is ejected from the internal working surface [km/s]
+v0_2 = 5
+
+# Final radius of the bowshock [arcsec]. Set None if you want to end the
+# bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
+# 2018)
+rbf_obs_2 = 1
+
+# Total mass of the bowshock [solar masses]
+mass_2 = 0.00031 * 1.5
+
+# Position angle [deg]
+pa_2 = 160
 
 
 """
@@ -133,28 +172,28 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model
-nzs = 500
+nzs = 1000
 
 # Number of azimuthal angle phi to calculate the bowshock solution
 nphis = 500
 
 # Number of spectral channel maps
-nc = 50
+nc = 100
 
 # Central velocity of the first channel map [km/s]
-vch0 = 0
+vch0 = -100
 
 # Central velocity of the last channel map [km/s]
 vchf = +100
 
 # Number of pixels in the x and y axes
-nxs, nys = (250, 250)
+nxs, nys = (300, 300)
 
-# Size of the channel maps along the x axis [arcsec]
-xpmax = 5
+# Physical size of the channel maps along the x axis [arcsec]
+xpmax = 10
 
-# Position angle of the jet axis [degrees]
-pa = 161.5
+# Position angle used to calculate the PV [degrees]
+papv = pa_1
 
 # Beam size [arcsec]
 bmaj, bmin = (0.420, 0.287)
@@ -179,15 +218,16 @@ CIC = True
 tolfactor_vt = 3
 
 # Reference pixel [[int, int] or None]
-# The x'y' pixel coordinates of the source. The x'y' is the plane of the sky,
-# being x' the projection of the symmetry axis z onto the plane of the sky. In
-# the model output cube, previous to any rotation defined by the PA angle of the
-# x' axis, x' is the abscisa axis and y' is the ordinate axis. If None, refpix
-# will be the center of the image
-refpix = [50, 125]
+# Pixel coordinates of the source, i.e., the origin from which the distances
+# are measured. The first index is the abscisa axis, the second is the ordinate
+# axis 
+refpix = [150, 150]
+
+# Angle to rotate the image [degrees]
+parot = 0
 
 # Add source to the image at the reference pixel? [True/False]
-# add_source = True
+add_source = False
 
 # Map noise
 # Standard deviation of the noise of the map relative to the maximum pixel in the cube, before convolving the cube. The actual noise will be computed after convolving.

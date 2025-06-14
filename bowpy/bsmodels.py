@@ -815,6 +815,8 @@ provide any cube.
 
         ci = np.cos(self.i)
         si = np.sin(self.i)
+        cpa = np.cos(self.pa)
+        spa = np.sin(self.pa)
 
         outsidegrid_warning = True
         bu.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
@@ -830,8 +832,10 @@ provide any cube.
                 dmass = self.intmass_analytical(self.dr/2) / self.nphis
 
             for phi in self.phis:
-                xp = self.rs[iz] * np.cos(phi) * ci + z * si
-                yp = self.rs[iz] * np.sin(phi)
+                _xp = self.rs[iz] * np.sin(phi)
+                _yp = self.rs[iz] * np.cos(phi) * ci + z * si
+                xp = _xp * cpa - _yp * spa
+                yp = _xp * spa + _yp * cpa
                 vzp = -self.vzp(z, phi)
 
                 xpixcoord = self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]
@@ -1006,7 +1010,10 @@ class CubeProcessing(BowshockCube):
                 print(f"\nRotatng {nck} in order to compute the PV diagram...")
             else:
                 print(f"\nRotatng {nck}...")
-        angle = -self.pa-90 if not forpv else self.pa+90
+        # before allowing rotation of the model and not the cube
+        # angle = -self.pa-90 if not forpv else self.pa+90
+        # after allowing the model to be rotated
+        angle = -self.parot if not forpv else self.papv + 90
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
             self.cubes[nck][chan] = rotate(
@@ -1032,7 +1039,7 @@ class CubeProcessing(BowshockCube):
         )
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
-            print(f"{nck} has been rotated to a PA = {self.pa} deg\n")
+            print(f"{nck} has been rotated to a PA = {angle} deg\n")
     
     def add_noise(self, ck="m"):
         nck = self.newck(ck, "n")
