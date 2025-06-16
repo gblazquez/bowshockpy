@@ -10,7 +10,7 @@ import importlib
 
 bpf_str = input(
 """
-Enter the name of the file where the parameters are defined (default: bowshock_params): 
+Enter the name of the file where the parameters are defined (default: bowshock_params):
 """
 )
 bpf_str = bpf_str if bpf_str!="" else "bowshock_params"
@@ -35,8 +35,8 @@ for i in range(p.nbowshocks):
      'vj':       p.__getattribute__(f"vj_{i+1}"),
      'vw':       p.__getattribute__(f"vw_{i+1}"),
      'v0':       p.__getattribute__(f"v0_{i+1}"),
-     'rbf_obs': (p.__getattribute__(f"rbf_obs_{i+1}") * p.distpc * u.au).to(u.km).value 
-         if p.__getattribute__(f"rbf_obs_{i+1}") is not None 
+     'rbf_obs': (p.__getattribute__(f"rbf_obs_{i+1}") * p.distpc * u.au).to(u.km).value
+         if p.__getattribute__(f"rbf_obs_{i+1}") is not None
          else p.__getattribute__(f"rbf_obs_{i+1}"),
      'mass':     p.__getattribute__(f"mass_{i+1}"),
      'pa':       p.__getattribute__(f"pa_{i+1}") * np.pi / 180,
@@ -107,7 +107,6 @@ for i, (ps,psobs) in enumerate(zip(pss,psobss)):
         if i == 0:
             bu.make_folder(f"models/{ps['modelname']}")
         bs2Dplot.fig_model.savefig(f"models/{ps['modelname']}/2D_{i+1}.pdf")
-    
     if len(p.outcubes) != 0:
         print(f"""
 
