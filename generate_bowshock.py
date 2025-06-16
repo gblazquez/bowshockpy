@@ -21,8 +21,8 @@ Parameters read from {bpf_str}.py
 """
 )
 
-from bowpy import bsmodels as bs
-from bowpy import bsutils as bu
+from bowshockpy import bsmodels as bs
+from bowshockpy import bsutils as bu
 
 pss = []
 psobss = []

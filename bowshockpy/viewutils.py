@@ -19,7 +19,7 @@ from astropy.coordinates import SkyCoord
 from photutils.isophote import EllipseGeometry
 from photutils import EllipticalAperture, EllipticalAnnulus, CircularAperture, RectangularAperture
 
-import bowpy.utils as mf
+import bowshockpy.utils as mf
 
 
 def mosaic_slices(image_cube, nrow, ncol, chan_0, chan_f, wcs, box,

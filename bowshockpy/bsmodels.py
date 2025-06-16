@@ -16,10 +16,10 @@ from datetime import datetime
 
 import sys
 
-import bowpy.utils as ut
-import bowpy.bsutils as bu
-import bowpy.comass as comass
-import bowpy.moments as moments
+import bowshockpy.utils as ut
+import bowshockpy.bsutils as bu
+import bowshockpy.comass as comass
+import bowshockpy.moments as moments
 
 
 class NJ():
@@ -919,9 +919,9 @@ class CubeProcessing(BowshockCube):
     @staticmethod
     def q(ck):
         return ck.split("_")[0] if "_" in ck else ck
-    
+
     def getunitlabel(self, ck):
-        return f"{self.btypes[self.q(ck)]} [{self.bunits[self.q(ck)]}]" 
+        return f"{self.btypes[self.q(ck)]} [{self.bunits[self.q(ck)]}]"
 
     def calc_beamarea_sr(self):
         self.beamarea_sr = ut.mb_sa_gaussian_f(
@@ -952,7 +952,7 @@ class CubeProcessing(BowshockCube):
             print(f"\nComputing opacities...")
         self.cubes["tau"] = comass.tau_N(
             nu=comass.freq_caract_CO["3-2"],
-            J=3, 
+            J=3,
             mu=0.112*u.D,
             Tex=self.Tex,
             Tbg=self.Tbg,
@@ -996,7 +996,7 @@ class CubeProcessing(BowshockCube):
         self.cubes[nck] = np.copy(self.cubes[ck])
         value = value if value is not None else np.max(self.cubes[ck])
         if self.refpixs[ck][1]>=0 and self.refpixs[ck][0]>=0:
-            self.cubes[nck][:, self.refpix[1], self.refpix[0]] = value 
+            self.cubes[nck][:, self.refpix[1], self.refpix[0]] = value
         self.refpixs[nck] = self.refpixs[ck]
         self.noisychans[nck] = self.noisychans[ck]
         self.sigma_noises[nck] = self.sigma_noises[ck]
@@ -1040,7 +1040,7 @@ class CubeProcessing(BowshockCube):
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
             print(f"{nck} has been rotated to a PA = {angle} deg\n")
-    
+
     def add_noise(self, ck="m"):
         nck = self.newck(ck, "n")
         if self.verbose:
@@ -1048,7 +1048,7 @@ class CubeProcessing(BowshockCube):
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
             # sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
-            #          * np.sqrt(self.x_FWHM*self.y_FWHM) / 2.35    
+            #          * np.sqrt(self.x_FWHM*self.y_FWHM) / 2.35
             sigma_noise = np.max(self.cubes[ck]) / self.maxcube2noise
             noise_matrix = np.random.normal(
                 0, sigma_noise,
@@ -1127,7 +1127,7 @@ class CubeProcessing(BowshockCube):
         hdul = fits.HDUList([hdu])
         hdu.header = self.hdrs[ck]
         bu.make_folder(foldername=f'models/{self.modelname}/fits')
-        hdul.writeto(f'models/{self.modelname}/fits/{ck}.fits', overwrite=True)                 
+        hdul.writeto(f'models/{self.modelname}/fits/{ck}.fits', overwrite=True)
         if self.verbose:
             print(f'models/{self.modelname}/fits/{ck}.fits saved')
 
@@ -1166,10 +1166,10 @@ class CubeProcessing(BowshockCube):
             hdul = fits.HDUList([hdu])
             hdu.header = hdrpv
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
-            hdul.writeto(f'models/{self.modelname}/fits/{ck}_pv.fits', overwrite=True)                 
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_pv.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_pv.fits saved')
-        return pvimage 
+        return pvimage
 
     def sumint(self, ck, chan_range=None, save=False):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
@@ -1201,11 +1201,11 @@ class CubeProcessing(BowshockCube):
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
-            hdul.writeto(f'models/{self.modelname}/fits/{ck}_sumint.fits', overwrite=True)                 
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_sumint.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_sumint.fits saved')
         return sumintimage
-    
+
     def mom0(self, ck, chan_range=None, save=False):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
@@ -1238,11 +1238,11 @@ class CubeProcessing(BowshockCube):
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
-            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom0.fits', overwrite=True)                 
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom0.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom0.fits saved')
         return mom0
-    
+
     def mom1(self, ck, chan_range=None, clipping=0, save=False):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
@@ -1279,7 +1279,7 @@ class CubeProcessing(BowshockCube):
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
-            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom1.fits', overwrite=True)                 
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom1.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom1.fits saved')
         return mom1
@@ -1320,11 +1320,11 @@ class CubeProcessing(BowshockCube):
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
-            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom2.fits', overwrite=True)                 
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom2.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom2.fits saved')
         return mom2
-    
+
     def mom8(self, ck, chan_range=None, clipping=0, save=False):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
@@ -1360,20 +1360,20 @@ class CubeProcessing(BowshockCube):
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
             bu.make_folder(foldername=f'models/{self.modelname}/fits')
-            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom8.fits', overwrite=True)                 
+            hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom8.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom8.fits saved')
         return mom8
 
     def plotpv(self, pvimage, rangex, chan_vels, **kwargs):
             return bu.plotpv(pvimage, rangex, chan_vels, **kwargs)
-    
+
     def plotsumint(self, sumint, **kwargs):
             return bu.plotsumint(sumint, **kwargs)
-    
+
     def plotmom0(self, mom0, **kwargs):
                 return bu.plotmom0(mom0, **kwargs)
-    
+
     def plotmom1(self, mom1, **kwargs):
                 return bu.plotmom1(mom1, **kwargs)
 
@@ -1382,7 +1382,7 @@ class CubeProcessing(BowshockCube):
 
     def plotmom8(self, mom8, **kwargs):
                 return bu.plotmom8(mom8, **kwargs)
-    
+
     def momentsandpv(self, ck, savefits=False, saveplot=False,
                       mom1clipping=0, mom2clipping=0, verbose=True,
                       mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
@@ -1398,7 +1398,7 @@ class CubeProcessing(BowshockCube):
 """
             )
 
-        ckpv = ck + "R" 
+        ckpv = ck + "R"
         if ckpv not in self.cubes:
             self.rotate(ck, forpv=True)
 
@@ -1412,7 +1412,7 @@ class CubeProcessing(BowshockCube):
         axs = {}
         cbaxs = {}
         gss = {}
-    
+
         for i, ik in enumerate(["mom0", "mom1", "mom2", "mom8", "pv"]):
             gss[ik] = gs[0,i].subgridspec(
                 2, 1,
@@ -1422,7 +1422,7 @@ class CubeProcessing(BowshockCube):
             )
             axs[ik] = plt.subplot(gss[ik][1,0])
             cbaxs[ik] = plt.subplot(gss[ik][0,0])
-    
+
         ak = "mom0"
         mom0 = self.mom0(
             ck,
@@ -1444,13 +1444,13 @@ class CubeProcessing(BowshockCube):
             cbarlabel="Integrated " + self.getunitlabel(ck).rstrip("]") + " km/s]",
             **mom0values,
             )
-    
+
         ak = "mom1"
         clipping = float(mom1clipping.split("x")[0]) * self.sigma_noises[ck] \
             if mom1clipping !=0 else 0
         mom1 = self.mom1(
                     ck,
-                    chan_range=[0, self.nc], 
+                    chan_range=[0, self.nc],
                     save=savefits,
                     clipping=clipping,
                 )
@@ -1469,13 +1469,13 @@ class CubeProcessing(BowshockCube):
             cbarlabel="Mean velocity [km/s]",
             **mom1values,
             )
-        
+
         ak = "mom2"
         clipping = float(mom2clipping.split("x")[0]) * self.sigma_noises[ck]\
             if mom1clipping !=0 else 0
         mom2 = self.mom2(
                     ck,
-                    chan_range=[0, self.nc], 
+                    chan_range=[0, self.nc],
                     save=savefits,
                     clipping=clipping,
                 )
@@ -1494,7 +1494,7 @@ class CubeProcessing(BowshockCube):
             cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
             **mom2values,
             )
-    
+
         ak = "pv"
         pvimage = self.pvalongz(
             ckpv,
@@ -1515,7 +1515,7 @@ class CubeProcessing(BowshockCube):
             cbarlabel=self.getunitlabel(ckpv),
             **pvvalues,
             )
-    
+
         ak = "mom8"
         mom8 = self.mom8(
                     ck,
@@ -1557,11 +1557,11 @@ class CubeProcessing(BowshockCube):
 """
             )
 
-      
-        ckpv = ck + "R" 
+
+        ckpv = ck + "R"
         if ckpv not in self.cubes:
             self.rotate(ck, forpv=True)
-        
+
         fig = plt.figure(figsize=(14,10))
         gs = GridSpec(
             2, 3,
@@ -1573,11 +1573,11 @@ class CubeProcessing(BowshockCube):
         axs = {}
         cbaxs = {}
         gss = {}
-       
+
         ik = "text"
         axs[ik] = plt.subplot(gs[0,0])
         axs[ik].set_axis_off()
-        
+
         ik = "mom0"
         gss[ik] = gs[0,1].subgridspec(
                  2, 1,
@@ -1587,7 +1587,7 @@ class CubeProcessing(BowshockCube):
              )
         axs[ik] = plt.subplot(gss[ik][1,0])
         cbaxs[ik] = plt.subplot(gss[ik][0,0])
-        
+
         ik = "mom8"
         gss[ik] = gs[0,2].subgridspec(
                  2, 1,
@@ -1597,7 +1597,7 @@ class CubeProcessing(BowshockCube):
              )
         axs[ik] = plt.subplot(gss[ik][1,0])
         cbaxs[ik] = plt.subplot(gss[ik][0,0])
-        
+
         ik = "pv"
         gss[ik] = gs[1,0].subgridspec(
                  2, 1,
@@ -1607,8 +1607,8 @@ class CubeProcessing(BowshockCube):
              )
         axs[ik] = plt.subplot(gss[ik][1,0])
         cbaxs[ik] = plt.subplot(gss[ik][0,0])
-        
-        
+
+
         ik = "mom1"
         gss[ik] = gs[1,1].subgridspec(
                  2, 1,
@@ -1618,7 +1618,7 @@ class CubeProcessing(BowshockCube):
              )
         axs[ik] = plt.subplot(gss[ik][1,0])
         cbaxs[ik] = plt.subplot(gss[ik][0,0])
-        
+
         ik = "mom2"
         gss[ik] = gs[1,2].subgridspec(
                  2, 1,
@@ -1628,7 +1628,7 @@ class CubeProcessing(BowshockCube):
              )
         axs[ik] = plt.subplot(gss[ik][1,0])
         cbaxs[ik] = plt.subplot(gss[ik][0,0])
-        
+
         ak = "text"
         ies = [bsc.i*180/np.pi for bsc in bscs]
         #rjs = [bsc.rj for bsc in bscs]
@@ -1643,7 +1643,7 @@ class CubeProcessing(BowshockCube):
         rhows = [bsc.rhow_gcm3*10**20 for bsc in bscs]
         m0s = [bsc.mp0_solmassyr*10**6 for bsc in bscs]
         mwfs = [bsc.mpamb_f_solmassyr*10**6 for bsc in bscs]
-    
+
         showtext = \
         fr"""
         {bscs[0].modelname}
@@ -1665,7 +1665,7 @@ class CubeProcessing(BowshockCube):
         for n, line in enumerate(showtext.split("\n")):
             axs["text"].text(0, 0.99-0.07*n, line, fontsize=12-len(bscs),
                               transform=axs["text"].transAxes)
-        
+
         ak = "mom0"
         mom0 = self.mom0(
             ck,
@@ -1687,13 +1687,13 @@ class CubeProcessing(BowshockCube):
             cbarlabel="Integrated " + self.getunitlabel(ck).rstrip("]") + " km/s]",
             **mom0values,
             )
-        
+
         ak = "mom1"
         clipping = float(mom1clipping.split("x")[0]) * self.sigma_noises[ck] \
             if mom1clipping !=0 else 0
         mom1 = self.mom1(
                     ck,
-                    chan_range=[0, self.nc], 
+                    chan_range=[0, self.nc],
                     save=savefits,
                     clipping=clipping,
                 )
@@ -1712,13 +1712,13 @@ class CubeProcessing(BowshockCube):
             cbarlabel="Mean velocity [km/s]",
             **mom1values,
             )
-        
+
         ak = "mom2"
         clipping = float(mom2clipping.split("x")[0]) * self.sigma_noises[ck]\
             if mom1clipping !=0 else 0
         mom2 = self.mom2(
                     ck,
-                    chan_range=[0, self.nc], 
+                    chan_range=[0, self.nc],
                     save=savefits,
                     clipping=clipping,
                 )
@@ -1737,7 +1737,7 @@ class CubeProcessing(BowshockCube):
             cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
             **mom2values,
             )
-        
+
         ak = "pv"
         pvimage = self.pvalongz(
             ckpv,
@@ -1759,7 +1759,7 @@ class CubeProcessing(BowshockCube):
             **pvvalues,
             )
         #axs[ak].set_aspect(np.abs(np.diff(rangex))/np.abs((chan_vels[0]-chan_vels[-1])) * 0.9)
-        
+
         ak = "mom8"
         mom8 = self.mom8(
                     ck,
