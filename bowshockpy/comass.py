@@ -88,7 +88,7 @@ def Inu_tau_thin(nu, Tex, Tbg, tau):
 # def Inu_tau_thin(nu, Tex, Tbg, tau):
 #     return (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)) * tau
 
-def tau_N(nu, J, mu, Tex, Tbg, dNdv):
+def tau_N(nu, J, mu, Tex, dNdv):
     expo = (J+1) * const.h * nu / 2 / const.k_B / Tex
     NJ = (2*J+1) * dNdv / np.exp(expo) / Qpart(nu, J, Tex)
     kk = const.c**3 * A_j_jm1(nu, J, mu) / 8 / np.pi / nu**3

@@ -12,7 +12,7 @@ x change the limits in the PV
 
 - fix vsys
 
-- erease bs.py (it is deprecated)
+x erease bs.py (it is deprecated)
 
 - clean codes that have your paths written on it 
 
@@ -21,3 +21,5 @@ x change the limits in the PV
 - erease bowshock fitter? leave it?
 
 - extrapolable to other CO transitions?
+
+- fix coordinates

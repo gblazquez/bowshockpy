@@ -203,123 +203,6 @@ class NJ():
         return mpamb_f
 
 
-
-class AJ():
-
-    default_kwargs = {
-        "rbf_niters": 1000,
-        "rb_niters": 100,
-        "zbr_niters": 1000,
-        "maxrb": 3,
-    }
-
-    def __init__(self, ps, **kwargs):
-        for param in ps:
-            setattr(self, param.replace("/", "_"), ps[param])
-        for kwarg in self.default_kwargs:
-            kwarg_attr = kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
-            setattr(self, kwarg, kwarg_attr)
-
-        self.zj = (self.xhead - self.xorigin) / np.sin(self.i)
-        self.vj = (-self.vhead + self.vsys) / np.cos(self.i)
-        self.tj = (self.zj * self.distpc * u.au \
-                   / (self.vj * u.km/u.s)).to(u.yr).value
-        self.rbf = self.rbf_calc()
-        self.zbf = self.zb_r(self.rbf)
-
-    def gamma(self):
-        return (self.vj-self.vw) / self.v0
-
-    def rb_0(self, rb, zb):
-        return (zb-self.zj) + 1/self.L0**2 * (rb**3 - 3*rb*self.rj**2 + 2*self.rj**3)
-
-    def rb(self, zb, niter=None, return_residual=False, use_minimize=True):
-        if use_minimize:
-            bounds = (self.rj, self.maxrb)
-            return minimize_scalar(lambda x: np.abs(self.rb_0(x,zb)),
-                                  method="bounded", bounds=bounds).x
-        else:
-            niter = niter if niter is not None else self.rb_niters
-            rb_trials = np.linspace(self.rj, self.maxrb, niter)
-            trials = np.ones(len(rb_trials))
-            for trial, rb_trial in enumerate(rb_trials):
-                trials[trial] = np.abs(self.rb_0(rb_trial, zb))
-            if return_residual:
-                return rb_trials[trials.argmin()], trials.min()
-            else:
-                return rb_trials[trials.argmin()]
-
-    def vr(self, zb):
-        return self.v0*(1 + 3*(self.rb(zb)**2-self.rj**2)/self.gamma()/self.L0**2)**(-1)
-
-    def vz(self, zb):
-        return self.vw + (self.vj-self.vw)*\
-                (1+3*(self.rb(zb)**2-self.rj**2)/self.gamma()/self.L0**2)**(-1)
-
-    def vtot(self, zb):
-        return np.sqrt(self.vr(zb)**2 + self.vz(zb)**2)
-
-    def alpha(self, zb):
-        """
-        This is not the alpha of alex apendix!. Alpha from alex apendix is alpha2.
-        Note that when vw=0 this angle is constant
-        """
-        return np.arctan(self.vr(zb) / self.vz(zb))
-
-    def theta(self, zb):
-        return np.arctan(self.rb(zb) / zb)
-
-    def vz_obs(self, zb, phi):
-        a = self.alpha(zb)
-        return self.vtot(zb) * (np.cos(a)*np.cos(self.i) \
-                                - np.sin(a)*np.cos(phi)*np.sin(self.i))
-
-    def x_obs(self, zb, phi):
-        return self.rb(zb)*np.cos(phi)*np.cos(self.i) + zb*np.sin(self.i)
-
-    def y_obs(self, zb, phi):
-        return self.rb(zb) * np.sin(phi)
-
-    def rbf_0(self, rr):
-        """
-        This is the eq (A.2) from Tabone et al. (2018), that should be minimize
-        to find rbf
-        """
-        return 1/self.gamma()/self.L0**2 \
-            * (rr**3 - self.rj**3 + 3*self.rj**2*(self.rj-rr)) \
-            + rr - self.rj - self.zj*self.v0/self.vj
-
-    def rbf_calc(self, ns=None, use_minimize=True):
-        if use_minimize:
-            bounds = (self.rj, self.rb(0))
-            return minimize_scalar(lambda x: np.abs(self.rbf_0(x)), method="bounded",
-                                   bounds=bounds).x
-        else:
-            ns = self.rbf_niters if ns is None else ns
-            rrs = np.linspace(self.rj, self.rb(0), ns)
-            trials = np.array([np.abs(self.rbf_0(rr)) for rr in rrs])
-            return rrs[np.argmin(trials)]
-
-    def zb_0(self, zb, rb):
-        return (zb-self.zj) + 1/self.L0**2 * (rb**3 - 3*rb*self.rj**2 + 2*self.rj**3)
-
-    def zb_r(self, rr, niter=None, return_residual=False, use_minimize=True):
-        if use_minimize:
-            bounds = (0, self.zj)
-            return minimize_scalar(lambda x: np.abs(self.zb_0(x,rr)),
-                                   method="bounded", bounds=bounds).x
-        else:
-            niter = niter if niter is not None else self.zbr_niters
-            zb_trials = np.linspace(0, self.zj, niter)
-            trials = np.ones(len(zb_trials))
-            for trial, zb_trial in enumerate(zb_trials):
-                trials[trial] = np.abs(self.zb_0(zb_trial, rr))
-            if return_residual:
-                return zb_trials[trials.argmin()], trials.min()
-            else:
-                return zb_trials[trials.argmin()]
-
-
 class ObsModel(NJ):
     def __init__(self, ps, psobs, **kwargs):
         super().__init__(ps, **kwargs)
@@ -955,7 +838,6 @@ class CubeProcessing(BowshockCube):
             J=3,
             mu=0.112*u.D,
             Tex=self.Tex,
-            Tbg=self.Tbg,
             dNdv=self.cubes["NCO"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s),
         ).to("").value
         self.refpixs["tau"] = self.refpixs["m"]
@@ -1758,7 +1640,6 @@ class CubeProcessing(BowshockCube):
             cbarlabel=self.getunitlabel(ckpv),
             **pvvalues,
             )
-        #axs[ak].set_aspect(np.abs(np.diff(rangex))/np.abs((chan_vels[0]-chan_vels[-1])) * 0.9)
 
         ak = "mom8"
         mom8 = self.mom8(
