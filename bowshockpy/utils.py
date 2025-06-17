@@ -1,17 +1,9 @@
-from matplotlib import cm
 from matplotlib import colormaps
 from matplotlib import colors
 
 import numpy as np
 
-import os
-
-from astropy.wcs import WCS
-from astropy.wcs.utils import pixel_to_skycoord, skycoord_to_pixel
-from astropy.coordinates import SkyCoord
-from astropy.nddata import Cutout2D
 from astropy import units as u
-from astropy import constants as const
 
 import subprocess
 

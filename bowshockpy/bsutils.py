@@ -1,8 +1,3 @@
-"""
-SOME THINGS FROM THIS FILE ARE INTENDED TO DISAPPEAR
-Usefull things from bs.py should be moved here
-"""
-
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -63,27 +58,6 @@ def write_log(path, mode, pars, printtime=False):
             f.writelines(f'    "{par}": "{pars[par]}",\n')
         f.writelines("}\n\n")
 
-def read_modelparams(modelname, namepars="params"):
-    """
-    Reads the params.txt within the folder modelname
-    """
-    pars = {}
-    path_bs = "models"
-    with open(f"{path_bs}/{modelname}/{namepars}.txt") as f:
-        for i,line in enumerate(f):
-            if ("{" in line) or ("}" in line) or (line=="\n"):
-                pass
-            else:
-                ppp = line
-                pars[line.split(':')[0].strip().strip('"')] = \
-                        line.split(":")[1].rstrip(",\n").strip().strip('"')
-    for par in pars:
-        try:
-            pars[par] = float(pars[par])
-        except:
-            pass
-    return pars
-
 def gaussconvolve(data, x_FWHM, y_FWHM, pa, return_kernel=False):
     """
     Gausskernel 0 and 1 entries are the FWHM, the third the PA
@@ -99,52 +73,6 @@ def gaussconvolve(data, x_FWHM, y_FWHM, pa, return_kernel=False):
         return data_conv, kernel
     else:
         return data_conv
-
-def channels_plot(cube, axs, ax_cbar, pars, chan_vels, nrow, ncol,
-                  fmaxlim=0.15, fvcenter=0.1, vmax=None, vcenter=None,
-                  vmin=None, plotparams=False):
-    """
-    Plots some channels from bowshock_cube. The number of channels is
-    determined by nrow*ncol
-    """
-    chans_plot = float(pars["NC"])
-    nv = np.shape(cube)[2]
-    vels = chan_vels
-
-    if plotparams:
-        nchanscube = nrow*ncol-1
-    else:
-        nchanscube = nrow*ncol
-    selint = int(chans_plot/nchanscube)
-    alldata = cube[::selint]
-    if vmax is None:
-        uplim = np.max(alldata) * fmaxlim
-        norm = TwoSlopeNorm(vcenter=uplim*fvcenter, vmax=uplim, vmin=0)
-    else:
-        vmin = vmin if vmin is not None else 0
-        vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
-        norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
-
-    for cha in range(nchanscube):
-        if plotparams:
-            chan = cha + 1
-        else:
-            chan = cha
-        data = cube[::selint][chan]
-        im = axs[chan].imshow(
-            data,
-            norm=norm,
-            origin="lower", interpolation="bilinear", cmap="inferno",)
-
-        axs[chan].text(0.05, 0.9,
-                s=f"V={chan_vels[::selint][chan]:.2f}",
-                color="w", transform=axs[chan].transAxes, fontsize=15)
-
-        axs[chan].set_xlabel("Ra")
-        axs[chan].set_ylabel("Dec")
-        axs[chan].set_aspect("equal")
-    plt.colorbar(im, cax=ax_cbar, extend="max")
-    ax_cbar.set_ylabel("Intensity")
 
 def plotpv(pvimage, rangex, chan_vels, ax=None, cbax=None,
         vmax=None, vcenter=None, vmin=None,

@@ -16,6 +16,8 @@ x erease bs.py (it is deprecated)
 
 - clean codes that have your paths written on it 
 
+- merge bsutils and utils
+
 - clean functions/variables unused
 
 - erease bowshock fitter? leave it?
