@@ -4,7 +4,7 @@ x Compute for several bowshocks
 
 x Make channel plots, moments 0 and 1
 
-- Generalize for a non zero jet radius
+ (- Generalize for a non zero jet radius) not in this version
 
 x PA for each bowshock: Rotate the model instead of rotate the image
 
@@ -14,14 +14,64 @@ x change the limits in the PV
 
 x erease bs.py (it is deprecated)
 
-- clean codes that have your paths written on it 
+x clean codes that have your paths written on it 
 
 - merge bsutils and utils
 
-- clean functions/variables unused
+x clean functions/variables unused
 
-- erease bowshock fitter? leave it?
+x erease bowshock fitter? leave it?
+
+- Make an __init__.py that only imports the usefull objects
+
+- think of tests
+
+- allow install from pipy
 
 - extrapolable to other CO transitions?
 
-- fix coordinates
+- fix ref coordinates
+
+- make some examples with jupyter notebooks
+
+- I think there are more user friendly ways to indicate what quantities and operations should be performed:
+
+e.g.:
+
+otputcubes = {
+    "quantity": "intensities", # Choose one  quantity
+    "operations": ["add_source", "add_noise", "convolve"] # list the operations
+}
+
+I think bowshockpy should work like this:
+
+After installing with pip:
+
+(.env)$ bowshockpy params.py
+
+To do this, I think you should move the generate_bowshock.py to the bowshockpy folder. Then, in __init__.py, 
+
+from generate_bowshock import genbow
+
+genbow should be a function in generate_bowshock package that runs all what your code generate_bowshock did.
+
+Then, you can point 
+
+setup(
+    ...
+     entry_points={
+        "console_scripts": [
+            "generate_bowshock = bowshockpy:genbow",
+        ],
+    },
+)   
+
+
+Another way should be
+
+from bowshockpy import generate_bowshock
+
+generate_bowshock("bowshock_params.py")
+
+
+

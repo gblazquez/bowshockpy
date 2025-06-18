@@ -72,7 +72,7 @@ BOWSHOCK PARAMETERS
 """
 
 # Number of bowshocks to model
-nbowshocks = 2
+nbowshocks = 1
 
 # Excitation temperature [K]
 Tex = 100
@@ -90,7 +90,7 @@ XCO = 8.5 * 10**(-5)
 # velocity for the third bowshock is vj_3
 
 """
-bowshock 1 [red]
+bowshock 1 [blue]
 """
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
@@ -129,45 +129,6 @@ pa_1 = -20
 
 
 """
-bowshock 2 [blue]
-"""
-
-# Jet inclination angle with respect to the line of sight. If i>90, the jet is
-# redshifted, if i<90, it will be blueshifted. [degrees]
-i_2 = 45
-
-# Jet radius. Set this parameter to zero, the channel maps generator
-# are not yet generalized for jet radius>0 [arcsec]
-rj_2 = 0
-
-# Characteristic length scale [arcsec]
-L0_2 = 0.7
-
-# Distance between the working surface and the source [arcsec]
-zj_2 = 3.5 / np.sin(i_1*np.pi/180)
-
-# Jet velocity
-vj_2 = (73-vsys) / (-np.cos(i_1*np.pi/180))
-
-# Ambient (or wind) velocity [km/s]
-vw_2 = 0
-
-# Velocity at which the material is ejected from the internal working surface [km/s]
-v0_2 = 5
-
-# Final radius of the bowshock [arcsec]. Set None if you want to end the
-# bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
-# 2018)
-rbf_obs_2 = 1
-
-# Total mass of the bowshock [solar masses]
-mass_2 = 0.00031 * 1.5
-
-# Position angle [deg]
-pa_2 = 160
-
-
-"""
 SPECTRAL CUBE PARAMETERS
 """
 
@@ -187,7 +148,7 @@ vch0 = -100
 vchf = +100
 
 # Number of pixels in the x and y axes
-nxs, nys = (300, 300)
+nxs, nys = (200, 200)
 
 # Physical size of the channel maps along the x axis [arcsec]
 xpmax = 10
@@ -220,8 +181,8 @@ tolfactor_vt = 3
 # Reference pixel [[int, int] or None]
 # Pixel coordinates of the source, i.e., the origin from which the distances
 # are measured. The first index is the abscisa axis, the second is the ordinate
-# axis 
-refpix = [150, 150]
+# axis
+refpix = [0, 100]
 
 # Angle to rotate the image [degrees]
 parot = 0

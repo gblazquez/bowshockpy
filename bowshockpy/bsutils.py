@@ -5,8 +5,6 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.colors import TwoSlopeNorm, ListedColormap
 from matplotlib import colormaps
 
-
-
 from astropy.io import fits
 from astropy.convolution import Gaussian2DKernel, convolve
 
@@ -21,6 +19,7 @@ result = subprocess.run(['whoami'], stdout=subprocess.PIPE)
 user = result.stdout.decode().strip()
 
 import bowshockpy.moments as moments
+from bowshockpy._header_default import hdr_str_default
 
 def progressbar_bowshock(
         iteration, total, timelapsed, intervaltime,
@@ -32,10 +31,6 @@ def progressbar_bowshock(
     print(f'  0{bar}{percent}% | {timelapsed:.0f}/{intervaltime*total:.0f}s', end = printend)
     if iteration == total:
         print()
-
-path = Path(__file__).parent / "header_default.txt"
-with path.open() as f:
-    hdr_str_default = f.read()
 
 def create_hdr(**kwargs):
     hdr = fits.Header.fromstring(hdr_str_default)
