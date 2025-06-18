@@ -17,7 +17,6 @@ from datetime import datetime
 import sys
 
 import bowshockpy.utils as ut
-import bowshockpy.bsutils as bu
 import bowshockpy.comass as comass
 import bowshockpy.moments as moments
 
@@ -702,7 +701,7 @@ provide any cube.
         spa = np.sin(self.pa)
 
         outsidegrid_warning = True
-        bu.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
+        ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
         for iz, z in enumerate(self.zs):
             if self.verbose:
                 t0 = datetime.now()
@@ -740,7 +739,7 @@ provide any cube.
                 tf = datetime.now()
                 intervaltime = (tf-t0).total_seconds()
                 ts.append(intervaltime)
-                bu.progressbar_bowshock(iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
+                ut.progressbar_bowshock(iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
                 # print(f"\n dt = {(tf-t0).total_seconds()*1000:.2f} ms")
                 # ts.append((tf-t0).total_seconds())
                 # print(f"Time = {np.sum(ts):.2f} s")
@@ -949,7 +948,7 @@ class CubeProcessing(BowshockCube):
             print(f"\nConvolving {nck}... ")
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
-            self.cubes[nck][chan] = bu.gaussconvolve(
+            self.cubes[nck][chan] = ut.gaussconvolve(
                 self.cubes[ck][chan],
                 x_FWHM=self.x_FWHM,
                 y_FWHM=self.y_FWHM,
@@ -957,7 +956,7 @@ class CubeProcessing(BowshockCube):
                 return_kernel=False,
             )
         self.refpixs[nck] = self.refpixs[ck]
-        self.noisychans[nck] = bu.gaussconvolve(
+        self.noisychans[nck] = ut.gaussconvolve(
             self.noisychans[ck],
             x_FWHM=self.x_FWHM,
             y_FWHM=self.y_FWHM,
@@ -985,7 +984,7 @@ class CubeProcessing(BowshockCube):
                         self.__getattribute__(self.dos[s])(ck=ck)
 
     def savecube(self, ck):
-        self.hdrs[ck] = bu.create_hdr(
+        self.hdrs[ck] = ut.create_hdr(
             NAXIS1 = np.shape(self.cubes[ck])[0],
             NAXIS2 = np.shape(self.cubes[ck])[1],
             NAXIS3 = np.shape(self.cubes[ck])[2],
@@ -1008,7 +1007,7 @@ class CubeProcessing(BowshockCube):
         hdu = fits.PrimaryHDU(self.cubes[ck])
         hdul = fits.HDUList([hdu])
         hdu.header = self.hdrs[ck]
-        bu.make_folder(foldername=f'models/{self.modelname}/fits')
+        ut.make_folder(foldername=f'models/{self.modelname}/fits')
         hdul.writeto(f'models/{self.modelname}/fits/{ck}.fits', overwrite=True)
         if self.verbose:
             print(f'models/{self.modelname}/fits/{ck}.fits saved')
@@ -1025,7 +1024,7 @@ class CubeProcessing(BowshockCube):
             axis=1
         )
         if save:
-            hdrpv = bu.create_hdr(
+            hdrpv = ut.create_hdr(
                 NAXIS1 = np.shape(self.cubes[ck])[1],
                 NAXIS2 = np.shape(self.cubes[ck])[0],
                 BMAJ = self.bmaj/3600,
@@ -1047,7 +1046,7 @@ class CubeProcessing(BowshockCube):
             hdu = fits.PrimaryHDU(pvimage)
             hdul = fits.HDUList([hdu])
             hdu.header = hdrpv
-            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            ut.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_pv.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_pv.fits saved')
@@ -1060,7 +1059,7 @@ class CubeProcessing(BowshockCube):
             chan_range=chan_range
         )
         if save:
-            hdr = bu.create_hdr(
+            hdr = ut.create_hdr(
                 NAXIS1 = np.shape(self.cubes[ck])[1],
                 NAXIS2 = np.shape(self.cubes[ck])[0],
                 BMAJ = self.bmaj/3600,
@@ -1082,7 +1081,7 @@ class CubeProcessing(BowshockCube):
             hdu = fits.PrimaryHDU(sumintimage)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            ut.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_sumint.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_sumint.fits saved')
@@ -1097,7 +1096,7 @@ class CubeProcessing(BowshockCube):
             chan_range=chan_range,
             )
         if save:
-            hdr = bu.create_hdr(
+            hdr = ut.create_hdr(
                 NAXIS1 = np.shape(self.cubes[ck])[1],
                 NAXIS2 = np.shape(self.cubes[ck])[0],
                 BMAJ = self.bmaj/3600,
@@ -1119,7 +1118,7 @@ class CubeProcessing(BowshockCube):
             hdu = fits.PrimaryHDU(mom0)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            ut.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom0.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom0.fits saved')
@@ -1138,7 +1137,7 @@ class CubeProcessing(BowshockCube):
                 )
             )
         if save:
-            hdr = bu.create_hdr(
+            hdr = ut.create_hdr(
                 NAXIS1 = np.shape(self.cubes[ck])[1],
                 NAXIS2 = np.shape(self.cubes[ck])[0],
                 BMAJ = self.bmaj/3600,
@@ -1160,7 +1159,7 @@ class CubeProcessing(BowshockCube):
             hdu = fits.PrimaryHDU(mom1)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            ut.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom1.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom1.fits saved')
@@ -1179,7 +1178,7 @@ class CubeProcessing(BowshockCube):
                 )
             )
         if save:
-            hdr = bu.create_hdr(
+            hdr = ut.create_hdr(
                 NAXIS1 = np.shape(self.cubes[ck])[1],
                 NAXIS2 = np.shape(self.cubes[ck])[0],
                 BMAJ = self.bmaj/3600,
@@ -1201,7 +1200,7 @@ class CubeProcessing(BowshockCube):
             hdu = fits.PrimaryHDU(mom2)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            ut.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom2.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom2.fits saved')
@@ -1219,7 +1218,7 @@ class CubeProcessing(BowshockCube):
                 )
             )
         if save:
-            hdr = bu.create_hdr(
+            hdr = ut.create_hdr(
                 NAXIS1 = np.shape(self.cubes[ck])[1],
                 NAXIS2 = np.shape(self.cubes[ck])[0],
                 BMAJ = self.bmaj/3600,
@@ -1241,29 +1240,29 @@ class CubeProcessing(BowshockCube):
             hdu = fits.PrimaryHDU(mom8)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            bu.make_folder(foldername=f'models/{self.modelname}/fits')
+            ut.make_folder(foldername=f'models/{self.modelname}/fits')
             hdul.writeto(f'models/{self.modelname}/fits/{ck}_mom8.fits', overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom8.fits saved')
         return mom8
 
     def plotpv(self, pvimage, rangex, chan_vels, **kwargs):
-            return bu.plotpv(pvimage, rangex, chan_vels, **kwargs)
+            return ut.plotpv(pvimage, rangex, chan_vels, **kwargs)
 
     def plotsumint(self, sumint, **kwargs):
-            return bu.plotsumint(sumint, **kwargs)
+            return ut.plotsumint(sumint, **kwargs)
 
     def plotmom0(self, mom0, **kwargs):
-                return bu.plotmom0(mom0, **kwargs)
+                return ut.plotmom0(mom0, **kwargs)
 
     def plotmom1(self, mom1, **kwargs):
-                return bu.plotmom1(mom1, **kwargs)
+                return ut.plotmom1(mom1, **kwargs)
 
     def plotmom2(self, mom2, **kwargs):
-                return bu.plotmom2(mom2, **kwargs)
+                return ut.plotmom2(mom2, **kwargs)
 
     def plotmom8(self, mom8, **kwargs):
-                return bu.plotmom8(mom8, **kwargs)
+                return ut.plotmom8(mom8, **kwargs)
 
     def momentsandpv(self, ck, savefits=False, saveplot=False,
                       mom1clipping=0, mom2clipping=0, verbose=True,

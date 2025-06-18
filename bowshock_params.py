@@ -42,13 +42,13 @@ bs2Dplot = True
 # The list can be left empty if no output cube is desired
 # Example of outcubes:
 # outcubes = ["m", "m_r", "I_c", "I_nc", "tau_rc", "NCO_rc", "Ithin_rc"]
-outcubes = ["I_nc", "I_rnc"]
+outcubes = ["I_nc"]
 
 # List of the cubes to which the position-velocity diagrams and moments (0, 1,
 # 2, and peak intensity) are going to be performed.
 # Example of momentsandpv:
 # momentsandpv = ["I_rc", "Ithin_rc"]
-momentsandpv = ["I_rnc"]
+momentsandpv = ["I_nc"]
 
 # Verbose messages about the computation? [True/False]
 verbose = True

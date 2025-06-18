@@ -22,7 +22,7 @@ Parameters read from {bpf_str}.py
 )
 
 from bowshockpy import bsmodels as bs
-from bowshockpy import bsutils as bu
+from bowshockpy import utils as ut
 
 pss = []
 psobss = []
@@ -105,7 +105,7 @@ for i, (ps,psobs) in enumerate(zip(pss,psobss)):
     if p.bs2Dplot:
         bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
         if i == 0:
-            bu.make_folder(f"models/{ps['modelname']}")
+            ut.make_folder(f"models/{ps['modelname']}")
         bs2Dplot.fig_model.savefig(f"models/{ps['modelname']}/2D_{i+1}.pdf")
     if len(p.outcubes) != 0:
         print(f"""
