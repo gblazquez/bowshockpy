@@ -16,7 +16,7 @@ x erease bs.py (it is deprecated)
 
 x clean codes that have your paths written on it 
 
-- merge bsutils and utils
+x merge bsutils and utils
 
 x clean functions/variables unused
 
@@ -38,10 +38,14 @@ x erease bowshock fitter? leave it?
 
 e.g.:
 
-otputcubes = {
-    "quantity": "intensities", # Choose one  quantity
-    "operations": ["add_source", "add_noise", "convolve"] # list the operations
-}
+outputcubes = [
+  {"quantity": "intensities", 
+   "operations": ["add_source", "add_noise", "convolve"]}, 
+  {"quantity": "column_densities", 
+   "operations": [] # list the operations},
+]
+
+Add above also the moments
 
 I think bowshockpy should work like this:
 

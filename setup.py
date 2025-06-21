@@ -13,6 +13,11 @@ setup(
         "scipy",
         "astropy",
     ],
+    entry_points={
+        "console_scripts": [
+            "bowshockpy=bowshockpy.genbow:main",
+        ],
+    },
     long_description=long_description,
     long_descripton_content_type="text/markdown",
 )
