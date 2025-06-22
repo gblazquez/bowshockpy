@@ -42,13 +42,13 @@ bs2Dplot = True
 # The list can be left empty if no output cube is desired
 # Example of outcubes:
 # outcubes = ["m", "m_r", "I_c", "I_nc", "tau_rc", "NCO_rc", "Ithin_rc"]
-outcubes = ["I_nc"]
+outcubes = ["I"]
 
 # List of the cubes to which the position-velocity diagrams and moments (0, 1,
 # 2, and peak intensity) are going to be performed.
 # Example of momentsandpv:
 # momentsandpv = ["I_rc", "Ithin_rc"]
-momentsandpv = ["I_nc"]
+momentsandpv = []
 
 # Verbose messages about the computation? [True/False]
 verbose = True
@@ -95,7 +95,7 @@ bowshock 1 [blue]
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
 # redshifted, if i<90, it will be blueshifted. [degrees]
-i_1 = 180-45
+i_1 = 180
 
 # Jet radius. Set this parameter to zero, the channel maps generator
 # are not yet generalized for jet radius>0 [arcsec]
@@ -105,10 +105,10 @@ rj_1 = 0
 L0_1 = 0.7
 
 # Distance between the working surface and the source [arcsec]
-zj_1 = 3.5 / np.sin(i_1*np.pi/180)
+zj_1 = 3.5
 
 # Jet velocity
-vj_1 = (73-vsys) / (-np.cos(i_1*np.pi/180))
+vj_1 = 80
 
 # Ambient (or wind) velocity [km/s]
 vw_1 = 0
@@ -125,7 +125,7 @@ rbf_obs_1 = 1
 mass_1 = 0.00031 * 1.5
 
 # Position angle [deg]
-pa_1 = -20
+pa_1 = 0
 
 
 """
@@ -133,22 +133,22 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model
-nzs = 500
+nzs = 50
 
 # Number of azimuthal angle phi to calculate the bowshock solution
-nphis = 500
+nphis = 50
 
 # Number of spectral channel maps
-nc = 50
+nc = 20
 
 # Central velocity of the first channel map [km/s]
-vch0 = 30
+vch0 = 40
 
 # Central velocity of the last channel map [km/s]
-vchf = +100
+vchf = +90
 
 # Number of pixels in the x and y axes
-nxs, nys = (200, 200)
+nxs, nys = (20, 20)
 
 # Physical size of the channel maps along the x axis [arcsec]
 xpmax = 5
@@ -179,10 +179,10 @@ CIC = True
 tolfactor_vt = 3
 
 # Reference pixel [[int, int] or None]
-# Pixel coordinates (zero-based) of the source, i.e., the origin from which the
-# distances are measured. The first index is the R.A. axis, the second is the
-# Dec. axis.
-refpix = [100, 0]
+# Pixel coordinates of the source, i.e., the origin from which the distances
+# are measured. The first index is the R.A. axis, the second is the Dec.
+# axis
+refpix = [10, 10]
 
 # Angle to rotate the image [degrees]
 parot = 0

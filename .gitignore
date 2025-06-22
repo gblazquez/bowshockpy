@@ -2,6 +2,13 @@
 # project .gitignore files #
 ############################
 
+
+
+
+# Added by you:
+rebuild_wheels.sh
+
+
 # ignore files in folder
 models/*
 

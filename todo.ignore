@@ -24,17 +24,21 @@ x erease bowshock fitter? leave it?
 
 - Make an __init__.py that only imports the usefull objects
 
-- think of tests
+- think of tests:
+ - Test on coordinates?
+ - test on mass?
 
-- allow install from pipy
+x allow install from pipy
 
 - extrapolable to other CO transitions?
 
-- fix ref coordinates
+x fix ref coordinates
 
 - make some examples with jupyter notebooks
 
 - I think there are more user friendly ways to indicate what quantities and operations should be performed:
+
+- update the readme.me
 
 e.g.:
 
@@ -51,25 +55,9 @@ I think bowshockpy should work like this:
 
 After installing with pip:
 
-(.env)$ bowshockpy params.py
-
-To do this, I think you should move the generate_bowshock.py to the bowshockpy folder. Then, in __init__.py, 
+(.env)$ bowshockpy -r params.py
 
 from generate_bowshock import genbow
-
-genbow should be a function in generate_bowshock package that runs all what your code generate_bowshock did.
-
-Then, you can point 
-
-setup(
-    ...
-     entry_points={
-        "console_scripts": [
-            "generate_bowshock = bowshockpy:genbow",
-        ],
-    },
-)   
-
 
 Another way should be
 
