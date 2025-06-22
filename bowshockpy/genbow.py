@@ -189,12 +189,12 @@ def main():
     )
     parser.add_argument("-r",
                         "--read",
-                        dest="bpf_str",
+                        dest="parameters_file",
                         type=str,
                         help="Reads a configuration file to generate the bowshock model",
                         default="bowshock_params.py")
     args = parser.parse_args()
-    filename = args.bpf_str
+    filename = args.parameters_file
     # bpf_str = bpf_str if bpf_str!="" else "bowshock_params"
     # _ROOT = os.path.abspath(os.getcwd())
     # p = importlib.import_module(_ROOT+"/"+bpf_str.strip(".py"))

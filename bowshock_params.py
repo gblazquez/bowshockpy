@@ -1,7 +1,3 @@
-import numpy as np
-
-from datetime import datetime
-
 """
 Use this file to define all the the parameters needed to run bowshockpy.
 
@@ -13,7 +9,7 @@ the documentation
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example_{datetime.now().strftime('%y%m%d_%H%M%S')}"
+modelname = f"example_250622"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -105,10 +101,10 @@ rj_1 = 0
 L0_1 = 0.7
 
 # Distance between the working surface and the source [arcsec]
-zj_1 = 3.5 / np.sin(i_1*np.pi/180)
+zj_1 = 3.5
 
 # Jet velocity
-vj_1 = (73-vsys) / (-np.cos(i_1*np.pi/180))
+vj_1 = 73
 
 # Ambient (or wind) velocity [km/s]
 vw_1 = 0
@@ -142,7 +138,7 @@ nphis = 500
 nc = 50
 
 # Central velocity of the first channel map [km/s]
-vch0 = 30
+vch0 = 40
 
 # Central velocity of the last channel map [km/s]
 vchf = +100

@@ -22,7 +22,7 @@ x clean functions/variables unused
 
 x erease bowshock fitter? leave it?
 
-- Make an __init__.py that only imports the usefull objects
+x Make an __init__.py that only imports the usefull objects
 
 - think of tests:
  - Test on coordinates?
@@ -36,9 +36,9 @@ x fix ref coordinates
 
 - make some examples with jupyter notebooks
 
-- I think there are more user friendly ways to indicate what quantities and operations should be performed:
+- Incorporate the docs
 
-- update the readme.me
+- I think there are more user friendly ways to indicate what quantities and operations should be performed:
 
 e.g.:
 

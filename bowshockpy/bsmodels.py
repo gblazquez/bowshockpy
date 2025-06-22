@@ -287,9 +287,9 @@ class Bowshock2D(ObsModel):
         self.xps_phi90 = np.array([self.xp(zb,phi=np.pi/2) for zb in self.zs])
         self.xps_phi0 = np.array([self.xp(zb,phi=0) for zb in self.zs])
         self.xps_phi180 = np.array([self.xp(zb,phi=np.pi) for zb in self.zs])
-        self.vzps_phi0 = -np.array([self.vzp(zb,phi=0) for zb in self.zs]) + self.vsys
-        self.vzps_phi90 = -np.array([self.vzp(zb,phi=np.pi/2) for zb in self.zs]) + self.vsys
-        self.vzps_phi180 = -np.array([self.vzp(zb,phi=np.pi) for zb in self.zs]) + self.vsys
+        self.vzps_phi0 = -np.array([self.vzp(zb,phi=0) for zb in self.zs])
+        self.vzps_phi90 = -np.array([self.vzp(zb,phi=np.pi/2) for zb in self.zs])
+        self.vzps_phi180 = -np.array([self.vzp(zb,phi=np.pi) for zb in self.zs])
 
         self.maxviso = np.max(self.vzps_phi180)
         self.minviso = np.min(self.vzps_phi0)
@@ -350,14 +350,15 @@ class Bowshock2DPlots(Bowshock2D):
 
 
     def create_axes(self):
-        nrow = 2
+        # nrow = 2
+        nrow = 1
         ncol = 3
         wspace = 0.4
         hspace = 0.4
         width_ratios = [1] * ncol
         height_ratios = [1] * nrow
 
-        self.fig_model = plt.figure(figsize=(14,8))
+        self.fig_model = plt.figure(figsize=(14,4))
         gs = GridSpec(
             nrow, ncol,
             height_ratios=height_ratios,
@@ -377,28 +378,28 @@ class Bowshock2DPlots(Bowshock2D):
             width_ratios=[1],
             hspace=0.05,
         )
-        gss[2] = gs[1, 1].subgridspec(
-            2, 1,
-            height_ratios=[0.05, 1],
-            width_ratios=[1],
-            hspace=0.05,
-        )
-        gss[3] = gs[1, 2].subgridspec(
-            2, 1,
-            height_ratios=[0.05, 1],
-            width_ratios=[1],
-            hspace=0.05,
-        )
+        # gss[2] = gs[1, 1].subgridspec(
+        #     2, 1,
+        #     height_ratios=[0.05, 1],
+        #     width_ratios=[1],
+        #     hspace=0.05,
+        # )
+        # gss[3] = gs[1, 2].subgridspec(
+        #     2, 1,
+        #     height_ratios=[0.05, 1],
+        #     width_ratios=[1],
+        #     hspace=0.05,
+        # )
 
         self.axs["text"] = plt.subplot(gs[:, 0])
         self.axs[0] = plt.subplot(gss[0][1, 0])
         self.cbaxs[0] = plt.subplot(gss[0][0, 0])
         self.axs[1] = plt.subplot(gss[1][1, 0])
         self.cbaxs[1] = plt.subplot(gss[1][0, 0])
-        self.axs[2] = plt.subplot(gss[2][1, 0])
-        self.cbaxs[2] = plt.subplot(gss[2][0, 0])
-        self.axs[3] = plt.subplot(gss[3][1, 0])
-        self.cbaxs[3] = plt.subplot(gss[3][0, 0])
+        # self.axs[2] = plt.subplot(gss[2][1, 0])
+        # self.cbaxs[2] = plt.subplot(gss[2][0, 0])
+        # self.axs[3] = plt.subplot(gss[3][1, 0])
+        # self.cbaxs[3] = plt.subplot(gss[3][0, 0])
         self.axs["text"].set_axis_off()
 
     def plot(self):
@@ -408,21 +409,21 @@ class Bowshock2DPlots(Bowshock2D):
             {self.modelname}
 
             $i = {{{self.i*180/np.pi:.2f}}}^\circ$
-            $V_\mathrm{{jet}} = {{{self.vj:.2f}}}$ km/s
-            $V_0 = {{{self.v0:.2f}}}$ km/s
-            $V_w = {{{self.vw:.2f}}}$ km/s
+            $v_\mathrm{{jet}} = {{{self.vj:.2f}}}$ km/s
+            $v_0 = {{{self.v0:.2f}}}$ km/s
+            $v_a = {{{self.vw:.2f}}}$ km/s
             $L_0 = {{{self.L0_arcsec:.2f}}}$ arcsec
             $z_\mathrm{{jet}} = {{{self.zj_arcsec:.2f}}}$ arcsec
             $r_\mathrm{{b,f}} = {{{self.rbf_arcsec:.2f}}}$ arcsec
             $t_\mathrm{{jet}} = {{{self.tj_yr:.2f}}}$ yr
-            $\rho_w = {{{self.rhow_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+            $\rho_a = {{{self.rhow_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
             $\dot{{m}}_0 = {{{self.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-            $\dot{{m}}_{{w,f}} = {{{self.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+            $\dot{{m}}_{{a,f}} = {{{self.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
             """
 
         self.axs["text"].set_axis_off()
         for n, line in enumerate(showtext.split("\n")):
-             self.axs["text"].text(0, 0.99-0.07*n, line, fontsize=12,
+             self.axs["text"].text(0, 0.99-0.06*n, line, fontsize=10,
                               transform=self.axs["text"].transAxes)
 
         """
@@ -490,80 +491,83 @@ class Bowshock2DPlots(Bowshock2D):
         )
 
         self.axs[0].set_aspect("equal")
-        self.axs[0].set_xlabel("$z_b$ [arcsec]")
-        self.axs[0].set_ylabel("R [arcsec]")
+        self.axs[0].set_xlabel("$Distance$ [arcsec]")
+        self.axs[0].set_ylabel("Radius [arcsec]")
 
         self.cbaxs[0].tick_params(
             bottom=False, labelbottom=False,
             top=True, labeltop=True
         )
-        self.cbaxs[0].set_xlabel(r"v [km/s]", )
+        self.cbaxs[0].set_xlabel(r"velocity [km/s]", )
         self.cbaxs[0].xaxis.set_label_position('top')
 
-        """
-        Radius vs distance
-        """
-        for i, xarcsec in enumerate(self.xps_phi90_arcsec):
-            c = ut.get_color(
-                [self.minvzp90, self.maxvzp90],
-                self.vzps_phi90[i],
-                "turbo",
-            )
-            self.axs[1].plot(
-                xarcsec,
-                self.Rs_arcsec[i],
-                color=c,
-                marker="o",
-            )
-            self.axs[1].plot(
-                xarcsec,
-                -self.Rs_arcsec[i],
-                color=c,
-                marker="o",
-            )
-        cbar = plt.colorbar(
-               cm.ScalarMappable(
-                   norm=colors.Normalize(
-                       vmax=self.maxvzp90,
-                       vmin=self.minvzp90),
-                   cmap="turbo",
-               ),
-               cax=self.cbaxs[1],
-               orientation="horizontal",
-        )
-        self.axs[1].set_aspect("equal")
-        self.axs[1].set_xlabel("$x(\phi=90^\circ)$ [arcsec]")
-        self.axs[1].set_ylabel("$y(\phi=90^\circ)$ [arcsec]")
+        # """
+        # Radius vs distance
+        # """
+        # for i, xarcsec in enumerate(self.xps_phi90_arcsec):
+        #     c = ut.get_color(
+        #         [self.minvzp90, self.maxvzp90],
+        #         self.vzps_phi90[i],
+        #         "turbo",
+        #     )
+        #     self.axs[1].plot(
+        #         xarcsec,
+        #         self.Rs_arcsec[i],
+        #         color=c,
+        #         marker="o",
+        #     )
+        #     self.axs[1].plot(
+        #         xarcsec,
+        #         -self.Rs_arcsec[i],
+        #         color=c,
+        #         marker="o",
+        #     )
+        # cbar = plt.colorbar(
+        #        cm.ScalarMappable(
+        #            norm=colors.Normalize(
+        #                vmax=self.maxvzp90,
+        #                vmin=self.minvzp90),
+        #            cmap="turbo",
+        #        ),
+        #        cax=self.cbaxs[1],
+        #        orientation="horizontal",
+        # )
+        # self.axs[1].set_aspect("equal")
+        # self.axs[1].set_xlabel("$x(\phi=90^\circ)$ [arcsec]")
+        # self.axs[1].set_ylabel("$y(\phi=90^\circ)$ [arcsec]")
 
-        self.cbaxs[1].tick_params(
-            which="both",
-            bottom=False, labelbottom=False,
-            top=True, labeltop=True
-        )
-        self.cbaxs[1].set_xlabel(r"$v_{z'}(\phi=90^\circ)$ [km/s]", )
-        self.cbaxs[1].xaxis.set_label_position('top')
-        self.cbaxs[1].invert_xaxis()
+        # self.cbaxs[1].tick_params(
+        #     which="both",
+        #     bottom=False, labelbottom=False,
+        #     top=True, labeltop=True
+        # )
+        # self.cbaxs[1].set_xlabel(r"$v_{z'}(\phi=90^\circ)$ [km/s]", )
+        # self.cbaxs[1].xaxis.set_label_position('top')
+        # self.cbaxs[1].invert_xaxis()
 
-        """
-        Surf. Dens.
-        """
-        minsurfdens, maxsurfdens = np.min(self.surfdenss_gcm2), np.percentile(self.surfdenss_gcm2, 85)
-        self.axs[2].plot(
-            self.zs_arcsec[self.surfdenss_gcm2<np.percentile(self.surfdenss_gcm2, 85)],
-            self.surfdenss_gcm2[self.surfdenss_gcm2<np.percentile(self.surfdenss_gcm2, 85)],
-            "b-"
-        )
-        self.axs[2].set_xlabel(r"$z$ [arcsec]", )
-        self.axs[2].set_ylabel(r"$\sigma$ [g cm$^{-2}$]", )
+        # """
+        # Surf. Dens.
+        # """
+        # minsurfdens, maxsurfdens = np.min(self.surfdenss_gcm2), np.percentile(self.surfdenss_gcm2, 85)
+        # self.axs[2].plot(
+        #     self.zs_arcsec[self.surfdenss_gcm2<np.percentile(self.surfdenss_gcm2, 85)],
+        #     self.surfdenss_gcm2[self.surfdenss_gcm2<np.percentile(self.surfdenss_gcm2, 85)],
+        #     "b-"
+        # )
+        # self.axs[2].set_xlabel(r"$z$ [arcsec]", )
+        # self.axs[2].set_ylabel(r"$\sigma$ [g cm$^{-2}$]", )
 
-        self.axs[2].set_yscale("log")
+        # self.axs[2].set_yscale("log")
 
-        self.cbaxs[2].set_axis_off()
+        # self.cbaxs[2].set_axis_off()
 
 
         """
         PV diagram
         """
+
+        minsurfdens = np.min(self.surfdenss_gcm2)
+        maxsurfdens = np.percentile(self.surfdenss_gcm2, 85)
         for i in range(len(self.zs)):
             c = ut.get_color(
                     [minsurfdens, maxsurfdens],
@@ -571,13 +575,13 @@ class Bowshock2DPlots(Bowshock2D):
                     "viridis",
                     norm="log",
             )
-            self.axs[3].plot(
+            self.axs[1].plot(
                 self.xps_phi180_arcsec[i],
                 self.vzps_phi180[i],
                 marker="o",
                 color=c
             )
-            self.axs[3].plot(
+            self.axs[1].plot(
                 self.xps_phi0_arcsec[i],
                 self.vzps_phi0[i],
                 marker="o",
@@ -586,11 +590,11 @@ class Bowshock2DPlots(Bowshock2D):
         allvelsarray = np.array([self.vzps_phi0, self.vzps_phi180]).ravel()
         argmaxvelpv = np.argmax(np.abs(allvelsarray))
         if allvelsarray[argmaxvelpv]<0:
-            self.axs[3].invert_yaxis()
+            self.axs[1].invert_yaxis()
         else:
             pass
-        self.axs[3].set_xlabel("$x_p$ [arcsec]")
-        self.axs[3].set_ylabel("$v_{z'}$ [km/s]")
+        self.axs[1].set_xlabel("Projected distance [arcsec]")
+        self.axs[1].set_ylabel("LOS velocity [km/s]")
 
         cbar = plt.colorbar(
                cm.ScalarMappable(
@@ -599,17 +603,17 @@ class Bowshock2DPlots(Bowshock2D):
                        vmin=minsurfdens),
                    cmap="viridis",
                ),
-               cax=self.cbaxs[3],
+               cax=self.cbaxs[1],
                orientation="horizontal",
         )
 
-        self.cbaxs[3].tick_params(
+        self.cbaxs[1].tick_params(
             which="both",
             bottom=False, labelbottom=False,
             top=True, labeltop=True
         )
-        self.cbaxs[3].set_xlabel(r"$\sigma$ [g cm$^{-2}$]", )
-        self.cbaxs[3].xaxis.set_label_position('top')
+        self.cbaxs[1].set_xlabel(r"Surface density [g cm$^{-2}$]", )
+        self.cbaxs[1].xaxis.set_label_position('top')
 
 #
 #
