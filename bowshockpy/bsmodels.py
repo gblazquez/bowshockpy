@@ -409,6 +409,7 @@ class Bowshock2DPlots(Bowshock2D):
             {self.modelname}
 
             $i = {{{self.i*180/np.pi:.2f}}}^\circ$
+            $v_\mathrm{{vsys}} = {{{self.vsys:.2f}}}$ km/s
             $v_\mathrm{{jet}} = {{{self.vj:.2f}}}$ km/s
             $v_0 = {{{self.v0:.2f}}}$ km/s
             $v_a = {{{self.vw:.2f}}}$ km/s
@@ -577,13 +578,13 @@ class Bowshock2DPlots(Bowshock2D):
             )
             self.axs[1].plot(
                 self.xps_phi180_arcsec[i],
-                self.vzps_phi180[i],
+                self.vzps_phi180[i] + self.vsys,
                 marker="o",
                 color=c
             )
             self.axs[1].plot(
                 self.xps_phi0_arcsec[i],
-                self.vzps_phi0[i],
+                self.vzps_phi0[i] + self.vsys,
                 marker="o",
                 color=c
             )
@@ -644,7 +645,7 @@ class BowshockCube(ObsModel):
         self.dphi = None
 
         self.vs = np.array([])
-        self.vchanss = np.array([])
+        self.velchans = np.array([])
 
         self.cube = None
         self.cubes = {}
@@ -723,6 +724,7 @@ provide any cube.
                 xp = _xp * cpa - _yp * spa
                 yp = _xp * spa + _yp * cpa
                 vzp = -self.vzp(z, phi)
+                vlsr = vzp + self.vsys
 
                 xpixcoord = self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]
                 ypixcoord = self.km2arcsec(yp) / self.arcsecpix + self.refpix[1]
@@ -733,7 +735,7 @@ provide any cube.
                     dypix = ypixcoord - ypix
 
                     for chan, vchan in enumerate(self.velchans):
-                        self.wxpyp(chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass)
+                        self.wxpyp(chan, vchan, xpix, ypix, dxpix, dypix, vlsr, dmass)
 
                 else:
                     if outsidegrid_warning:
@@ -837,8 +839,8 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print(f"\nComputing opacities...")
         self.cubes["tau"] = comass.tau_N(
-            nu=comass.freq_caract_CO["3-2"],
-            J=3,
+            nu=comass.freq_caract_CO[self.J],
+            J=float(self.J[0]),
             mu=0.112*u.D,
             Tex=self.Tex,
             dNdv=self.cubes["NCO"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s),
@@ -860,7 +862,7 @@ class CubeProcessing(BowshockCube):
         func_I = comass.Inu_tau_thin if opthin else comass.Inu_tau
         ckI = "Ithin" if opthin else "I"
         self.cubes[ckI] = (func_I(
-            nu=comass.freq_caract_CO["3-2"],
+            nu=comass.freq_caract_CO[self.J],
             Tex=self.Tex,
             Tbg=self.Tbg,
             tau=self.cubes["tau"],
@@ -1535,20 +1537,21 @@ class CubeProcessing(BowshockCube):
         Number of bowshocks: {len(bscs)}
         Tex = {self.Tex.value} K
         $i = {{{ut.list2str(ies)}}}^\circ$
-        $V_\mathrm{{jet}} = {{{ut.list2str(vjs)}}}$ km/s
-        $V_0 = {{{ut.list2str(v0s)}}}$ km/s
-        $V_w = {{{ut.list2str(vws)}}}$ km/s
+        $v_\mathrm{{sys}} = {self.vsys}$ km/s
+        $v_\mathrm{{jet}} = {{{ut.list2str(vjs)}}}$ km/s
+        $v_0 = {{{ut.list2str(v0s)}}}$ km/s
+        $v_a = {{{ut.list2str(vws)}}}$ km/s
         $L_0 = {{{ut.list2str(L0s)}}}$ arcsec
         $z_\mathrm{{jet}} = {{{ut.list2str(zjs)}}}$ arcsec
         $r_\mathrm{{b,f}} = {{{ut.list2str(rbfs)}}}$ arcsec
         $t_\mathrm{{jet}} = {{{ut.list2str(tjs)}}}$ yr
         mass $= {{{ut.list2str(masss)}}}\times 10^{{-4}}$ M$_\odot$
-        $\rho_w = {{{ut.list2str(rhows)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+        $\rho_a = {{{ut.list2str(rhows)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
         $\dot{{m}}_0 = {{{ut.list2str(m0s)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-        $\dot{{m}}_{{w,f}} = {{{ut.list2str(mwfs)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+        $\dot{{m}}_{{a,f}} = {{{ut.list2str(mwfs)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
         """
         for n, line in enumerate(showtext.split("\n")):
-            axs["text"].text(0, 0.99-0.07*n, line, fontsize=12-len(bscs),
+            axs["text"].text(0, 0.99-0.06*n, line, fontsize=12-len(bscs),
                               transform=axs["text"].transAxes)
 
         ak = "mom0"

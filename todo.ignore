@@ -10,7 +10,7 @@ x PA for each bowshock: Rotate the model instead of rotate the image
 
 x change the limits in the PV
 
-- fix vsys
+x fix vsys
 
 x erease bs.py (it is deprecated)
 
@@ -30,11 +30,13 @@ x Make an __init__.py that only imports the usefull objects
 
 x allow install from pipy
 
-- extrapolable to other CO transitions?
+x extrapolable to other CO transitions?
 
 x fix ref coordinates
 
 - make some examples with jupyter notebooks
+
+- Examples of input files. 
 
 - Incorporate the docs
 

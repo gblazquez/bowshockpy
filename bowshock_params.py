@@ -9,7 +9,7 @@ the documentation
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example_250622"
+modelname = f"example_250624"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -57,7 +57,7 @@ OBSERVER PARAMETERS
 distpc = 300
 
 # Systemic velocity of the source [km/s]
-vsys = + 5
+vsys = + 0
 
 # Source coordinates [deg, deg]
 ra_source_deg, dec_source_deg = 51.41198333, 30.73479833
@@ -78,6 +78,9 @@ Tbg = 2.7
 
 # Mean molecular mass per H molecule
 muH2 = 2.8
+
+# CO rovibrational line
+J = "3-2"
 
 # CO abundance
 XCO = 8.5 * 10**(-5)
@@ -129,7 +132,7 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model
-nzs = 500
+nzs = 700
 
 # Number of azimuthal angle phi to calculate the bowshock solution
 nphis = 500
@@ -138,10 +141,10 @@ nphis = 500
 nc = 50
 
 # Central velocity of the first channel map [km/s]
-vch0 = 40
+vch0 = 30
 
 # Central velocity of the last channel map [km/s]
-vchf = +100
+vchf = +70
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)
@@ -178,7 +181,7 @@ tolfactor_vt = 3
 # Pixel coordinates (zero-based) of the source, i.e., the origin from which the
 # distances are measured. The first index is the R.A. axis, the second is the
 # Dec. axis.
-refpix = [100, 0]
+refpix = [90, 20]
 
 # Angle to rotate the image [degrees]
 parot = 0

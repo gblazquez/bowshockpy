@@ -91,6 +91,7 @@ def generate_bowshock(p):
             pscube["refpix"] = [xref, yref]
         mpars = {
             "muH2": p.muH2,
+            "J": p.J,
             "XCO": p.XCO,
             "meanmass": p.muH2 / (6.023*10**23) * u.g,
             "Tex": p.Tex*u.K,
