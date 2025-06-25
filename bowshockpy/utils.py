@@ -291,8 +291,12 @@ def plotmom1(mom1, ax=None, cbax=None, extent=None,
     if extend_cbar == "max":
         velcmap = ListedColormap(velcolors[::-1])
 
-    vmin = vmin if vmin is not None else np.min(mom1[~np.isnan(mom1)])
-    vmax = vmin if vmax is not None else np.max(mom1[~np.isnan(mom1)])
+    vmin = vmin if vmin is not None else np.min(
+        mom1[(~np.isnan(mom1)) & (~np.isclose(0,mom1,atol=1))]
+        )
+    vmax = vmax if vmax is not None else np.max(
+        mom1[(~np.isnan(mom1)) & (~np.isclose(0,mom1,atol=1))]
+        )
     vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
     norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
     im = ax.imshow(
@@ -364,8 +368,12 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
     velcmap = ListedColormap(velcolors)
     if extend_cbar == "max":
         velcmap = ListedColormap(velcolors[::-1])
-    vmin = vmin if vmin is not None else np.min(mom2[~np.isnan(mom2)])
-    vmax = vmin if vmax is not None else np.max(mom2[~np.isnan(mom2)])
+    vmin = vmin if vmin is not None else np.min(
+        mom2[(~np.isnan(mom2)) & (~np.isclose(0,mom2,atol=1))]
+        )
+    vmax = vmax if vmax is not None else np.max(
+        mom2[(~np.isnan(mom2)) & (~np.isclose(0,mom2,atol=1))]
+        )
     vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
     norm = TwoSlopeNorm(vcenter=vcenter, vmax=vmax, vmin=vmin)
     im = ax.imshow(

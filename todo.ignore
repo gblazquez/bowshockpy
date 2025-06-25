@@ -40,15 +40,13 @@ x fix ref coordinates
 
 - Incorporate the docs
 
-- I think there are more user friendly ways to indicate what quantities and operations should be performed:
+x I think there are more user friendly ways to indicate what quantities and operations should be performed:
 
 e.g.:
 
 outputcubes = [
-  {"quantity": "intensities", 
-   "operations": ["add_source", "add_noise", "convolve"]}, 
-  {"quantity": "column_densities", 
-   "operations": [] # list the operations},
+  {"intensities": ["add_source", "add_noise", "convolve"]}, 
+  {"column_densities": [] # list the operations},
 ]
 
 Add above also the moments
@@ -58,8 +56,6 @@ I think bowshockpy should work like this:
 After installing with pip:
 
 (.env)$ bowshockpy -r params.py
-
-from generate_bowshock import genbow
 
 Another way should be
 

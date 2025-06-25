@@ -9,7 +9,7 @@ the documentation
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example_250624"
+modelname = f"example_250624_outcubes-v3"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -38,13 +38,19 @@ bs2Dplot = True
 # The list can be left empty if no output cube is desired
 # Example of outcubes:
 # outcubes = ["m", "m_r", "I_c", "I_nc", "tau_rc", "NCO_rc", "Ithin_rc"]
-outcubes = ["I_nc"]
+outcubes = {
+    "intensity": ["add_noise", "convolve", "moments_and_pv"],
+    "intensity_opthin": ["add_noise", "convolve"],
+    "opacity": ["convolve"],
+    # "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
+    "mass": [],
+    }
 
 # List of the cubes to which the position-velocity diagrams and moments (0, 1,
 # 2, and peak intensity) are going to be performed.
 # Example of momentsandpv:
 # momentsandpv = ["I_rc", "Ithin_rc"]
-momentsandpv = ["I_nc"]
+# momentsandpv = ["I_nc"]
 
 # Verbose messages about the computation? [True/False]
 verbose = True
@@ -132,7 +138,7 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model
-nzs = 700
+nzs = 100
 
 # Number of azimuthal angle phi to calculate the bowshock solution
 nphis = 500
@@ -144,7 +150,7 @@ nc = 50
 vch0 = 30
 
 # Central velocity of the last channel map [km/s]
-vchf = +70
+vchf = 63
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)
@@ -181,7 +187,7 @@ tolfactor_vt = 3
 # Pixel coordinates (zero-based) of the source, i.e., the origin from which the
 # distances are measured. The first index is the R.A. axis, the second is the
 # Dec. axis.
-refpix = [90, 20]
+refpix = [80, 30]
 
 # Angle to rotate the image [degrees]
 parot = 0

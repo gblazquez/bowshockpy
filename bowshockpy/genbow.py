@@ -5,21 +5,11 @@ import astropy.constants as c
 
 import os
 
-import importlib
-
 from bowshockpy import bsmodels as bs
 from bowshockpy import utils as ut
 
 
 def generate_bowshock(p):
-    # bpf_str = bpf_str if bpf_str!="" else "bowshock_params"
-    # _ROOT = os.path.abspath(os.getcwd())
-    # p = importlib.import_module(_ROOT+"/"+bpf_str.strip(".py"))
-    # print(
-    # f"""
-    # Parameters read from {bpf_str}
-    # """
-    # )
     print(
     f"""
     Parameters read from {p.filename}
@@ -102,8 +92,8 @@ def generate_bowshock(p):
 
     bscs = []
     for i, (ps,psobs) in enumerate(zip(pss,psobss)):
-        bsm = bs.NJ(ps)
-        bsmobs = bs.ObsModel(ps, psobs)
+        # bsm = bs.NJ(ps)
+        # bsmobs = bs.ObsModel(ps, psobs)
         if p.bs2Dplot:
             bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
             if i == 0:
@@ -130,33 +120,18 @@ def generate_bowshock(p):
     bscp = bs.CubeProcessing(bscs[-1], mpars)
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
-    for ck in p.momentsandpv:
-        # bscp.momentsandpv(
-        #     ck,
-        #     savefits=p.savefits,
-        #     saveplot=p.saveplot,
-        #     mom1clipping=p.mom1clipping,
-        #     mom2clipping=p.mom2clipping,
-        #     mom0values=p.mom0values,
-        #     mom1values=p.mom1values,
-        #     mom2values=p.mom2values,
-        #     mom8values=p.mom8values,
-        #     pvvalues=p.pvvalues,
-        #     )
-
-        bscp.momentsandpv_and_params(
-            ck,
-            bscs,
-            savefits=p.savefits,
-            saveplot=p.saveplot,
-            mom1clipping=p.mom1clipping,
-            mom2clipping=p.mom2clipping,
-            mom0values=p.mom0values,
-            mom1values=p.mom1values,
-            mom2values=p.mom2values,
-            mom8values=p.mom8values,
-            pvvalues=p.pvvalues,
-            )
+    bscp.momentsandpv_and_params_all(
+         bscs,
+         savefits=p.savefits,
+         saveplot=p.saveplot,
+         mom1clipping=p.mom1clipping,
+         mom2clipping=p.mom2clipping,
+         mom0values=p.mom0values,
+         mom1values=p.mom1values,
+         mom2values=p.mom2values,
+         mom8values=p.mom8values,
+         pvvalues=p.pvvalues,
+         )
 
     # Save the file with all the parameters used to generate the bowshocks
     os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")

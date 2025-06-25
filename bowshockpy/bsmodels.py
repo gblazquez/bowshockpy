@@ -410,13 +410,13 @@ class Bowshock2DPlots(Bowshock2D):
 
             $i = {{{self.i*180/np.pi:.2f}}}^\circ$
             $v_\mathrm{{vsys}} = {{{self.vsys:.2f}}}$ km/s
-            $v_\mathrm{{jet}} = {{{self.vj:.2f}}}$ km/s
+            $v_\mathrm{{iws}} = {{{self.vj:.2f}}}$ km/s
             $v_0 = {{{self.v0:.2f}}}$ km/s
             $v_a = {{{self.vw:.2f}}}$ km/s
             $L_0 = {{{self.L0_arcsec:.2f}}}$ arcsec
-            $z_\mathrm{{jet}} = {{{self.zj_arcsec:.2f}}}$ arcsec
+            $z_\mathrm{{iws}} = {{{self.zj_arcsec:.2f}}}$ arcsec
             $r_\mathrm{{b,f}} = {{{self.rbf_arcsec:.2f}}}$ arcsec
-            $t_\mathrm{{jet}} = {{{self.tj_yr:.2f}}}$ yr
+            $t_\mathrm{{iws}} = {{{self.tj_yr:.2f}}}$ yr
             $\rho_a = {{{self.rhow_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
             $\dot{{m}}_0 = {{{self.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
             $\dot{{m}}_{{a,f}} = {{{self.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
@@ -794,6 +794,7 @@ class CubeProcessing(BowshockCube):
         self.refpixs = {}
         self.refpixs["m"] = self.refpix
         self.hdrs = {}
+        self.listmompvs = []
 
         self.areapix_cm = None
         self.beamarea_sr = None
@@ -874,7 +875,7 @@ class CubeProcessing(BowshockCube):
             print(f"Intensities has been calculated\n")
 
     def calc_Ithin(self):
-        self.calc_I(self, opthin=True)
+        self.calc_I(opthin=True)
 
     def add_source(self, ck="m", value=None):
         nck = self.newck(ck, "s")
@@ -926,7 +927,7 @@ class CubeProcessing(BowshockCube):
         )
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
-            print(f"{nck} has been rotated to a PA = {angle} deg\n")
+            print(f"{nck} has been rotated {angle} deg to compute the PV diagram\n")
 
     def add_noise(self, ck="m"):
         nck = self.newck(ck, "n")
@@ -975,8 +976,43 @@ class CubeProcessing(BowshockCube):
             if "n" in nck:
                 print(f"The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.q(nck)]}\n")
 
+    def _useroutputcube2dostr(self, userdic):
+        dictrad = {
+            "mass": "m",
+            "intensity": "I",
+            "intensity_opthin": "Ithin",
+            "CO_column_density": "NCO",
+            "opacity": "tau",
+            "add_source": "s",
+            "rotate": "r",
+            "add_noise": "n",
+            "convolve": "c",
+        }
+        dostrs = []
+        for userkey in userdic:
+            q = dictrad[userkey]
+            ops = userdic[userkey]
+            calcmompv = "moments_and_pv" in ops
+            if calcmompv:
+                if len(ops)>1:
+                    ss = "".join([dictrad[s_user] for s_user in
+                                  userdic[userkey] if s_user!="moments_and_pv"])
+                    dostr = [f"{q}_{ss}"]
+                if len(ops)==1:
+                    dostr = [f"{q}"]
+                dostrs += dostr
+                self.listmompvs += dostr
+            else:
+                if len(ops)!=0:
+                    ss = "".join([dictrad[s_user] for s_user in userdic[userkey]])
+                    dostrs += [f"{q}_{ss}"]
+                else:
+                    dostrs += [f"{q}"]
+        return dostrs
 
-    def calc(self, dostrs):
+    def calc(self, userdic):
+        dostrs = self._useroutputcube2dostr(userdic)
+        print(dostrs)
         for ds in dostrs:
             _split = ds.split("_")
             q = _split[0]
@@ -1018,7 +1054,8 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print(f'models/{self.modelname}/fits/{ck}.fits saved')
 
-    def savecubes(self, cks):
+    def savecubes(self, userdic):
+        cks = self._useroutputcube2dostr(userdic)
         for ck in cks:
             self.savecube(ck)
 
@@ -1214,7 +1251,7 @@ class CubeProcessing(BowshockCube):
 
     def mom8(self, ck, chan_range=None, clipping=0, save=False):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
-        chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
+        # chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
         cube_clipped = np.copy(self.cubes[ck])
         cube_clipped[cube_clipped<clipping] = 0
         mom8 = np.nan_to_num(
@@ -1269,6 +1306,10 @@ class CubeProcessing(BowshockCube):
 
     def plotmom8(self, mom8, **kwargs):
                 return ut.plotmom8(mom8, **kwargs)
+
+    def momentsandpv_all(self, **kwargs):
+        for ck in self.listmompvs:
+            self.momentsandpv(ck, **kwargs)
 
     def momentsandpv(self, ck, savefits=False, saveplot=False,
                       mom1clipping=0, mom2clipping=0, verbose=True,
@@ -1429,6 +1470,10 @@ class CubeProcessing(BowshockCube):
                 bbox_inches="tight",
                 )
 
+    def momentsandpv_and_params_all(self, bscs,**kwargs):
+        for ck in self.listmompvs:
+            self.momentsandpv_and_params(ck, bscs, **kwargs)
+
     def momentsandpv_and_params(self, ck, bscs, savefits=False, saveplot=False,
                       mom1clipping=0, mom2clipping=0, verbose=True,
                       mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
@@ -1538,13 +1583,13 @@ class CubeProcessing(BowshockCube):
         Tex = {self.Tex.value} K
         $i = {{{ut.list2str(ies)}}}^\circ$
         $v_\mathrm{{sys}} = {self.vsys}$ km/s
-        $v_\mathrm{{jet}} = {{{ut.list2str(vjs)}}}$ km/s
+        $v_\mathrm{{iws}} = {{{ut.list2str(vjs)}}}$ km/s
         $v_0 = {{{ut.list2str(v0s)}}}$ km/s
         $v_a = {{{ut.list2str(vws)}}}$ km/s
         $L_0 = {{{ut.list2str(L0s)}}}$ arcsec
-        $z_\mathrm{{jet}} = {{{ut.list2str(zjs)}}}$ arcsec
+        $z_\mathrm{{iws}} = {{{ut.list2str(zjs)}}}$ arcsec
         $r_\mathrm{{b,f}} = {{{ut.list2str(rbfs)}}}$ arcsec
-        $t_\mathrm{{jet}} = {{{ut.list2str(tjs)}}}$ yr
+        $t_\mathrm{{iws}} = {{{ut.list2str(tjs)}}}$ yr
         mass $= {{{ut.list2str(masss)}}}\times 10^{{-4}}$ M$_\odot$
         $\rho_a = {{{ut.list2str(rhows)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
         $\dot{{m}}_0 = {{{ut.list2str(m0s)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
@@ -1669,7 +1714,7 @@ class CubeProcessing(BowshockCube):
             )
         if saveplot:
             fig.savefig(
-                f"models/{self.modelname}/momentsandpv_and_params.pdf",
+                f"models/{self.modelname}/momentsandpv_and_params_{ck}.pdf",
                 bbox_inches="tight",
                 )
 
