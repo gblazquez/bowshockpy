@@ -9,48 +9,63 @@ the documentation
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example_250624_outcubes-v3"
+modelname = f"example_250627_outcubes-v4"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
 
-# List of the output cube quantites and operations performed onto the cubes.
-# The string should follow this format: {quantity}_{operations}
-# Available quantities:
-#     m: Mass
-#     NCO: CO column density
-#     tau: Opacity
-#     I: Intensity
-#     Ithin: Intensity taking into account the optically thin approximation.
+# Dictionary indicating the desired output spectral cubes and the operations
+# performed over them. The keys of the dictionary are strings indicating the
+# quantities of the desired cubes. These are the available quantities of the
+# spectral cubes:
+#    "mass": Total mass of molecular hydrogen in solar mass
+#    "CO_column_density": Column density of the CO in cm-2.
+#    "intensity": Intensity in Jy/beam.
+#    "intensity_opthin": Intensity in Jy/beam, using the optically thin approximation.
+#    "tau": Opacities
+#  
+# The values of the dictionary are lists of strings indicating the operations to be
+# performed over the cube. These are the available operations:
+#     "add_source": Add a source at the reference pixel, just for spatial
+#     reference purposes.
+#     "rotate": Rotate the whole spectral cube by an angle given by parot parameter. 
+#     "add_noise": Add gaussian noise, defined by maxcube2noise parameter.
+#     "convolve": Convolve with a gaussian defined by the parameters bmaj, bmin,
+#     and pabeam.
+#     "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity
+#     and the PV diagram.
+# The operations will be performed folowing the order of the strings in the list
+# (from left to right). The list can be left empty if no operations are desired.
+# Examples of outcubes dictionaries: 
 #
-# Available operations:
-#     s: Add source at the origin (just for spatial reference purposes)
-#     r: Rotate the cube
-#     n: Add gaussian noise
-#     c: Convolve with the specified beam
-# Operations can be combined, and will be performed following the order of the
-# symbols in the string (from left to right).
-# Some examples of the strings that could be included in the list outcubes are:
-#    "m": Compute the masses in every pixel and channel.
-#    "tau_c": Compute the opacities in every pixel and channel, and convolves.
-#    "I_rnc": Compute the intensities in every pixel and channel, rotate, add
-#    noise, and convolve.
-# The list can be left empty if no output cube is desired
-# Example of outcubes:
-# outcubes = ["m", "m_r", "I_c", "I_nc", "tau_rc", "NCO_rc", "Ithin_rc"]
+# - The next dictionary will produce 2 cubes, one of the intensities and another with
+# the intensities computed with the optically thin approximation. Gaussian
+# noise will be added to both of them, then they will be convolved and the
+# moments and PV will be computed:
+#   outcubes = {
+#     "intensity": ["add_noise", "convolve", "moments_and_pv"],
+#     "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
+#     }
+#
+# - The next dictionary will produce 4 cubes: one with the intensities with
+# noise, convolved and with moments and pv computed, another with only the
+# intensities (without operations applied to it), and two more cubes with the
+# masses and opacities.
+#   outcubes = {
+#     "intensity": ["add_noise", "convolve", "moments_and_pv"],
+#     "intensity": [],
+#     "mass": [],
+#     "opacity": [],
+#     }
+#
 outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
-    "intensity_opthin": ["add_noise", "convolve"],
+    "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
     "opacity": ["convolve"],
-    # "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
+    "CO_column_density": ["convolve", "moments_and_pv"],
+    "opacity": [],
     "mass": [],
     }
-
-# List of the cubes to which the position-velocity diagrams and moments (0, 1,
-# 2, and peak intensity) are going to be performed.
-# Example of momentsandpv:
-# momentsandpv = ["I_rc", "Ithin_rc"]
-# momentsandpv = ["I_nc"]
 
 # Verbose messages about the computation? [True/False]
 verbose = True
@@ -191,9 +206,6 @@ refpix = [80, 30]
 
 # Angle to rotate the image [degrees]
 parot = 0
-
-# Add source to the image at the reference pixel? [True/False]
-add_source = False
 
 # Map noise
 # Standard deviation of the noise of the map relative to the maximum pixel in the cube, before convolving the cube. The actual noise will be computed after convolving.

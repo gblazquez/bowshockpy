@@ -34,6 +34,10 @@ x extrapolable to other CO transitions?
 
 x fix ref coordinates
 
+- Fix moments when the noise is 0 or very small. I think you can do a np.iscloseto().
+
+- Make an option to add the same noise instead to relative to the maximum
+
 - make some examples with jupyter notebooks
 
 - Examples of input files. 
