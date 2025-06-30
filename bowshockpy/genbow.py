@@ -93,7 +93,7 @@ def generate_bowshock(p):
 
     bscs = []
     for i, (ps,psobs) in enumerate(zip(pss,psobss)):
-        # bsm = bs.NJ(ps)
+        # bsm = bs.NarrowJet(ps)
         # bsmobs = bs.ObsModel(ps, psobs)
         if p.bs2Dplot:
             bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
@@ -183,11 +183,11 @@ def main():
         """,
         default="None"
         )
- 
+
     args = parser.parse_args()
     filename = args.parameters_file
     inputfile_example = args.inputfile_example
-    if filename != "None": 
+    if filename != "None":
         parameters = runpy.run_path(filename)
         p = VarsInParamFile(parameters)
         generate_bowshock(p)

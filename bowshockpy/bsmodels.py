@@ -21,7 +21,7 @@ import bowshockpy.comass as comass
 import bowshockpy.moments as moments
 
 
-class NJ():
+class NarrowJet():
 
     default_kwargs = {
         "rbf_niters": 1000,
@@ -202,7 +202,7 @@ class NJ():
         return mpamb_f
 
 
-class ObsModel(NJ):
+class ObsModel(NarrowJet):
     def __init__(self, ps, psobs, **kwargs):
         super().__init__(ps, **kwargs)
         for param in psobs:
