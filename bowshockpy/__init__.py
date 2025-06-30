@@ -8,4 +8,6 @@ from .comass import Bnu_f, B0, gJ, Qpart, A_j_jm1, Ej, coldens, Tex, tau_f, Inu_
 
 from .genbow import generate_bowshock
 
+from .inputfiles import *
+
 __version__ = "0.1.0"

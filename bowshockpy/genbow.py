@@ -58,6 +58,7 @@ def generate_bowshock(p):
             "pabeam": p.pabeam,
             "CIC": p.CIC,
             "tolfactor_vt": p.tolfactor_vt,
+            "sigma_beforeconv": p.sigma_beforeconv,
             "maxcube2noise": p.maxcube2noise,
             "verbose": p.verbose,
         }
@@ -163,21 +164,39 @@ def main():
     parser = argparse.ArgumentParser(
         #description=description
     )
-    parser.add_argument("-r",
-                        "--read",
-                        dest="parameters_file",
-                        type=str,
-                        help="Reads a configuration file to generate the bowshock model",
-                        default="bowshock_params.py")
+    parser.add_argument(
+        "-r", "--read",
+        dest="parameters_file",
+        type=str,
+        help="Reads a configuration file to generate the bowshock model",
+        default="None"
+        )
+    parser.add_argument(
+        "-p", "--print_example",
+        dest="inputfile_example",
+        type=str,
+        help="""
+        Prints an example of input file. Enter the number of the corresponding
+        example, there are XX examples:\n
+
+          1- Blue shifted bowshock ...
+        """,
+        default="None"
+        )
+ 
     args = parser.parse_args()
     filename = args.parameters_file
-    # bpf_str = bpf_str if bpf_str!="" else "bowshock_params"
-    # _ROOT = os.path.abspath(os.getcwd())
-    # p = importlib.import_module(_ROOT+"/"+bpf_str.strip(".py"))
-    parameters = runpy.run_path(filename)
-    p = VarsInParamFile(parameters)
-
-    generate_bowshock(p)
+    inputfile_example = args.inputfile_example
+    if filename != "None": 
+        parameters = runpy.run_path(filename)
+        p = VarsInParamFile(parameters)
+        generate_bowshock(p)
+    if inputfile_example != "None":
+        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+        with open("example1.py", "w") as wr:
+            with open(ROOT_DIR+f"/inputfiles/example{inputfile_example}.py", "r") as re:
+                for line in re:
+                    wr.write(line)
 
 if __name__ == "__main__":
     main()

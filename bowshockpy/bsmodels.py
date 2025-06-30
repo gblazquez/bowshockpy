@@ -776,6 +776,7 @@ class CubeProcessing(BowshockCube):
         "n": "add_noise",
         "c": "convolve",
     }
+    momtol_clipping = 10**(-4)
 
     def __init__(self, bscube, mpars, **kwargs):
         self.__dict__ = bscube.__dict__
@@ -937,7 +938,8 @@ class CubeProcessing(BowshockCube):
         for chan in range(np.shape(self.cubes[ck])[0]):
             # sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
             #          * np.sqrt(self.x_FWHM*self.y_FWHM) / 2.35
-            sigma_noise = np.max(self.cubes[ck]) / self.maxcube2noise
+            sigma_noise = self.sigma_beforeconv if self.sigma_beforeconv is not None\
+                else np.max(self.cubes[ck]) * self.maxcube2noise
             noise_matrix = np.random.normal(
                 0, sigma_noise,
                 size=np.shape(self.cubes[ck][chan])
@@ -1171,6 +1173,8 @@ class CubeProcessing(BowshockCube):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
         cube_clipped = np.copy(self.cubes[ck])
+        clipping = clipping if clipping != 0 \
+            else self.momtol_clipping * np.max(self.cubes[ck])
         cube_clipped[cube_clipped<clipping] = 0
         mom1 = np.nan_to_num(
                 moments.mom1(
@@ -1212,6 +1216,8 @@ class CubeProcessing(BowshockCube):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
         cube_clipped = np.copy(self.cubes[ck])
+        clipping = clipping if clipping != 0 \
+            else self.momtol_clipping * np.max(self.cubes[ck])
         cube_clipped[cube_clipped<clipping] = 0
         mom2 = np.nan_to_num(
                 moments.mom2(
@@ -1253,6 +1259,8 @@ class CubeProcessing(BowshockCube):
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         # chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
         cube_clipped = np.copy(self.cubes[ck])
+        clipping = clipping if clipping != 0 \
+            else self.momtol_clipping * np.max(self.cubes[ck])
         cube_clipped[cube_clipped<clipping] = 0
         mom8 = np.nan_to_num(
                 moments.mom8(

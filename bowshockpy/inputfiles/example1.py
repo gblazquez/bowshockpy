@@ -9,7 +9,7 @@ the documentation
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example_250627_outcubes-v4"
+modelname = f"example1"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -23,12 +23,12 @@ bs2Dplot = True
 #    "intensity": Intensity in Jy/beam.
 #    "intensity_opthin": Intensity in Jy/beam, using the optically thin approximation.
 #    "tau": Opacities
-#  
+#
 # The values of the dictionary are lists of strings indicating the operations to be
 # performed over the cube. These are the available operations:
 #     "add_source": Add a source at the reference pixel, just for spatial
 #     reference purposes.
-#     "rotate": Rotate the whole spectral cube by an angle given by parot parameter. 
+#     "rotate": Rotate the whole spectral cube by an angle given by parot parameter.
 #     "add_noise": Add gaussian noise, defined by maxcube2noise parameter.
 #     "convolve": Convolve with a gaussian defined by the parameters bmaj, bmin,
 #     and pabeam.
@@ -36,7 +36,7 @@ bs2Dplot = True
 #     and the PV diagram.
 # The operations will be performed folowing the order of the strings in the list
 # (from left to right). The list can be left empty if no operations are desired.
-# Examples of outcubes dictionaries: 
+# Examples of outcubes dictionaries:
 #
 # - The next dictionary will produce 2 cubes, one of the intensities and another with
 # the intensities computed with the optically thin approximation. Gaussian
@@ -208,8 +208,14 @@ refpix = [80, 30]
 parot = 0
 
 # Map noise
-# Standard deviation of the noise of the map relative to the maximum pixel in the cube, before convolving the cube. The actual noise will be computed after convolving.
-maxcube2noise = 15
+# Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
+sigma_beforeconv = 0.1
+
+# Standard deviation of the noise of the map, before convolution, relative to
+# the maximum pixel in the cube. The actual noise will be computed after
+# convolving. This parameter would not be used if sigma_beforeconve is not
+# None.
+maxcube2noise = 0.07
 
 
 
