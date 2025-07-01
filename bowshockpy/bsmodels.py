@@ -66,7 +66,7 @@ class NarrowJet():
         return value * (u.solMass/u.km**3).to(u.g/u.cm**3)
 
     def gamma(self):
-        return (self.vj-self.vw) / self.v0
+        return (self.vj-self.va) / self.v0
 
     def rb(self, zb):
         return (self.L0**2*(self.zj-zb))**(1/3)
@@ -75,7 +75,7 @@ class NarrowJet():
         return self.v0*(1 + 3*self.rb(zb)**2/self.gamma()/self.L0**2)**(-1)
 
     def vz(self, zb):
-        return self.vw + (self.vj-self.vw)*(1+3*self.rb(zb)**2/self.gamma()/self.L0**2)**(-1)
+        return self.va + (self.vj-self.va)*(1+3*self.rb(zb)**2/self.gamma()/self.L0**2)**(-1)
 
     def vtot(self, zb):
         return np.sqrt(self.vr(zb)**2 + self.vz(zb)**2)
@@ -83,7 +83,7 @@ class NarrowJet():
     def alpha(self, zb):
         """
         This is not the alpha of alex apendix!. Alpha from alex apendix is alpha2.
-        Note that when vw=0 this angle is constant
+        Note that when va=0 this angle is constant
         """
         return np.arctan(self.vr(zb) / self.vz(zb))
 
@@ -194,11 +194,11 @@ class NarrowJet():
             return rhow
 
     def mp0_calc(self, rhow):
-        mp0 = rhow * np.pi * self.L0**2 * (self.vj-self.vw)**2 / 3 / self.v0
+        mp0 = rhow * np.pi * self.L0**2 * (self.vj-self.va)**2 / 3 / self.v0
         return mp0
 
     def mpamb_f_calc(self, rhow):
-        mpamb_f = np.pi * rhow * (self.vj - self.vw) * self.rbf**2
+        mpamb_f = np.pi * rhow * (self.vj - self.va) * self.rbf**2
         return mpamb_f
 
 
@@ -412,7 +412,7 @@ class Bowshock2DPlots(Bowshock2D):
             $v_\mathrm{{vsys}} = {{{self.vsys:.2f}}}$ km/s
             $v_\mathrm{{iws}} = {{{self.vj:.2f}}}$ km/s
             $v_0 = {{{self.v0:.2f}}}$ km/s
-            $v_a = {{{self.vw:.2f}}}$ km/s
+            $v_a = {{{self.va:.2f}}}$ km/s
             $L_0 = {{{self.L0_arcsec:.2f}}}$ arcsec
             $z_\mathrm{{iws}} = {{{self.zj_arcsec:.2f}}}$ arcsec
             $r_\mathrm{{b,f}} = {{{self.rbf_arcsec:.2f}}}$ arcsec
@@ -1575,7 +1575,7 @@ class CubeProcessing(BowshockCube):
         L0s = [bsc.L0_arcsec for bsc in bscs]
         zjs = [bsc.zj_arcsec for bsc in bscs]
         vjs = [bsc.vj for bsc in bscs]
-        vws = [bsc.vw for bsc in bscs]
+        vas = [bsc.va for bsc in bscs]
         v0s = [bsc.v0 for bsc in bscs]
         rbfs = [bsc.rbf_arcsec for bsc in bscs]
         tjs = [bsc.tj_yr for bsc in bscs]
@@ -1593,7 +1593,7 @@ class CubeProcessing(BowshockCube):
         $v_\mathrm{{sys}} = {self.vsys}$ km/s
         $v_\mathrm{{iws}} = {{{ut.list2str(vjs)}}}$ km/s
         $v_0 = {{{ut.list2str(v0s)}}}$ km/s
-        $v_a = {{{ut.list2str(vws)}}}$ km/s
+        $v_a = {{{ut.list2str(vas)}}}$ km/s
         $L_0 = {{{ut.list2str(L0s)}}}$ arcsec
         $z_\mathrm{{iws}} = {{{ut.list2str(zjs)}}}$ arcsec
         $r_\mathrm{{b,f}} = {{{ut.list2str(rbfs)}}}$ arcsec

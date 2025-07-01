@@ -14,10 +14,9 @@ modelname = f"example1"
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
 
-# Dictionary indicating the desired output spectral cubes and the operations
-# performed over them. The keys of the dictionary are strings indicating the
-# quantities of the desired cubes. These are the available quantities of the
-# spectral cubes:
+# Dictionary of the desired output spectral cubes and the operations performed
+# over them. The keys of the dictionary are strings indicating the quantities of
+# the desired cubes. These are the available quantities of the spectral cubes:
 #    "mass": Total mass of molecular hydrogen in solar mass
 #    "CO_column_density": Column density of the CO in cm-2.
 #    "intensity": Intensity in Jy/beam.
@@ -117,21 +116,17 @@ bowshock 1 [blue]
 # redshifted, if i<90, it will be blueshifted. [degrees]
 i_1 = 180-45
 
-# Jet radius. Set this parameter to zero, the channel maps generator
-# are not yet generalized for jet radius>0 [arcsec]
-rj_1 = 0
-
 # Characteristic length scale [arcsec]
 L0_1 = 0.7
 
 # Distance between the working surface and the source [arcsec]
 zj_1 = 3.5
 
-# Jet velocity
+# Jet velocity [km/s]
 vj_1 = 73
 
-# Ambient (or wind) velocity [km/s]
-vw_1 = 0
+# Ambient (or surrounding wind) velocity [km/s]
+va_1 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
 v0_1 = 5
@@ -223,7 +218,7 @@ maxcube2noise = 0.07
 MOMENTS AND PV PARAMETERS
 """
 
-# Do you want to save the moments and the pv in fits file? [True/False]
+# Do you want to save the moments and the pv in fits format? [True/False]
 savefits = True
 
 # Do you want to save a figure of the moments and the PV? [True/False]

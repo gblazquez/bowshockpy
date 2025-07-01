@@ -20,11 +20,10 @@ def generate_bowshock(p):
     for i in range(p.nbowshocks):
         pss += [{
          "modelname": p.modelname,
-         'rj':      (p.__getattribute__(f"rj_{i+1}") * p.distpc * u.au).to(u.km).value,
          'L0':      (p.__getattribute__(f"L0_{i+1}") * p.distpc * u.au).to(u.km).value,
          'zj':      (p.__getattribute__(f"zj_{i+1}") * p.distpc * u.au).to(u.km).value,
          'vj':       p.__getattribute__(f"vj_{i+1}"),
-         'vw':       p.__getattribute__(f"vw_{i+1}"),
+         'va':       p.__getattribute__(f"va_{i+1}"),
          'v0':       p.__getattribute__(f"v0_{i+1}"),
          'rbf_obs': (p.__getattribute__(f"rbf_obs_{i+1}") * p.distpc * u.au).to(u.km).value
              if p.__getattribute__(f"rbf_obs_{i+1}") is not None
