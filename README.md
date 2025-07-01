@@ -17,18 +17,26 @@ It has been tested with `python == 3.10`, but it could work with previous versio
 
 ## Installation
 
-Within a python evironment:
+
+You can install ``bowshockpy`` using ``pip``, either from PyPI or from the source repository. The will be automatically installed.
+
+### Installation from PyPI
+
+You can get ``bowshockpy`` from PyPI using pip:
 
 ```bash
-(pyenv)$ pip install -r requirements.txt
+(.venv) $ pip install bowshockpy 
 ```
 
-## How to use bowshockpy
 
-- One should set the right parameters in bowshock_params.py
-- Run generate_bowshock.py:
- ```bash
- (pyenv)$ python generate_bowshock.py
- ```
-- Your model will be saved in model folder
+### Installation from source repository
+
+You can install ``bowshockpy`` from the source by cloning this repository:
+
+```bash
+$ git clone https://github.com/gblazquez/bowshockpy.git 
+$ cd bowshockpy
+$ pip install .
+```
+
 
