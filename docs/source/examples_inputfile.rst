@@ -76,7 +76,7 @@ This example of input file generates one redshifted bowshock
   
   rbf_obs_1 = 1
   
-  mass_1 = 0.00031 * 1.5
+  mass_1 = 0.0002
   
   pa_1 = -20
   
@@ -256,7 +256,7 @@ This example of input file generates two blueshifted bowshock
   
   rbf_obs_2 = 1
   
-  mass_2 = 0.00035 * 1.5
+  mass_2 = 0.00025 
   
   pa_2 = -20
   

@@ -1,13 +1,15 @@
+from bowshockpy import __version__
+
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information
 
 project = 'bowshockpy'
-copyright = '2025, gblazquez'
-author = 'gblazquez'
+copyright = '2025, Guillermo Blazquez-Calero'
+author = 'Guillermo Blazquez-Calero'
 
-release = '0.1'
-version = '0.1.0'
+release = __version__
+version = __version__
 
 # -- General configuration
 

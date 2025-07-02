@@ -1,8 +1,14 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "bowshockpy"
-authors = [{name = "gblazquez", email = "gblazquez@iaa.es"}]
-dynamic = ["version", "description"]
+authors = [{name = "Guillermo Blazquez-Calero", email = "gblazquez@iaa.es"}]
+readme = "README.md"
+dynamic = ["version", "maintainers", "scripts", "dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/gblazquez/bowshockpy"
+Documentation = "bowshockpy.readthedocs.io/en/latest/"
+Repository = "https://github.com/gblazquez/bowshockpy"

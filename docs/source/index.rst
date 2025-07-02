@@ -41,7 +41,9 @@ Contents
 
 .. toctree::
    :maxdepth: 2
+   :caption: 
 
+   citation
    api
 
 

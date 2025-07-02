@@ -172,7 +172,7 @@ v0_2 = 7
 rbf_obs_2 = 1
 
 # Total mass of the bowshock [solar masses]
-mass_2 = 0.00035 * 1.5
+mass_2 = 0.00025 
 
 # Position angle [deg]
 pa_2 = -20
