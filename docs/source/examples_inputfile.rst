@@ -173,7 +173,7 @@ This example of input file generates two blueshifted bowshock
   """
   MODEL OUTPUTS
   """
-  modelname = f"example1"
+  modelname = f"example2"
   
   bs2Dplot = True
   
@@ -275,7 +275,7 @@ This example of input file generates two blueshifted bowshock
   
   vch0 = 30
   
-  vchf = 63
+  vchf = 70
   
   nxs, nys = (200, 200)
   

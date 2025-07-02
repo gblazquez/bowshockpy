@@ -10,7 +10,7 @@ For more information about the meaning of some of these parameters, see the docu
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example1"
+modelname = f"example2"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -197,7 +197,7 @@ nc = 50
 vch0 = 30
 
 # Central velocity of the last channel map [km/s]
-vchf = 63
+vchf = 70
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)
