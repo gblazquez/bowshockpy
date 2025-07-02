@@ -55,7 +55,7 @@ The easiest way to use ``bowshockpy`` is using an input file that contains all t
 (.venv) $ bowshockpy --read params.py 
 ```
 
-If you want to use an example of an input file, you can print some :doc:`examples`. If you want to print example 1:
+If you want to use an example of an input file, you can print some examples. If you want to print example 1:
 
 ```bash
 (.venv) $ bowshockpy --print_example 1
@@ -68,15 +68,21 @@ Then, you can modify the example file to your needs.
 
 This the most flexible way to use ``bowshockpy``. In order to import ``bowshockpy`` as a python package:
 
->>> import bowshockpy as bp
+```python
+import bowshockpy as bp
+```
 
 Using bowshockpy as a package allows you to either load the model parameters from an input file or to define the parameters in you script and create the bowshock model. The input file that contains all the model parameters, "params.py" can be read in the following manner. 
 
->>> bp.generate_bowshock("params.py")
+```python
+bp.generate_bowshock("params.py")
+```
 
 If you would like to print an example of the input file
 
->>> bp.print_example("1")
+```python
+bp.print_example("1")
+```
 
 See the [documentation](https://bowshockpy.readthedocs.io/en/latest/) for more details on the modular usage of bowshockpy
 
