@@ -13,8 +13,8 @@ project = 'bowshockpy'
 copyright = '2025, Guillermo Blazquez-Calero'
 author = 'Guillermo Blazquez-Calero'
 
-release = __version__
-version = __version__
+release =  get_version()
+version =  get_version()
 
 # -- General configuration
 
