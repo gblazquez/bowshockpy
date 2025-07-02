@@ -127,6 +127,7 @@ bowshocks could potentially distinguiwish between ejection mechanisms
 and create synthetic observations. 
 -->
 
+<!--
 # Description
 
 We summarize here the key principles and characteristics of the analytic, momentum-conserving bowshock model presented in Ref. @tabone2018, which we use as a basis for comparison with our data. Originally developed to describe the leading bowshock at the jet head[@masson1993; @ostriker2001], this model was recently extended by @tabone2018 to describe bowshocks formed by internal working surfaces (IWS) within a jet propagating into a slower-moving ambient medium.
@@ -144,6 +145,7 @@ cube, pv's, and moments.
 - Once we have the mass in each cell of the spectral cube through equation, we can calculate the intensity of the line of interest, assuming the excitation properties and performing the radiative transfer. In this thesis, we are interested in the CO emission from a bowshock model, assuming LTE conditions and perform for the radiative transfer (eqs from ). In order to compare it with radio observations, we convolved the model images with the synthetized beam of the observations.
 - Outputs: Cube, pv's and moments, but also important parameters such as mdot0,
   mdotamb, and the ambient density.
+-->
 
 <!--
 that results from the mass and $(x^*,r)$-momentum conservation equations:
