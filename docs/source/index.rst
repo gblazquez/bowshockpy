@@ -14,7 +14,7 @@ Contents
 
 .. toctree::
 
-   bowshockpy <self>
+   About BowshockPy <self>
 
 .. toctree::
    :maxdepth: 2
