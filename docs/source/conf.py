@@ -1,10 +1,3 @@
-
-def get_version():
-    version_file = 'version.py'
-    with open(version_file, 'r', encoding='utf-8') as f:
-        exec(compile(f.read(), version_file, 'exec'))
-    return locals()['__version__']
-
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information
@@ -13,8 +6,8 @@ project = 'bowshockpy'
 copyright = '2025, Guillermo Blazquez-Calero'
 author = 'Guillermo Blazquez-Calero'
 
-release =  get_version()
-version =  get_version()
+release =  "0.1.1"
+version =  "0.1.1"
 
 # -- General configuration
 
