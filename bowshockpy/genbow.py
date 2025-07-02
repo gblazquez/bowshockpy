@@ -192,7 +192,7 @@ def main():
         generate_bowshock(p)
     if inputfile_example != "None":
         ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-        with open("example1.py", "w") as wr:
+        with open(f"example{inputfile_example}.py", "w") as wr:
             with open(ROOT_DIR+f"/inputfiles/example{inputfile_example}.py", "r") as re:
                 for line in re:
                     wr.write(line)

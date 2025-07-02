@@ -211,7 +211,7 @@ class ObsModel(NarrowJet):
             kwarg_attr = kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
             setattr(self, kwarg, kwarg_attr)
 
-        self.rj_arcsec = self.km2arcsec(self.rj)
+        #self.rj_arcsec = self.km2arcsec(self.rj)
         self.zj_arcsec = self.km2arcsec(self.zj)
         self.L0_arcsec = self.km2arcsec(self.L0)
         self.rbf_arcsec = self.km2arcsec(self.rbf)
@@ -268,8 +268,11 @@ class Bowshock2D(ObsModel):
 
 
     def calc_solutions(self):
+        # self.zsextended = self.zb_r(
+        #     np.linspace(self.rbf, self.rj, self.nzs)
+        # )
         self.zsextended = self.zb_r(
-            np.linspace(self.rbf, self.rj, self.nzs)
+            np.linspace(self.rbf, 0, self.nzs)
         )
         self.dzs = (np.diff(self.zsextended[1:]) + np.diff(self.zsextended[:-1])) / 2
         self.zs = self.zsextended[1:-1]
@@ -677,7 +680,8 @@ class BowshockCube(ObsModel):
             print("\nComputing masses...")
 
         self.nrs = self.nzs
-        self.rs = np.linspace(self.rbf, self.rj, self.nrs)
+        # self.rs = np.linspace(self.rbf, self.rj, self.nrs)
+        self.rs = np.linspace(self.rbf, 0, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
         self.zs = self.zb_r(self.rs)
         self.dzs = self.dz_func(self.zb_r(self.rs), self.dr)

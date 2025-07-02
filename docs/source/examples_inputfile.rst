@@ -23,8 +23,8 @@ This example of input file generates one redshifted bowshock
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
       "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
       "opacity": ["convolve"],
-      "CO_column_density": ["convolve", "moments_and_pv"],
       "opacity": [],
+      "CO_column_density": ["convolve"],
       "mass": [],
       }
   
@@ -59,7 +59,7 @@ This example of input file generates one redshifted bowshock
   
   
   """
-  bowshock 1 [blue]
+  bowshock 1 [redshifted]
   """
   
   i_1 = 180-45
@@ -181,8 +181,8 @@ This example of input file generates two blueshifted bowshock
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
       "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
       "opacity": ["convolve"],
-      "CO_column_density": ["convolve", "moments_and_pv"],
       "opacity": [],
+      "CO_column_density": ["convolve"],
       "mass": [],
       }
   
@@ -203,7 +203,7 @@ This example of input file generates two blueshifted bowshock
   BOWSHOCK PARAMETERS
   """
   
-  nbowshocks = 1
+  nbowshocks = 2
   
   Tex = 100
   
@@ -217,7 +217,7 @@ This example of input file generates two blueshifted bowshock
   
   
   """
-  bowshock 1 [blue]
+  bowshock 1 [redshifted]
   """
   
   i_1 = 180-45
@@ -237,6 +237,30 @@ This example of input file generates two blueshifted bowshock
   mass_1 = 0.00031 * 1.5
   
   pa_1 = -20
+  
+  """
+  bowshock 2 [redshifted]
+  """
+  
+  i_2 = 180-45
+  
+  L0_2 = 0.8
+  
+  zj_2 = 4.5
+  
+  vj_2 = 80
+  
+  va_2 = 0
+  
+  v0_2 = 7
+  
+  rbf_obs_2 = 1
+  
+  mass_2 = 0.00035 * 1.5
+  
+  pa_2 = -20
+  
+  
   
   
   """

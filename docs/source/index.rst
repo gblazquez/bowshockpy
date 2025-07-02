@@ -20,8 +20,8 @@ Contents
    :maxdepth: 2
    :caption: Installation
 
-   dependencies
    installation 
+   dependencies
 
 .. toctree::
    :maxdepth: 2

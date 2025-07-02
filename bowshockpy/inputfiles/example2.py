@@ -1,15 +1,16 @@
 """
-Use this file to define all the the parameters needed to run bowshockpy.
+Use this input file to define all the the parameters needed to run bowshockpy:
 
-For more information about the physical meaning of some of these parameters, see
-the documentation
+(env.)$ bowshockpy --read <inputfile.py>
+
+For more information about the meaning of some of these parameters, see the documentation: https://bowshockpy.readthedocs.io/en/latest/
 """
 
 """
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example1"
+modelname = f"example2"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -61,8 +62,8 @@ outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
     "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
     "opacity": ["convolve"],
-    "CO_column_density": ["convolve", "moments_and_pv"],
     "opacity": [],
+    "CO_column_density": ["convolve"],
     "mass": [],
     }
 
@@ -88,7 +89,7 @@ BOWSHOCK PARAMETERS
 """
 
 # Number of bowshocks to model
-nbowshocks = 1
+nbowshocks = 2
 
 # Excitation temperature [K]
 Tex = 100
@@ -109,7 +110,7 @@ XCO = 8.5 * 10**(-5)
 # velocity for the third bowshock is vj_3
 
 """
-bowshock 1 [blue]
+bowshock 1 [redshifted]
 """
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
@@ -142,6 +143,42 @@ mass_1 = 0.00031 * 1.5
 # Position angle [deg]
 pa_1 = -20
 
+"""
+bowshock 2 [redshifted]
+"""
+
+# Jet inclination angle with respect to the line of sight. If i>90, the jet is
+# redshifted, if i<90, it will be blueshifted. [degrees]
+i_2 = 180-45
+
+# Characteristic length scale [arcsec]
+L0_2 = 0.8
+
+# Distance between the working surface and the source [arcsec]
+zj_2 = 4.5
+
+# Jet velocity [km/s]
+vj_2 = 80
+
+# Ambient (or surrounding wind) velocity [km/s]
+va_2 = 0
+
+# Velocity at which the material is ejected from the internal working surface [km/s]
+v0_2 = 7
+
+# Final radius of the bowshock [arcsec]. Set None if you want to end the
+# bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
+# 2018)
+rbf_obs_2 = 1
+
+# Total mass of the bowshock [solar masses]
+mass_2 = 0.00035 * 1.5
+
+# Position angle [deg]
+pa_2 = -20
+
+
+
 
 """
 SPECTRAL CUBE PARAMETERS
@@ -160,7 +197,7 @@ nc = 50
 vch0 = 30
 
 # Central velocity of the last channel map [km/s]
-vchf = 63
+vchf = 70
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)

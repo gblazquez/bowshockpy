@@ -1,8 +1,9 @@
 """
-Use this file to define all the the parameters needed to run bowshockpy.
+Use this input file to define all the the parameters needed to run bowshockpy:
 
-For more information about the physical meaning of some of these parameters, see
-the documentation
+(env.)$ bowshockpy --read <inputfile.py>
+
+For more information about the meaning of some of these parameters, see the documentation: https://bowshockpy.readthedocs.io/en/latest/
 """
 
 """
@@ -61,8 +62,8 @@ outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
     "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
     "opacity": ["convolve"],
-    "CO_column_density": ["convolve", "moments_and_pv"],
     "opacity": [],
+    "CO_column_density": ["convolve"],
     "mass": [],
     }
 
@@ -109,7 +110,7 @@ XCO = 8.5 * 10**(-5)
 # velocity for the third bowshock is vj_3
 
 """
-bowshock 1 [blue]
+bowshock 1 [redshifted]
 """
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
