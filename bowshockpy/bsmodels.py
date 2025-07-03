@@ -743,7 +743,12 @@ provide any cube.
 
                 else:
                     if outsidegrid_warning:
-                        print("WARNING: Part of the model lie outside the grid! Try to make the image bigger by increasing the number of pixels (parameters nxs and nys), or try to change the reference pixel where the physical center (the source) is found (parameter refpix)\n")
+                        print("""
+WARNING: Part of the model lie outside the grid of the spectral cube! The model will be truncated or not appearing at all in your spectral cube. This is due to at least one of three reasons:
+    - The image is too small. Try to make the image bigger by increasing the number of pixels (parameters nxs and nys), or  bigger physical size of the image (parameter xpmax)
+    - The model is far away from the image center. Try to change the reference pixel where the physical center (the source) is found (parameter refpix)
+    - The model is outside your velocity coverage. Try to change the range of velocity channels of the spectral cube to (parameters vch0 and vchf, which should be negative floats if the model is blueshifted).\n
+""")
                         outsidegrid_warning = False
             if self.verbose:
                 tf = datetime.now()

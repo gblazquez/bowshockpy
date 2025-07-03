@@ -132,16 +132,16 @@ Pixel size: {pscube['arcsecpix']:.4} arcsec/pix
                 bscs[i].makecube(fromcube=bscs[i-1].cube)
 
     print(
-"""
+f"""
 The masses has been computed!
 
 The cubes are going to be processed in order to get the desired outputs specified in {p.filename}. The outputs will be saved in fits format. The filename of each cube indicate its quantity and the operations applied to the cube ("<quantity>_<operations>.fits")
 
-The quantities are                      The operations are:
-    m: mass [SolarMass]                     s: add_source
-    I: Intensity [Jy/beam]                  r: rotate
-    Ithin: Intensity [Jy/beam]              n: add_noise
-    NCO: CO column density [cm-2]           c: convolve
+The quantities are:                      The operations are:
+    m: mass [SolarMass]                      s: add_source
+    I: Intensity [Jy/beam]                   r: rotate
+    Ithin: Intensity [Jy/beam]               n: add_noise
+    NCO: CO column density [cm-2]            c: convolve
     tau: Opacity
 """
     )

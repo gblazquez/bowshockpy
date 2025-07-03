@@ -6,7 +6,7 @@ Output files
 Fits files
 ----------
 
- The filenames of the fits are abbreviations of the quantities and the operations performed to it. These are the abbrevations for the quantities:
+The filenames of the fits are abbreviations of the quantities and the operations performed to it. These are the abbrevations for the quantities:
 
 .. list-table:: Quantities of the output fits files
    :widths: 10 10 10
@@ -27,21 +27,9 @@ Fits files
    * - CO column density
      - NCO
      - cm-2
-
-.. list-table:: Title
-   :widths: 25 25 50
-   :header-rows: 1
-
-   * - Heading row 1, column 1
-     - Heading row 1, column 2
-     - Heading row 1, column 3
-   * - Row 1, column 1
-     -
-     - Row 1, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
-
+   * - Opacities
+     - tau
+     - 
 
 
 The abbreviations for the operations are:

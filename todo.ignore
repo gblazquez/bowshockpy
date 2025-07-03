@@ -40,32 +40,59 @@ x Make an option to add the same noise instead to relative to the maximum
 
 - make some examples with jupyter notebooks
 
-- Examples of input files. 
+- Example 3 of input files. 
+
+- Add a description section in the documentation (also in the draft?)
 
 x Incorporate the docs (make it first)
 
-x I think there are more user friendly ways to indicate what quantities and operations should be performed:
-
-e.g.:
-
-outputcubes = [
-  {"intensities": ["add_source", "add_noise", "convolve"]}, 
-  {"column_densities": [] # list the operations},
-]
-
-Add above also the moments
-
-I think bowshockpy should work like this:
-
-After installing with pip:
-
-(.env)$ bowshockpy -r params.py
-
-Another way should be
-
-from bowshockpy import generate_bowshock
-
-generate_bowshock("bowshock_params.py")
+- Add contributing statement
 
 
+- Solve:
+models/example3/fits/I_nc_mom0.fits saved
+models/example3/fits/I_nc_mom1.fits saved
+Traceback (most recent call last):
+  File "/home/guille/py_envs/bowpy/bin/bowshockpy", line 8, in <module>
+    sys.exit(main())
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/genbow.py", line 220, in main
+    generate_bowshock(p)
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/genbow.py", line 151, in generate_bowshock
+    bscp.momentsandpv_and_params_all(
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/bsmodels.py", line 1492, in momentsandpv_and_params_all
+    self.momentsandpv_and_params(ck, bscs, **kwargs)
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/bsmodels.py", line 1656, in momentsandpv_and_params
+    self.plotmom1(
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/bsmodels.py", line 1319, in plotmom1
+    return ut.plotmom1(mom1, **kwargs)
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/utils.py", line 300, in plotmom1
+    vmin = vmin if vmin is not None else np.min(
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/numpy/_core/fromnumeric.py", line 3302, in min
+    return _wrapreduction(a, np.minimum, 'min', axis, None, out,
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/numpy/_core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+ValueError: zero-size array to reduction operation minimum which has no identity
+
+
+Maybe with try?
+
+
+Also:
+models/example3/fits/I_nc_mom2.fits saved
+Traceback (most recent call last):
+  File "/home/guille/py_envs/bowpy/bin/bowshockpy", line 8, in <module>
+    sys.exit(main())
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/genbow.py", line 220, in main
+    generate_bowshock(p)
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/genbow.py", line 151, in generate_bowshock
+    bscp.momentsandpv_and_params_all(
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/bsmodels.py", line 1492, in momentsandpv_and_params_all
+    self.momentsandpv_and_params(ck, bscs, **kwargs)
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/bsmodels.py", line 1692, in momentsandpv_and_params
+    pvimage = self.pvalongz(
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/bsmodels.py", line 1074, in pvalongz
+    pvimage = moments.pv(
+  File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/moments.py", line 45, in pv
+    selected_data = cube[:, pixarray, :]
+IndexError: index 239 is out of bounds for axis 1 with size 200
 
