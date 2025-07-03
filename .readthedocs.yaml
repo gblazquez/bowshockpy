@@ -12,6 +12,11 @@ build:
   tools:
     python: "3.13"
 
+
+# Optionally build your docs in additional formats such as PDF
+formats:
+   - pdf
+
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
   configuration: docs/source/conf.py
