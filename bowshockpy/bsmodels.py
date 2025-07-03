@@ -978,7 +978,7 @@ class CubeProcessing(BowshockCube):
         )
         self.sigma_noises[nck] = np.std(self.noisychans[nck])
         if self.verbose:
-            print(f"{nck} has been convolved with a gaussian kernel [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and a PA of {self.pabeam:.2f}deg\n")
+            print(f"{nck} has been convolved with a gaussian kernel with a size of [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and with a PA of {self.pabeam:.2f}deg\n")
             if "n" in nck:
                 print(f"The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.q(nck)]}\n")
 
@@ -1018,7 +1018,6 @@ class CubeProcessing(BowshockCube):
 
     def calc(self, userdic):
         dostrs = self._useroutputcube2dostr(userdic)
-        print(dostrs)
         for ds in dostrs:
             _split = ds.split("_")
             q = _split[0]
@@ -1052,6 +1051,12 @@ class CubeProcessing(BowshockCube):
             BMIN = self.bmin/3600,
             BPA = self.pabeam
         )
+        if self.coordcube == "offset":
+            self.hdrs[ck]["CTYPE0"] = "OFFSET"
+            self.hdrs[ck]["CTYPE1"] = "OFFSET"
+            self.hdrs[ck]["CRVAL0"] = 0
+            self.hdrs[ck]["CRVAL1"] = 0
+ 
         hdu = fits.PrimaryHDU(self.cubes[ck])
         hdul = fits.HDUList([hdu])
         hdu.header = self.hdrs[ck]

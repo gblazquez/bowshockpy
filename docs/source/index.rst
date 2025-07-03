@@ -40,8 +40,6 @@ Contents
    examples_module
 
 .. toctree::
-   :maxdepth: 2
-   :caption: 
 
    citation
    api

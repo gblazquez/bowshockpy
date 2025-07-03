@@ -75,13 +75,13 @@ OBSERVER PARAMETERS
 """
 
 # Source distance to the observer [pc]
-distpc = 300
+distpc = 400
 
 # Systemic velocity of the source [km/s]
-vsys = + 0
+vsys = + 5
 
-# Source coordinates [deg, deg]
-ra_source_deg, dec_source_deg = 51.41198333, 30.73479833
+# Source coordinates [deg, deg] 
+ra_source_deg, dec_source_deg = 84.095, -6.7675
 
 
 """
@@ -138,7 +138,7 @@ v0_1 = 5
 rbf_obs_1 = 1
 
 # Total mass of the bowshock [solar masses]
-mass_1 = 0.0002
+mass_1 = 0.00015
 
 # Position angle [deg]
 pa_1 = -20
@@ -158,10 +158,10 @@ nphis = 500
 nc = 50
 
 # Central velocity of the first channel map [km/s]
-vch0 = 30
+vch0 = 35
 
 # Central velocity of the last channel map [km/s]
-vchf = 63
+vchf = 65
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)
@@ -200,12 +200,15 @@ tolfactor_vt = 3
 # Dec. axis.
 refpix = [80, 30]
 
+# Spectral cubes in offset or sky coordinates? ["offset" or "sky"]
+coordcube = "sky"
+
 # Angle to rotate the image [degrees]
 parot = 0
 
 # Map noise
 # Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
-sigma_beforeconv = 0.1
+sigma_beforeconv = 0.05
 
 # Standard deviation of the noise of the map, before convolution, relative to
 # the maximum pixel in the cube. The actual noise will be computed after

@@ -16,6 +16,12 @@ from datetime import datetime
 
 from bowshockpy._header_default import hdr_str_default
 
+def print_example(nexample):
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    with open(f"example{nexample}.py", "w") as wr:
+        with open(ROOT_DIR+f"/inputfiles/example{nexample}.py", "r") as re:
+            for line in re:
+                wr.write(line)
 
 def list2str(a, precision=2):
     _list = [float(f'{i:.{precision}f}') for i in a]

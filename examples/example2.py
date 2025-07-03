@@ -75,13 +75,13 @@ OBSERVER PARAMETERS
 """
 
 # Source distance to the observer [pc]
-distpc = 300
+distpc = 400
 
 # Systemic velocity of the source [km/s]
-vsys = + 0
+vsys = + 5
 
 # Source coordinates [deg, deg]
-ra_source_deg, dec_source_deg = 51.41198333, 30.73479833
+ra_source_deg, dec_source_deg = 84.095, -6.7675
 
 
 """
@@ -115,13 +115,13 @@ bowshock 1 [redshifted]
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
 # redshifted, if i<90, it will be blueshifted. [degrees]
-i_1 = 180-45
+i_1 = 180-55
 
 # Characteristic length scale [arcsec]
 L0_1 = 0.7
 
 # Distance between the working surface and the source [arcsec]
-zj_1 = 3.5
+zj_1 = 3
 
 # Jet velocity [km/s]
 vj_1 = 73
@@ -130,7 +130,7 @@ vj_1 = 73
 va_1 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_1 = 5
+v0_1 = 4
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
@@ -138,7 +138,7 @@ v0_1 = 5
 rbf_obs_1 = 1
 
 # Total mass of the bowshock [solar masses]
-mass_1 = 0.00031 * 1.5
+mass_1 = 0.00015
 
 # Position angle [deg]
 pa_1 = -20
@@ -149,22 +149,22 @@ bowshock 2 [redshifted]
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
 # redshifted, if i<90, it will be blueshifted. [degrees]
-i_2 = 180-45
+i_2 = 180-55
 
 # Characteristic length scale [arcsec]
 L0_2 = 0.8
 
 # Distance between the working surface and the source [arcsec]
-zj_2 = 4.5
+zj_2 = 4
 
 # Jet velocity [km/s]
-vj_2 = 80
+vj_2 = 77
 
 # Ambient (or surrounding wind) velocity [km/s]
 va_2 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_2 = 7
+v0_2 = 4
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
@@ -172,7 +172,7 @@ v0_2 = 7
 rbf_obs_2 = 1
 
 # Total mass of the bowshock [solar masses]
-mass_2 = 0.00025 
+mass_2 = 0.00020 
 
 # Position angle [deg]
 pa_2 = -20
@@ -197,7 +197,7 @@ nc = 50
 vch0 = 30
 
 # Central velocity of the last channel map [km/s]
-vchf = 70
+vchf = 57
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)
@@ -236,12 +236,15 @@ tolfactor_vt = 3
 # Dec. axis.
 refpix = [80, 30]
 
+# Spectral cubes in offset or sky coordinates? ["offset" or "sky"]
+coordcube = "sky"
+
 # Angle to rotate the image [degrees]
 parot = 0
 
 # Map noise
 # Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
-sigma_beforeconv = 0.1
+sigma_beforeconv = 0.05
 
 # Standard deviation of the noise of the map, before convolution, relative to
 # the maximum pixel in the cube. The actual noise will be computed after

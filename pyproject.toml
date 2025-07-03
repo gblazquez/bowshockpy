@@ -10,5 +10,5 @@ dynamic = ["version", "maintainers", "scripts", "dependencies"]
 
 [project.urls]
 Homepage = "https://github.com/gblazquez/bowshockpy"
-Documentation = "bowshockpy.readthedocs.io/en/latest/"
+Documentation = "https://bowshockpy.readthedocs.io/en/latest/"
 Repository = "https://github.com/gblazquez/bowshockpy"

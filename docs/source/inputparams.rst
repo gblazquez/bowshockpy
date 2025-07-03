@@ -153,6 +153,9 @@ Spectral cube parameters
 *refpix* (list or None)
     Pixel coordinates (zero-based) of the source, i.e., the origin from which the distances are measured. The first index is the R.A. axis, the second is the  Dec. axis [[int, int] or None] 
 
+*coordcube* ("sky" or "offset")
+    Set to "sky" if you would like to set the cube headers in sky coordinates, or "offset" if you prefer them in offsets relative to the origin (the source).
+
 *parot* (float)
     Angle to rotate the image [degrees]
 

@@ -17,7 +17,7 @@ If you want to use an example of an input file, you can print some :doc:`example
 
 .. code-block:: console
 
-  (.venv) $ bowshockpy --print_example 1
+  (.venv) $ bowshockpy --print-example 1
 
 Then, you can modify the example file to your needs. 
 

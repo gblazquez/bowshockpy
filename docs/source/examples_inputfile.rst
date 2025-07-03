@@ -34,11 +34,11 @@ This example of input file generates one redshifted bowshock
   OBSERVER PARAMETERS
   """
   
-  distpc = 300
+  distpc = 400
   
-  vsys = + 0
+  vsys = + 5
   
-  ra_source_deg, dec_source_deg = 51.41198333, 30.73479833
+  ra_source_deg, dec_source_deg = 84.095, -6.7675
   
   
   """
@@ -76,7 +76,7 @@ This example of input file generates one redshifted bowshock
   
   rbf_obs_1 = 1
   
-  mass_1 = 0.0002
+  mass_1 = 0.00015
   
   pa_1 = -20
   
@@ -91,9 +91,9 @@ This example of input file generates one redshifted bowshock
   
   nc = 50
   
-  vch0 = 30
+  vch0 = 35
   
-  vchf = 63
+  vchf = 65
   
   nxs, nys = (200, 200)
   
@@ -113,9 +113,11 @@ This example of input file generates one redshifted bowshock
   
   refpix = [80, 30]
   
+  coordcube = "sky"
+  
   parot = 0
   
-  sigma_beforeconv = 0.1
+  sigma_beforeconv = 0.05
   
   maxcube2noise = 0.07
   
@@ -192,11 +194,11 @@ This example of input file generates two blueshifted bowshock
   OBSERVER PARAMETERS
   """
   
-  distpc = 300
+  distpc = 400
   
-  vsys = + 0
+  vsys = + 5
   
-  ra_source_deg, dec_source_deg = 51.41198333, 30.73479833
+  ra_source_deg, dec_source_deg = 84.095, -6.7675
   
   
   """
@@ -220,21 +222,21 @@ This example of input file generates two blueshifted bowshock
   bowshock 1 [redshifted]
   """
   
-  i_1 = 180-45
+  i_1 = 180-55
   
   L0_1 = 0.7
   
-  zj_1 = 3.5
+  zj_1 = 3
   
   vj_1 = 73
   
   va_1 = 0
   
-  v0_1 = 5
+  v0_1 = 4
   
   rbf_obs_1 = 1
   
-  mass_1 = 0.00031 * 1.5
+  mass_1 = 0.00015
   
   pa_1 = -20
   
@@ -242,21 +244,21 @@ This example of input file generates two blueshifted bowshock
   bowshock 2 [redshifted]
   """
   
-  i_2 = 180-45
+  i_2 = 180-55
   
   L0_2 = 0.8
   
-  zj_2 = 4.5
+  zj_2 = 4
   
-  vj_2 = 80
+  vj_2 = 77
   
   va_2 = 0
   
-  v0_2 = 7
+  v0_2 = 4
   
   rbf_obs_2 = 1
   
-  mass_2 = 0.00025 
+  mass_2 = 0.00020 
   
   pa_2 = -20
   
@@ -275,7 +277,7 @@ This example of input file generates two blueshifted bowshock
   
   vch0 = 30
   
-  vchf = 70
+  vchf = 57
   
   nxs, nys = (200, 200)
   
@@ -295,9 +297,11 @@ This example of input file generates two blueshifted bowshock
   
   refpix = [80, 30]
   
+  coordcube = "sky"
+  
   parot = 0
   
-  sigma_beforeconv = 0.1
+  sigma_beforeconv = 0.05
   
   maxcube2noise = 0.07
   

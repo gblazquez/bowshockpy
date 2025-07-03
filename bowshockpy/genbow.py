@@ -5,14 +5,24 @@ import astropy.constants as c
 
 import os
 
+import warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning)
+
 from bowshockpy import bsmodels as bs
 from bowshockpy import utils as ut
+from bowshockpy.version import __version__
 
 
 def generate_bowshock(p):
     print(
     f"""
-    Parameters read from {p.filename}
+
+------------------------
+Running BowshockPy {__version__}
+------------------------
+
+
+Parameters read from {p.filename}
     """
     )
     pss = []
@@ -87,7 +97,8 @@ def generate_bowshock(p):
             "Tex": p.Tex*u.K,
             "Tbg": p.Tbg*u.K,
             "ra_source_deg": p.ra_source_deg,
-            "dec_source_deg": p.dec_source_deg
+            "dec_source_deg": p.dec_source_deg,
+            "coordcube": p.coordcube
         }
 
     bscs = []
@@ -102,14 +113,14 @@ def generate_bowshock(p):
         if len(p.outcubes) != 0:
             print(f"""
 
-    Generating bowshock {i+1}/{p.nbowshocks}
+Generating bowshock {i+1}/{p.nbowshocks}
                   """)
             if i == 0:
                 bscs += [bs.BowshockCube(ps, psobs, pscube)]
                 bscs[i].makecube()
                 print(f"""
-     Channel width: {pscube['abschanwidth']:.3} km/s
-     Pixel size: {pscube['arcsecpix']:.4} arcsec/pix
+Channel width: {pscube['abschanwidth']:.3} km/s
+Pixel size: {pscube['arcsecpix']:.4} arcsec/pix
      """)
 
             else:
@@ -117,6 +128,20 @@ def generate_bowshock(p):
     #            import pdb; pdb.set_trace()
                 bscs[i].makecube(fromcube=bscs[i-1].cube)
 
+    print(
+"""
+The masses has been computed!
+
+The cubes are going to be processed in order to get the desired outputs specified in {p.filename}. The outputs will be saved in fits format. The filename of each cube indicate its quantity and the operations applied to the cube ("<quantity>_<operations>.fits")
+
+The quantities are                      The operations are:
+    m: mass [SolarMass]                     s: add_source
+    I: Intensity [Jy/beam]                  r: rotate
+    Ithin: Intensity [Jy/beam]              n: add_noise
+    NCO: CO column density [cm-2]           c: convolve
+    tau: Opacity
+"""
+    )
     bscp = bs.CubeProcessing(bscs[-1], mpars)
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
@@ -171,7 +196,7 @@ def main():
         default="None"
         )
     parser.add_argument(
-        "-p", "--print_example",
+        "-p", "--print-example",
         dest="inputfile_example",
         type=str,
         help="""
@@ -185,17 +210,13 @@ def main():
 
     args = parser.parse_args()
     filename = args.parameters_file
-    inputfile_example = args.inputfile_example
+    nexample = args.inputfile_example
     if filename != "None":
         parameters = runpy.run_path(filename)
         p = VarsInParamFile(parameters)
         generate_bowshock(p)
-    if inputfile_example != "None":
-        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-        with open(f"example{inputfile_example}.py", "w") as wr:
-            with open(ROOT_DIR+f"/inputfiles/example{inputfile_example}.py", "r") as re:
-                for line in re:
-                    wr.write(line)
+    if nexample != "None":
+        ut.print_example(nexample)
 
 if __name__ == "__main__":
     main()
