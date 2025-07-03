@@ -109,7 +109,10 @@ Parameters read from {p.filename}
             bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
             if i == 0:
                 ut.make_folder(f"models/{ps['modelname']}")
-            bs2Dplot.fig_model.savefig(f"models/{ps['modelname']}/2D_{i+1}.pdf")
+            bs2Dplot.fig_model.savefig(
+                f"models/{ps['modelname']}/2D_{i+1}.pdf",
+                bbox_inches="tight"
+                )
         if len(p.outcubes) != 0:
             print(f"""
 

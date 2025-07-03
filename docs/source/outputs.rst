@@ -21,17 +21,31 @@ Fits files
    * - Intensity
      - I
      - Jy/beam
-   * - Mass
-     - m
-     - solar mass
-   * - Intensity opticaly thin approx.
+   * - Intensity optically thin approx.
      - Ithin
      - Jy/beam
    * - CO column density
      - NCO
      - cm-2
 
+.. list-table:: Title
+   :widths: 25 25 50
+   :header-rows: 1
+
+   * - Heading row 1, column 1
+     - Heading row 1, column 2
+     - Heading row 1, column 3
+   * - Row 1, column 1
+     -
+     - Row 1, column 3
+   * - Row 2, column 1
+     - Row 2, column 2
+     - Row 2, column 3
+
+
+
 The abbreviations for the operations are:
+
 .. list-table:: Operations performed to the fits files
    :widths: 10 10
    :header-rows: 1
