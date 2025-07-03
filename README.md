@@ -2,7 +2,7 @@
 
 *A Python package for generating spectral channel maps of a jet-driven bowshocks model*
 
-``Bowshockpy`` is a Python package that generates synthetic spectral cubes, position-velocity diagrams, and moment images for a simple analytical jet-driven bowshock mode, using the prescription for protostellar jets presented in Ostriker et al (2001) and Tabone et al. (2018).
+``Bowshockpy`` is a Python package that generates synthetic spectral cubes, position-velocity diagrams, and moment images for a simple analytical jet-driven bowshock model, using the prescription for protostellar jets presented in [Ostriker et al. (2001)](https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract) and [Tabone et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract).
 
 <!--
  computes spectral channel maps of jet-driven bowshock model. The bowshock shell morphology and kinematics are determined from the momentum conservation in the interaction of jet material ejected sideways by an internal working surface and the ambient medium (or a surrounding disk wind moving in the jet axis direction). Well mixing between the jet and ambient material are assumed.
