@@ -5,7 +5,7 @@ There are two ways to use bowshockpy, either using a configuration file with the
 
 
 From the command-line using an input file
---------------------------
+-------------------------------------------
 
 The easiest way to use ``bowshockpy`` is using an input file that contains all the parameters of the model to be generated. You can tell ``bowshockpy`` to read a input file and generate your models either from terminal
 
@@ -13,7 +13,7 @@ The easiest way to use ``bowshockpy`` is using an input file that contains all t
 
   (.venv) $ bowshockpy --read params.py 
 
-If you want to use an example of an input file, you can print some :doc:`examples`. If you want to print example 1:
+If you want to use an example of an input file, you can print some :doc:`examples_inputfile`. If you want to print example 1:
 
 .. code-block:: console
 

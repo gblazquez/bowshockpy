@@ -1,5 +1,5 @@
 How to cite 
-==========
+============
 
 If you use ``bowshockpy`` in your research work, it can be cited 
 

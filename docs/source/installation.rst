@@ -1,5 +1,5 @@
 How to install
-============
+==============
 
 You can install ``bowshockpy`` using ``pip``, either from PyPI or from the source repository. The :doc:`dependencies` will be automatically installed.
 

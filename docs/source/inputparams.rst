@@ -31,6 +31,7 @@ These parameters define the desired outputs:
     - "add_noise": Add gaussian noise, defined by maxcube2noise parameter.
     - "convolve": Convolve with a gaussian defined by the parameters bmaj, bmin, and pabeam.
     - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity and the PV diagram.
+
     The operations will be performed folowing the order of the strings in the list (from left to right). The list can be left empty if no operations are desired.
 
 *verbose* (bolean)
@@ -73,8 +74,7 @@ These parameters common to all the bowshocks that are going to be generated:
 ``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by *nbowshocks* parameter. The following paramers should be defined for each bowshock, subtituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define vj_1, vj_2, vj_3, and vj_4, and similarly with the rest of parameters).
 
 *i_n* (foat)
-    Inclination angle with respect to the line of sight. If i>90, the bowshock is
-redshifted, if i<90, it will be blueshifted [degrees].
+    Inclination angle with respect to the line of sight. If i>90, the bowshock is redshifted, if i<90, it will be blueshifted [degrees].
  
 *L0_n* (float)
     Characteristic length scale [arcsec]
