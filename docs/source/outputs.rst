@@ -9,8 +9,8 @@ Fits files
  The filenames of the fits are abbreviations of the quantities and the operations performed to it. These are the abbrevations for the quantities:
 
 .. list-table:: Quantities of the output fits files
-    :widths: 10 10 10
-    :header-rows: 1
+   :widths: 10 10 10
+   :header-rows: 1
 
    * - Quantity
      - Abbreviation
@@ -33,8 +33,8 @@ Fits files
 
 The abbreviations for the operations are:
 .. list-table:: Operations performed to the fits files
-    :widths: 10 10
-    :header-rows: 1
+   :widths: 10 10
+   :header-rows: 1
 
    * - Operation
      - Abbreviation
@@ -51,12 +51,10 @@ The abbreviations for the operations are:
 ------------------------------
 
 .. figure:: 2D_1.png
-    :scale: 50 %
     :alt: Bowshock model. This figure will be generate for each bowshock included in the cube
 
 Plot of the moments and position velocity diagrams
 --------------------------------------------------
 
 .. figure:: momentsandpv_and_params_I_nc.png
-    :scale: 50 %
     :alt: Moments and position-velocity diagram of the synthetic cube.
