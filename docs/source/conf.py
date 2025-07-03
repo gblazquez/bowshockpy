@@ -26,6 +26,8 @@ intersphinx_mapping = {
 }
 intersphinx_disabled_domains = ['std']
 
+autodoc_mock_imports = ["bowshockpy"]
+
 templates_path = ['_templates']
 
 # -- Options for HTML output
