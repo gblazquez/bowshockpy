@@ -183,13 +183,15 @@ def main():
     import argparse
     import runpy
 
-    # description = """DESCRIPTION: From CO line emission, estimates the total
-    #                  mass through the calculation of the column density in the
-    #                  optically thin approximation and considering LTE
-    #                  conditions."""
+    description = """
+Bowshockpy is a Python package that generates synthetic spectral cubes, position-velocity diagrams, and moment images for a simple analytical jet-driven bowshock model, using the prescription for protostellar jets presented in Ostriker et al. (2001) and Tabone et al. (2018). Please, see the documentation at:
+
+https://bowshockpy.readthedocs.io/en/latest/
+
+    """
 
     parser = argparse.ArgumentParser(
-        #description=description
+        description=description
     )
     parser.add_argument(
         "-r", "--read",
@@ -203,10 +205,7 @@ def main():
         dest="inputfile_example",
         type=str,
         help="""
-        Prints an example of input file. Enter the number of the corresponding
-        example, there are XX examples:\n
-
-          1- Blue shifted bowshock ...
+        Prints an example of input file. Write the number of the corresponding example you are interested in there are 3 examples: write 1 for an example of input file of a redshifted bowshock model, write 2 for a model including two redshifted bowshocks, write 3 for a blueshifted bowshock. See https://bowshockpy.readthedocs.io/en/latest/ for a detailed documentation of the examples.
         """,
         default="None"
         )

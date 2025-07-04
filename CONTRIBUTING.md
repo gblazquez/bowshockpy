@@ -1,7 +1,3 @@
 # Contributing to `BowshockPy`
 
-Contributions, issue reports, and questions to `BowshockPy` are welcome:
-
-- Questions: You can start a [discussion](https://github.com/gblazquez/bowshockpy/discussions)
-- Issue reports: Please, open an [issue](https://github.com/gblazquez/bowshockpy/issues) a describing bug you would like to fix. 
-- Contributing: Fork a repository and create a full request. Previous contact to the contributors are recomended, either by private message, opening an [issue](https://github.com/gblazquez/bowshockpy/issues), or [discussion](https://github.com/gblazquez/bowshockpy/discussions).
+We welcome contributions and issue reports to `BowshockPy`. If you would like to contribute, fork a repository and create a full request. Previous contact to the contributors are encouraged, either by private message, opening an [issue](https://github.com/gblazquez/bowshockpy/issues) or a [discussion](https://github.com/gblazquez/bowshockpy/discussions). Reporting bugs or proposing improvements are welcome by opening an [issue](https://github.com/gblazquez/bowshockpy/issues) or a [discussion](https://github.com/gblazquez/bowshockpy/discussions), describing the details of the problem you experienced or the aspects of `BowshockPy` you think it would important to improve. Also, feel free to make any questions to the contributors either by private message or starting a [discussion](https://github.com/gblazquez/bowshockpy/discussions).

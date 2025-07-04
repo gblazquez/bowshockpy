@@ -59,7 +59,7 @@ See the [documentation](https://bowshockpy.readthedocs.io/en/latest/) for more d
 
 ## Contributing
 
-If you are interested in contributing, see [contributing](CONTRIBUTING)
+If you are interested in contributing, see [contributing](CONTRIBUTING.md)
 
 ## License
 
