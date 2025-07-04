@@ -19,8 +19,9 @@ def generate_bowshock(p):
 
 ------------------------
 Running BowshockPy {__version__}
-------------------------
 
+https://bowshockpy.readthedocs.io/en/latest/
+------------------------
 
 Parameters read from {p.filename}
     """
@@ -135,9 +136,12 @@ Pixel size: {pscube['arcsecpix']:.4} arcsec/pix
 f"""
 The masses has been computed!
 
-The cubes are going to be processed in order to get the desired outputs specified in {p.filename}. The outputs will be saved in fits format. The filename of each cube indicate its quantity and the operations applied to the cube ("<quantity>_<operations>.fits")
+The cubes are going to be processed in order to get the desired outputs
+specified in {p.filename}. The outputs will be saved in fits format. The
+filename of each cube indicate its quantity and the operations applied to the
+cube ("<quantity>_<operations>.fits"). Some abbreviations will be used:
 
-The quantities are:                      The operations are:
+Abbreviations for quantities are:        Abbreviations for the operations are:
     m: mass [SolarMass]                      s: add_source
     I: Intensity [Jy/beam]                   r: rotate
     Ithin: Intensity [Jy/beam]               n: add_noise
@@ -184,7 +188,11 @@ def main():
     import runpy
 
     description = """
-Bowshockpy is a Python package that generates synthetic spectral cubes, position-velocity diagrams, and moment images for a simple analytical jet-driven bowshock model, using the prescription for protostellar jets presented in Ostriker et al. (2001) and Tabone et al. (2018). Please, see the documentation at:
+Bowshockpy is a Python package that generates synthetic spectral cubes,
+position-velocity diagrams, and moment images for a simple analytical jet-driven
+bowshock model, using the prescription for protostellar jets presented in
+Ostriker et al. (2001) and Tabone et al. (2018). Please, see the documentation
+at:
 
 https://bowshockpy.readthedocs.io/en/latest/
 
@@ -205,8 +213,12 @@ https://bowshockpy.readthedocs.io/en/latest/
         dest="inputfile_example",
         type=str,
         help="""
-        Prints an example of input file. Write the number of the corresponding example you are interested in there are 3 examples: write 1 for an example of input file of a redshifted bowshock model, write 2 for a model including two redshifted bowshocks, write 3 for a blueshifted bowshock. See https://bowshockpy.readthedocs.io/en/latest/ for a detailed documentation of the examples.
-        """,
+        Prints an example of input file. Write the number of the corresponding
+        example that is closer to your needs. There are 3 examples: write 1 to
+        print an example of input file of a redshifted bowshock model, write 2
+        for a model including two redshifted bowshocks, write 3 for a
+        blueshifted bowshock. See https://bowshockpy.readthedocs.io/en/latest/
+        for a detailed documentation of the examples.  """,
         default="None"
         )
 

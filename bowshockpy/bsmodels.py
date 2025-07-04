@@ -413,13 +413,13 @@ class Bowshock2DPlots(Bowshock2D):
 
             $i = {{{self.i*180/np.pi:.2f}}}^\circ$
             $v_\mathrm{{vsys}} = {{{self.vsys:.2f}}}$ km/s
-            $v_\mathrm{{iws}} = {{{self.vj:.2f}}}$ km/s
+            $v_\mathrm{{j}} = {{{self.vj:.2f}}}$ km/s
             $v_0 = {{{self.v0:.2f}}}$ km/s
             $v_a = {{{self.va:.2f}}}$ km/s
             $L_0 = {{{self.L0_arcsec:.2f}}}$ arcsec
-            $z_\mathrm{{iws}} = {{{self.zj_arcsec:.2f}}}$ arcsec
+            $z_\mathrm{{j}} = {{{self.zj_arcsec:.2f}}}$ arcsec
             $r_\mathrm{{b,f}} = {{{self.rbf_arcsec:.2f}}}$ arcsec
-            $t_\mathrm{{iws}} = {{{self.tj_yr:.2f}}}$ yr
+            $t_\mathrm{{j}} = {{{self.tj_yr:.2f}}}$ yr
             $\rho_a = {{{self.rhow_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
             $\dot{{m}}_0 = {{{self.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
             $\dot{{m}}_{{a,f}} = {{{self.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
@@ -744,10 +744,17 @@ provide any cube.
                 else:
                     if outsidegrid_warning:
                         print("""
-WARNING: Part of the model lie outside the grid of the spectral cube! The model will be truncated or not appearing at all in your spectral cube. This is due to at least one of three reasons:
-    - The image is too small. Try to make the image bigger by increasing the number of pixels (parameters nxs and nys), or  bigger physical size of the image (parameter xpmax)
-    - The model is far away from the image center. Try to change the reference pixel where the physical center (the source) is found (parameter refpix)
-    - The model is outside your velocity coverage. Try to change the range of velocity channels of the spectral cube to (parameters vch0 and vchf, which should be negative floats if the model is blueshifted).\n
+WARNING: Part of the model lie outside the grid of the spectral cube! The model
+will be truncated or not appearing at all in your spectral cube. This is due to
+at least one of three reasons: 
+    - The image is too small. Try to make the image larger by increasing the
+    number of pixels (parameters nxs and nys), or increase the physical size of
+    the image (parameter xpmax).
+    - The model is far away from the image center. Try to change the reference
+    pixel where the physical center (the source) is found (parameter refpix).
+    - The model is outside your velocity coverage. Try to change the range of
+    velocity channels of the spectral cube (parameters vch0 and vchf, which
+    should be negative floats if the model is blueshifted).\n
 """)
                         outsidegrid_warning = False
             if self.verbose:
@@ -899,7 +906,7 @@ class CubeProcessing(BowshockCube):
         self.noisychans[nck] = self.noisychans[ck]
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
-            print(f"{nck} has been added a source in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n")
+            print(f"A source has been added to {nck}, in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n")
 
     def rotate(self, ck="m", forpv=False):
         nck = self.newck(ck, "r") if not forpv else self.newck(ck, "R")
@@ -983,9 +990,16 @@ class CubeProcessing(BowshockCube):
         )
         self.sigma_noises[nck] = np.std(self.noisychans[nck])
         if self.verbose:
-            print(f"{nck} has been convolved with a gaussian kernel with a size of [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and with a PA of {self.pabeam:.2f}deg\n")
+            print(
+f"""
+{nck} has been convolved with a gaussian kernel with a size of [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and with a PA of {self.pabeam:.2f}deg
+"""
+            )
             if "n" in nck:
-                print(f"The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.q(nck)]}\n")
+                print(
+f"""
+The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.q(nck)]}
+""")
 
     def _useroutputcube2dostr(self, userdic):
         dictrad = {
@@ -1605,13 +1619,13 @@ class CubeProcessing(BowshockCube):
         Tex = {self.Tex.value} K
         $i = {{{ut.list2str(ies)}}}^\circ$
         $v_\mathrm{{sys}} = {self.vsys}$ km/s
-        $v_\mathrm{{iws}} = {{{ut.list2str(vjs)}}}$ km/s
+        $v_\mathrm{{j}} = {{{ut.list2str(vjs)}}}$ km/s
         $v_0 = {{{ut.list2str(v0s)}}}$ km/s
         $v_a = {{{ut.list2str(vas)}}}$ km/s
         $L_0 = {{{ut.list2str(L0s)}}}$ arcsec
-        $z_\mathrm{{iws}} = {{{ut.list2str(zjs)}}}$ arcsec
+        $z_\mathrm{{j}} = {{{ut.list2str(zjs)}}}$ arcsec
         $r_\mathrm{{b,f}} = {{{ut.list2str(rbfs)}}}$ arcsec
-        $t_\mathrm{{iws}} = {{{ut.list2str(tjs)}}}$ yr
+        $t_\mathrm{{j}} = {{{ut.list2str(tjs)}}}$ yr
         mass $= {{{ut.list2str(masss)}}}\times 10^{{-4}}$ M$_\odot$
         $\rho_a = {{{ut.list2str(rhows)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
         $\dot{{m}}_0 = {{{ut.list2str(m0s)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$

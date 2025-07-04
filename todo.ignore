@@ -40,9 +40,9 @@ x Make an option to add the same noise instead to relative to the maximum
 
 - make some examples with jupyter notebooks
 
-- Example 3 of input files. 
+x Example 3 of input files. 
 
-- Add a description section in the documentation (also in the draft?)
+- Add a description section in the documentation (also in the draft? with the pipeline scheme?)
 
 x Incorporate the docs (make it first)
 
@@ -50,7 +50,11 @@ x Add contributing statement
 
 - Add beam convolution in figures
 
-- Change iws -> j in params figures
+x Change iws -> j in params figures
+
+- Include image of the channel maps?
+
+- Include IWS model? It has been applied several times
 
 - modular usage: 
 
@@ -64,6 +68,7 @@ gen.generate_bowshock()
 
 
 - Solve:
+
 models/example3/fits/I_nc_mom0.fits saved
 models/example3/fits/I_nc_mom1.fits saved
 Traceback (most recent call last):

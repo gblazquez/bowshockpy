@@ -60,10 +60,8 @@ bs2Dplot = True
 #
 outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
-    "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
-    "opacity": ["convolve"],
     "opacity": [],
-    "CO_column_density": ["convolve"],
+    "CO_column_density": [],
     "mass": [],
     }
 
@@ -167,7 +165,7 @@ vchf = 65
 nxs, nys = (200, 200)
 
 # Physical size of the channel maps along the x axis [arcsec]
-xpmax = 5
+xpmax = 4
 
 # Position angle used to calculate the PV [degrees]
 papv = pa_1
@@ -178,10 +176,11 @@ bmaj, bmin = (0.420, 0.287)
 # Beam position angle [degrees]
 pabeam = -17.2
 
-# Thermal+turbulent line-of-sight velocity dispersion [km/s] If
-# thermal+turbulent line-of-sight velocity dispersion is smaller than the
-# instrumental spectral resolution, vt should be the spectral resolution.
-# It can be also set to a integer times the channel width (e.g., "2xchannel")
+# Thermal+turbulent line-of-sight velocity dispersion [km/s] 
+# If thermal+turbulent line-of-sight velocity dispersion is smaller than the
+# instrumental spectral resolution, vt should be the spectral resolution.  It
+# can be also set to a integer times the channel width, in this case it would be
+# a string [e.g., "2xchannel"]
 vt = "2xchannel"
 
 # Cloud in Cell interpolation? [True/False]

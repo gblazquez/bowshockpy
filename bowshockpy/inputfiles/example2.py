@@ -61,9 +61,7 @@ bs2Dplot = True
 outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
     "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
-    "opacity": ["convolve"],
     "opacity": [],
-    "CO_column_density": ["convolve"],
     "mass": [],
     }
 
@@ -89,7 +87,7 @@ BOWSHOCK PARAMETERS
 """
 
 # Number of bowshocks to model
-nbowshocks = 2
+nbowshocks = 1
 
 # Excitation temperature [K]
 Tex = 100
@@ -110,74 +108,38 @@ XCO = 8.5 * 10**(-5)
 # velocity for the third bowshock is vj_3
 
 """
-bowshock 1 [redshifted]
+bowshock 1 [blueshifted]
 """
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
 # redshifted, if i<90, it will be blueshifted. [degrees]
-i_1 = 180-55
+i_1 = 25
 
 # Characteristic length scale [arcsec]
-L0_1 = 0.7
+L0_1 = 0.8
 
 # Distance between the working surface and the source [arcsec]
-zj_1 = 3
+zj_1 = 3.5
 
 # Jet velocity [km/s]
-vj_1 = 73
+vj_1 = 80
 
 # Ambient (or surrounding wind) velocity [km/s]
 va_1 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_1 = 4
+v0_1 = 10
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
 # 2018)
-rbf_obs_1 = 1
+rbf_obs_1 = 1.1
 
 # Total mass of the bowshock [solar masses]
 mass_1 = 0.00015
 
 # Position angle [deg]
-pa_1 = -20
-
-"""
-bowshock 2 [redshifted]
-"""
-
-# Jet inclination angle with respect to the line of sight. If i>90, the jet is
-# redshifted, if i<90, it will be blueshifted. [degrees]
-i_2 = 180-55
-
-# Characteristic length scale [arcsec]
-L0_2 = 0.8
-
-# Distance between the working surface and the source [arcsec]
-zj_2 = 4
-
-# Jet velocity [km/s]
-vj_2 = 77
-
-# Ambient (or surrounding wind) velocity [km/s]
-va_2 = 0
-
-# Velocity at which the material is ejected from the internal working surface [km/s]
-v0_2 = 4
-
-# Final radius of the bowshock [arcsec]. Set None if you want to end the
-# bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
-# 2018)
-rbf_obs_2 = 1
-
-# Total mass of the bowshock [solar masses]
-mass_2 = 0.00020 
-
-# Position angle [deg]
-pa_2 = -20
-
-
+pa_1 = +40
 
 
 """
@@ -194,16 +156,16 @@ nphis = 500
 nc = 50
 
 # Central velocity of the first channel map [km/s]
-vch0 = 30
+vch0 = -25
 
 # Central velocity of the last channel map [km/s]
-vchf = 57
+vchf = -80
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)
 
 # Physical size of the channel maps along the x axis [arcsec]
-xpmax = 5
+xpmax = 4
 
 # Position angle used to calculate the PV [degrees]
 papv = pa_1
@@ -214,10 +176,11 @@ bmaj, bmin = (0.420, 0.287)
 # Beam position angle [degrees]
 pabeam = -17.2
 
-# Thermal+turbulent line-of-sight velocity dispersion [km/s] If
-# thermal+turbulent line-of-sight velocity dispersion is smaller than the
-# instrumental spectral resolution, vt should be the spectral resolution.
-# It can be also set to a integer times the channel width (e.g., "2xchannel")
+# Thermal+turbulent line-of-sight velocity dispersion [km/s] 
+# If thermal+turbulent line-of-sight velocity dispersion is smaller than the
+# instrumental spectral resolution, vt should be the spectral resolution.  It
+# can be also set to a integer times the channel width, in this case it would be
+# a string [e.g., "2xchannel"]
 vt = "2xchannel"
 
 # Cloud in Cell interpolation? [True/False]
@@ -234,7 +197,7 @@ tolfactor_vt = 3
 # Pixel coordinates (zero-based) of the source, i.e., the origin from which the
 # distances are measured. The first index is the R.A. axis, the second is the
 # Dec. axis.
-refpix = [80, 30]
+refpix = [125, 75]
 
 # Spectral cubes in offset or sky coordinates? ["offset" or "sky"]
 coordcube = "sky"
@@ -244,7 +207,7 @@ parot = 0
 
 # Map noise
 # Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
-sigma_beforeconv = 0.05
+sigma_beforeconv = 0.03
 
 # Standard deviation of the noise of the map, before convolution, relative to
 # the maximum pixel in the cube. The actual noise will be computed after

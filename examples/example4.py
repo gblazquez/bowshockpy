@@ -10,7 +10,7 @@ For more information about the meaning of some of these parameters, see the docu
 MODEL OUTPUTS
 """
 # Name of the model folder
-modelname = f"example2"
+modelname = f"example4"
 
 # Plot 2D bowshock model [True/False]
 bs2Dplot = True
@@ -60,7 +60,6 @@ bs2Dplot = True
 #
 outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
-    "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
     "opacity": [],
     "mass": [],
     }
@@ -87,7 +86,7 @@ BOWSHOCK PARAMETERS
 """
 
 # Number of bowshocks to model
-nbowshocks = 1
+nbowshocks = 2
 
 # Excitation temperature [K]
 Tex = 100
@@ -108,38 +107,74 @@ XCO = 8.5 * 10**(-5)
 # velocity for the third bowshock is vj_3
 
 """
-bowshock 1 [blueshifted]
+bowshock 1 [redshifted]
 """
 
 # Jet inclination angle with respect to the line of sight. If i>90, the jet is
 # redshifted, if i<90, it will be blueshifted. [degrees]
-i_1 = 25
+i_1 = 180-55
 
 # Characteristic length scale [arcsec]
-L0_1 = 0.8
+L0_1 = 0.7
 
 # Distance between the working surface and the source [arcsec]
-zj_1 = 3.5
+zj_1 = 3
 
 # Jet velocity [km/s]
-vj_1 = 80
+vj_1 = 73
 
 # Ambient (or surrounding wind) velocity [km/s]
 va_1 = 0
 
 # Velocity at which the material is ejected from the internal working surface [km/s]
-v0_1 = 10
+v0_1 = 4
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
 # 2018)
-rbf_obs_1 = 1.1
+rbf_obs_1 = 1
 
 # Total mass of the bowshock [solar masses]
 mass_1 = 0.00015
 
 # Position angle [deg]
-pa_1 = +40
+pa_1 = -20
+
+"""
+bowshock 2 [redshifted]
+"""
+
+# Jet inclination angle with respect to the line of sight. If i>90, the jet is
+# redshifted, if i<90, it will be blueshifted. [degrees]
+i_2 = 180-55
+
+# Characteristic length scale [arcsec]
+L0_2 = 0.8
+
+# Distance between the working surface and the source [arcsec]
+zj_2 = 4
+
+# Jet velocity [km/s]
+vj_2 = 77
+
+# Ambient (or surrounding wind) velocity [km/s]
+va_2 = 0
+
+# Velocity at which the material is ejected from the internal working surface [km/s]
+v0_2 = 4
+
+# Final radius of the bowshock [arcsec]. Set None if you want to end the
+# bowshock model at the theoretical final radius (see eq. 11 from Tabone et al.
+# 2018)
+rbf_obs_2 = 1
+
+# Total mass of the bowshock [solar masses]
+mass_2 = 0.00020 
+
+# Position angle [deg]
+pa_2 = -20
+
+
 
 
 """
@@ -156,16 +191,16 @@ nphis = 500
 nc = 50
 
 # Central velocity of the first channel map [km/s]
-vch0 = -25
+vch0 = 30
 
 # Central velocity of the last channel map [km/s]
-vchf = -80
+vchf = 57
 
 # Number of pixels in the x and y axes
 nxs, nys = (200, 200)
 
 # Physical size of the channel maps along the x axis [arcsec]
-xpmax = 4
+xpmax = 5
 
 # Position angle used to calculate the PV [degrees]
 papv = pa_1
@@ -197,7 +232,7 @@ tolfactor_vt = 3
 # Pixel coordinates (zero-based) of the source, i.e., the origin from which the
 # distances are measured. The first index is the R.A. axis, the second is the
 # Dec. axis.
-refpix = [125, 75]
+refpix = [80, 30]
 
 # Spectral cubes in offset or sky coordinates? ["offset" or "sky"]
 coordcube = "sky"
@@ -207,7 +242,7 @@ parot = 0
 
 # Map noise
 # Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
-sigma_beforeconv = 0.03
+sigma_beforeconv = 0.05
 
 # Standard deviation of the noise of the map, before convolution, relative to
 # the maximum pixel in the cube. The actual noise will be computed after

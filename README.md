@@ -1,4 +1,4 @@
-# bowshockpy
+# BowshockPy
 
 *A Python package for generating spectral channel maps of a jet-driven bowshocks model*
 
