@@ -13,7 +13,6 @@ examples2docs.py
 models/*
 
 *ignore.ipynb
-*.ipynb
 
 *workspace
 *old
