@@ -8,7 +8,6 @@
 # Added by you:
 rebuild_wheels.sh
 examples2docs.py
-docs/build/
 
 # ignore files in folder
 models/*

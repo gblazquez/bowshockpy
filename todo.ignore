@@ -46,7 +46,21 @@ x Make an option to add the same noise instead to relative to the maximum
 
 x Incorporate the docs (make it first)
 
-- Add contributing statement
+x Add contributing statement
+
+- Add beam convolution in figures
+
+- Change iws -> j in params figures
+
+- modular usage: 
+
+import bowshockpy as bp
+
+gen = bp.bowshock_generator()
+gen.params
+...
+gen.params["vj_1"] = 5
+gen.generate_bowshock()
 
 
 - Solve:
