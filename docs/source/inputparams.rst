@@ -1,7 +1,7 @@
 Input parameters
 ================
 
-In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (this is the easiest way, link to an example of input file), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (link to example)
+In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<examples_module>`).
 
 
 Model output parameters
@@ -33,6 +33,20 @@ These parameters define the desired outputs:
     - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity and the PV diagram.
 
     The operations will be performed folowing the order of the strings in the list (from left to right). The list can be left empty if no operations are desired.
+    
+    For example, the following dictionary for the outcubes parameter,
+
+    .. code-block:: python
+     
+        outcubes = {
+            "intensity": ["add_noise", "convolve", "moments_and_pv"],
+            "opacity": [],
+            "CO_column_density": ["convolve"],
+            "mass": [],
+        }
+
+    will save 4 spectral cubes in fits format. The first one are the intensities with gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the CO_column_density, which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third NCO_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
+
 
 *verbose* (bolean)
     Set true to verbose messages about the computation

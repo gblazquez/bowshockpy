@@ -1,7 +1,7 @@
 How to use
 ==========
 
-There are two ways to use bowshockpy, either using a configuration file with the model parameters to be generated or importing bowshockpy as a package and run the model manually.
+There are two ways to use ``bowshockpy``, either using a configuration file with the model parameters to be generated or importing ``bowshockpy`` as a package and run the model manually.
 
 
 From the command-line using an input file
@@ -13,13 +13,7 @@ The easiest way to use ``bowshockpy`` is using an input file that contains all t
 
   (.venv) $ bowshockpy --read params.py 
 
-If you want to use an example of an input file, you can print some :doc:`examples_inputfile`. If you want to print example 1:
-
-.. code-block:: console
-
-  (.venv) $ bowshockpy --print-example 1
-
-Then, you can modify the example file to your needs. 
+You can download some :doc:`examples<examples_inputfile>` of input files. See :doc:`parameters<inputparams>` for a description of the parameters.
 
 
 Importing bowshockpy module

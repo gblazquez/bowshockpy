@@ -9,7 +9,7 @@ Fits files
 The filenames of the fits are abbreviations of the quantities and the operations performed to it. These are the abbrevations for the quantities:
 
 .. list-table:: Quantities of the output fits files
-   :widths: 10 10 10
+   :widths: 10 6 5
    :header-rows: 1
 
    * - Quantity
@@ -35,7 +35,7 @@ The filenames of the fits are abbreviations of the quantities and the operations
 The abbreviations for the operations are:
 
 .. list-table:: Operations performed to the fits files
-   :widths: 10 10
+   :widths: 10 4
    :header-rows: 1
 
    * - Operation

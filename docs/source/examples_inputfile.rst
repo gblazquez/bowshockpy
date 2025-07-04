@@ -2,7 +2,15 @@
 Examples of input file
 =======================
 
-Here, some examples of input files are presented. You can copy and paste them to your local machine, or download them from the `examples <https://github.com/gblazquez/bowshockpy/tree/main/examples>` folder available in the GitHub repository.
+Here, some examples of input files are presented. See :doc:`usage<usage>` section for an explanation of how to use this input file, and :doc:`input parameters<inputparams>` secton for a description of the parameters.
+
+You can copy and paste these examples to your local machine, download them from the `examples <https://github.com/gblazquez/bowshockpy/tree/main/examples>`_ folder available in the GitHub repository, or print them directy to your working directory
+
+.. code-block:: console
+
+  (.venv) $ bowshockpy --print-example 1
+
+This will print example 1 to your working directory. Then, you can modify the example file according to your needs. 
 
 
 Example 1: A redshifted bowshock
