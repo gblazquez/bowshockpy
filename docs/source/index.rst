@@ -13,6 +13,12 @@ Contents
 --------
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   notebooks/example
+
+.. toctree::
 
    About BowshockPy <self>
 
