@@ -6,8 +6,8 @@ project = 'bowshockpy'
 copyright = '2025, Guillermo Blazquez-Calero'
 author = 'Guillermo Blazquez-Calero'
 
-release =  "0.1.1"
-version =  "0.1.1"
+release =  "0.2.0"
+version =  "0.2.0"
 
 # -- General configuration
 
@@ -26,7 +26,7 @@ intersphinx_mapping = {
 }
 intersphinx_disabled_domains = ['std']
 
-autodoc_mock_imports = ["bowshockpy"]
+# autodoc_mock_imports = ["bowshockpy"]
 
 templates_path = ['_templates']
 

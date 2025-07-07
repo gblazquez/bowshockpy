@@ -1,7 +1,6 @@
 import numpy as np
 
 import astropy.units as u
-import astropy.constants as c
 
 import os
 
@@ -17,11 +16,11 @@ def generate_bowshock(p):
     print(
     f"""
 
-------------------------
-Running BowshockPy {__version__}
+--------------------------------------------
+BowshockPy v{__version__}
 
 https://bowshockpy.readthedocs.io/en/latest/
-------------------------
+--------------------------------------------
 
 Parameters read from {p.filename}
     """
@@ -72,24 +71,6 @@ Parameters read from {p.filename}
             "maxcube2noise": p.maxcube2noise,
             "verbose": p.verbose,
         }
-        pscube["chanwidth"] = (pscube["vchf"] - pscube["vch0"]) / (pscube["nc"]-1)
-        pscube["abschanwidth"] = np.abs(pscube["chanwidth"])
-        pscube["vt"] = pscube["vt"] if type(pscube["vt"])!=str \
-              else float(pscube["vt"].split("x")[0])*pscube["chanwidth"]
-        pscube["arcsecpix"] = pscube["xpmax"] / float(pscube["nxs"])
-        pscube["x_FWHM"] = pscube["bmin"] / pscube["arcsecpix"]
-        pscube["y_FWHM"] = pscube["bmaj"] / pscube["arcsecpix"]
-        pscube["beamarea"] = np.pi * pscube["y_FWHM"] * pscube["x_FWHM"] / (4 * np.log(2))
-        if pscube["refpix"] == None:
-            if pscube["nxs"]%2 == 0:
-                xref = int(pscube["nxs"] / 2)
-            else:
-                xref = int((pscube["nxs"]-1) / 2)
-            if pscube["nys"]%2 == 0:
-                yref = int(pscube["nys"] / 2)
-            else:
-                yref = int((pscube["nys"]-1) / 2)
-            pscube["refpix"] = [xref, yref]
         mpars = {
             "muH2": p.muH2,
             "J": p.J,
@@ -104,15 +85,28 @@ Parameters read from {p.filename}
 
     bscs = []
     for i, (ps,psobs) in enumerate(zip(pss,psobss)):
-        # bsm = bs.NarrowJet(ps)
-        # bsmobs = bs.ObsModel(ps, psobs)
+        bsm = bs.NarrowJet(
+            L0=ps["L0"],
+            zj=ps["zj"],
+            vj=ps["vj"],
+            va=ps["va"],
+            v0=ps["v0"],
+            mass=ps["mass"],
+            rbf_obs=ps["rbf_obs"]
+            )
+        bsmobs = bs.ObsModel(
+            model=bsm,
+            i=psobs["i"],
+            vsys=psobs["vsys"],
+            distpc=psobs["distpc"],
+            nzs=psobs["nzs"],
+            )
         if p.bs2Dplot:
-            bs2Dplot = bs.Bowshock2DPlots(ps, psobs)
+            bs2Dplot = bs.Bowshock2DPlots(bsmobs, ps['modelname'])
             if i == 0:
                 ut.make_folder(f"models/{ps['modelname']}")
-            bs2Dplot.fig_model.savefig(
+            bs2Dplot.savefig(
                 f"models/{ps['modelname']}/2D_{i+1}.pdf",
-                bbox_inches="tight"
                 )
         if len(p.outcubes) != 0:
             print(f"""
@@ -120,16 +114,42 @@ Parameters read from {p.filename}
 Generating bowshock {i+1}/{p.nbowshocks}
                   """)
             if i == 0:
-                bscs += [bs.BowshockCube(ps, psobs, pscube)]
+                bscs += [
+                    bs.BowshockCube(
+                        obsmodel=bsmobs,
+                        nphis=pscube["nphis"],
+                        vch0=pscube["vch0"],
+                        vchf=pscube["vchf"],
+                        xpmax=pscube["xpmax"],
+                        nc=pscube["nc"],
+                        nxs=pscube["nxs"],
+                        nys=pscube["nys"],
+                        refpix=pscube["refpix"],
+                        CIC=pscube["CIC"],
+                        vt=pscube["vt"],
+                        tolfactor_vt=pscube["tolfactor_vt"],)
+                    ]
                 bscs[i].makecube()
                 print(f"""
-Channel width: {pscube['abschanwidth']:.3} km/s
-Pixel size: {pscube['arcsecpix']:.4} arcsec/pix
+Channel width: {bscs[i].abschanwidth:.3} km/s
+Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
      """)
-
             else:
-                bscs += [bs.BowshockCube(ps, psobs, pscube)]
-    #            import pdb; pdb.set_trace()
+                bscs += [
+                    bs.BowshockCube(
+                        obsmode=bsmobs,
+                        nphis=pscube["nphis"],
+                        nc=pscube["nc"],
+                        vch0=pscube["vch0"],
+                        vchf=pscube["vchf"],
+                        xpmax=pscube["xpmax"],
+                        nxs=pscube["nxs"],
+                        nys=pscube["nys"],
+                        refpix=pscube["refpix"],
+                        CIC=pscube["CIC"],
+                        vt=pscube["vt"],
+                        tolfactor_vt=pscube["tolfactor_vt"],)
+                    ]
                 bscs[i].makecube(fromcube=bscs[i-1].cube)
 
     print(
@@ -149,7 +169,24 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
     tau: Opacity
 """
     )
-    bscp = bs.CubeProcessing(bscs[-1], mpars)
+    bscp = bs.CubeProcessing(
+        bscs[-1],
+        J=mpars["J"],
+        XCO=mpars["XCO"],
+        meanmass=mpars["meanmass"],
+        Tex=mpars["Tex"],
+        Tbg=mpars["Tbg"],
+        coordcube=mpars["coordcube"],
+        ra_source_deg=mpars["ra_source_deg"],
+        dec_source_deg=mpars["dec_source_deg"],
+        bmin=pscube["bmin"],
+        bmaj=pscube["bmaj"],
+        pabeam=pscube["pabeam"],
+        papv=pscube["papv"],
+        parot=pscube["parot"],
+        sigma_beforeconv=pscube["sigma_beforeconv"],
+        maxcube2noise=pscube["maxcube2noise"],
+            )
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
     bscp.momentsandpv_and_params_all(

@@ -1,7 +1,7 @@
 Input parameters
 ================
 
-In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<examples_module>`).
+In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<example_module>`).
 
 
 Model output parameters
@@ -49,7 +49,7 @@ These parameters define the desired outputs:
 
 
 *verbose* (bolean)
-    Set true to verbose messages about the computation
+    Set True to verbose messages about the computation
 
 
 Observer parameters
@@ -81,7 +81,7 @@ These parameters common to all the bowshocks that are going to be generated:
 *muH2* (float)
     Mean molecular mass per H molecule
 *J* (str)
-    CO rovibrational transition (e.g. "3-2")
+    CO rotational transition (e.g. "3-2")
 *XCO* (float)
     CO abundance
 
@@ -141,7 +141,6 @@ Spectral cube parameters
 
 *xpmax* (float)
     Physical size of the channel maps along the x axis [arcsec]
-
 
 *papv* (float)
     Position angle used to calculate the PV [degrees]

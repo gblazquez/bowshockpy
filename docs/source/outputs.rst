@@ -53,10 +53,12 @@ The abbreviations for the operations are:
 ------------------------------
 
 .. figure:: 2D_1.png
-    :alt: Bowshock model. This figure will be generate for each bowshock included in the cube
+
+    Bowshock model. This figure will be generate for each bowshock included in the cube
 
 Plot of the moments and position velocity diagrams
 --------------------------------------------------
 
 .. figure:: momentsandpv_and_params_I_nc.png
-    :alt: Moments and position-velocity diagram of the synthetic cube.
+
+    Moments and position-velocity diagram of the synthetic cube.

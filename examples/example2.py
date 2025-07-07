@@ -83,7 +83,7 @@ ra_source_deg, dec_source_deg = 84.095, -6.7675
 
 
 """
-BOWSHOCK PARAMETERS
+BOWSHOCKS PARAMETERS
 """
 
 # Number of bowshocks to model
@@ -98,7 +98,7 @@ Tbg = 2.7
 # Mean molecular mass per H molecule
 muH2 = 2.8
 
-# CO rovibrational line
+# CO rotational transition
 J = "3-2"
 
 # CO abundance

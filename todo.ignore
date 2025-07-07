@@ -26,7 +26,7 @@ x Make an __init__.py that only imports the usefull objects
 
 - think of tests:
  - Test on coordinates?
- - test on mass?
+ - test on mass?: try to test only with NarrowJet!
 
 x allow install from pipy
 
@@ -56,7 +56,17 @@ x Change iws -> j in params figures
 
 - Include IWS model? It has been applied several times
 
-- modular usage: 
+- Add warning (or error) if the number of points do not fully fill voxels space
+
+- change comass name: radtrans
+
+- make the standalone comass a nother module
+
+- bsmodels should only contain NarrowJet (and probably IWS). Make other modules for the rest. 
+
+- modular usage: Remember for the modular usage that you have available some of the important functons directly from bowshockpy as you have defined them n the __init__.py
+
+- test numerical vs anaytical
 
 import bowshockpy as bp
 

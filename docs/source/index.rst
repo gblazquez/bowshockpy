@@ -13,10 +13,6 @@ Contents
 --------
 
 .. toctree::
-
-   About BowshockPy <self>
-
-.. toctree::
    :maxdepth: 2
    :caption: Installation
 
@@ -30,7 +26,6 @@ Contents
    usage
    inputparams 
    outputs
-   description
    comass
 
 .. toctree::
@@ -38,12 +33,20 @@ Contents
    :caption: Examples
 
    examples_inputfile
-   examples_module
+   example_module
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Description
+
+   modelandworkflow
+   api
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Citation
 
    citation
-   api
 
 
 

@@ -48,7 +48,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   
   """
-  BOWSHOCK PARAMETERS
+  BOWSHOCKS PARAMETERS
   """
   
   nbowshocks = 1
@@ -206,7 +206,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   
   """
-  BOWSHOCK PARAMETERS
+  BOWSHOCKS PARAMETERS
   """
   
   nbowshocks = 1
@@ -364,7 +364,7 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   
   """
-  BOWSHOCK PARAMETERS
+  BOWSHOCKS PARAMETERS
   """
   
   nbowshocks = 1
@@ -521,7 +521,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   
   """
-  BOWSHOCK PARAMETERS
+  
   """
   
   nbowshocks = 2
