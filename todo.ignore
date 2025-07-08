@@ -26,8 +26,9 @@ x Make an __init__.py that only imports the usefull objects
 
 - think of tests:
  - Test on coordinates?
- - test on mass?: try to test only with NarrowJet!
+ - test on mass?: try to test only with NarrowJet! or obsmod??
 
+ 
 x allow install from pipy
 
 x extrapolable to other CO transitions?
@@ -73,6 +74,8 @@ x test numerical vs anaytical
 - make an statement in the paper:
   - What kind of user the software is targeted to?
   - Softwares that compares to bowshockpy?
+
+- Unify meanmass con muH2. Keep muH2
 
 import bowshockpy as bp
 

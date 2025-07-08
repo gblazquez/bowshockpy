@@ -195,17 +195,37 @@ Moments and PV parameters
     Clipping for moment 2 as a function of the standard deviation of noise in the image (e.g., "4xsigma").
 
 *mom0values* (dict)
-    Set the maximum, central, and minimum value to show in the plot of the moments and PV-diagram along the jet axis. Example: mom0values = {"vmax": None, "vcenter": None, "vmin": None,}
+    Dictionary with the maximum, central, and minimum value to show in the plot
+    of the moment 0. If the dictionary value is None for vmax, vcenter, or vmin,
+    then the maximum, central, or the minimum value of the moment image will be
+    considered, respectively. Example: mom0values = {"vmax": None, "vcenter": None,
+    "vmin": 0,}. 
 
 *mom1values* (dict)
-    Set the maximum, central, and minimum value to show in the plot of the moments and PV-diagram along the jet axis. Example: mom1values = {"vmax": None, "vcenter": None, "vmin": None,}
-
+    Dictionary with the maximum, central, and minimum value to show in the plot
+    of the moment 1. If the dictionary value is None for vmax, vcenter, or vmin,
+    then the maximum, central, or the minimum value of the moment image will be
+    considered, respectively. Example: mom1values = {"vmax": 60, "vcenter": 20,
+    "vmin": 0,}. 
+    
 *mom2values* (dict)
-    Set the maximum, central, and minimum value to show in the plot of the moments and PV-diagram along the jet axis. Example: mom2values = {"vmax": None, "vcenter": None, "vmin": None,}
+    Dictionary with the maximum, central, and minimum value to show in the plot
+    of the moment 2. If the dictionary value is None for vmax, vcenter, or vmin,
+    then the maximum, central, or the minimum value of the moment image will be
+    considered, respectively. Example: mom2values = {"vmax": None, "vcenter": None,
+    "vmin": None,}. 
 
 *mom8values* (dict)
-    Set the maximum, central, and minimum value to show in the plot of the moments and PV-diagram along the jet axis. Example: mom8values = {"vmax": None, "vcenter": None, "vmin": None,}
+    Dictionary with the maximum, central, and minimum value to show in the plot
+    of the maximum value along the velocity axis. If the dictionary value is
+    None for vmax, vcenter, or vmin, then the maximum, central, or the minimum
+    value of the moment image will be considered, respectively. Example:
+    mom2values = {"vmax": None, "vcenter": None, "vmin": None,}. 
 
 *pvvalues* (dict) 
-    Set the maximum, central, and minimum value to show in the plot of the moments and PV-diagram along the jet axis. Example: pvvalues = {"vmax": None, "vcenter": None, "vmin": None,}
-
+    Set the maximum, central, and minimum value to show in the plot of the
+    moments and PV-diagram along the jet axis. If the dictionary value is None
+    for vmax, vcenter, or vmin, then the maximum, central, or the minimum value
+    of the position velocity diagram will be considered, respectively. Example:
+    pvvalues = {"vmax": None, "vcenter": None, "vmin": None,}
+    

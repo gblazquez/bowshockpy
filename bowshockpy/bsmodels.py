@@ -43,6 +43,31 @@ class NarrowJet():
     rbf_obs: optional, float
         Final radius of the bowshock [km]. If None, the theoretical final radius
         is calculated.
+    
+    Attributes:
+    -----------
+    zbf : float
+        z coordinate at rbf
+    tj : float
+        Dynamical time defined as zj / vj [s].
+    tj_yr : float
+        Dynamical time in yrs.
+    rhoa : float
+        Ambient density [Msun km^3]
+    rhoa_gcm3 : float
+        Ambient density [g cm-3]
+    mp0 : float
+        Mass rate at which the jet material is ejected sideways from the
+        internal working surface [Msun / s]
+    mp0_solmassyr : float
+        Mass rate at which the jet material is ejected sideways from the
+        internal working surface [Msun / yr]
+    mpamb_f : float
+        Mass rate of ambient material being incorporated into the bowshock
+        shell [Msun / s]
+    mpamb_f_solmassyr : float
+        Mass rate of ambient material being incorporated into the
+        bowshock shell [Msun / yr]
         
     References:
     -----------
@@ -51,7 +76,7 @@ class NarrowJet():
     perspective." Astron. Astrophys. 614, A119 (2018).
      
     [2] Ostriker, E. C., Lee, C.-F., Stone, J. M. & Mundy, L. G. A Ballistic Bow
-    Shock Model for Jet-driven Protostellar Outflow Shells. Astrophys. J.  557,
+    Shock Model for Jet-driven Protostellar Outflow Shells. Astrophys. J. 557,
     443–450 (2001).
      
     [3] Blazquez-Calero, G., et al. (in prep)
@@ -73,7 +98,8 @@ class NarrowJet():
         self.mass = mass
         self.rbf_obs = rbf_obs
         for kwarg in self.default_kwargs:
-            kwarg_attr = kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
+            kwarg_attr = kwargs[kwarg] if kwarg in kwargs \
+            else self.default_kwargs[kwarg]
             setattr(self, kwarg, kwarg_attr)
         if self.rbf_obs is None:
             self.rbf = self.rbf_calc()
@@ -111,6 +137,9 @@ class NarrowJet():
         return value * (u.solMass/u.km**3).to(u.g/u.cm**3)
 
     def gamma(self):
+        """
+        Computes the gamma parameter, defined as gamma = (vj - va) / v0
+        """
         return (self.vj-self.va) / self.v0
 
     def rb(self, zb):
@@ -447,6 +476,17 @@ class ObsModel(NarrowJet):
         Distance between the source and the observer [pc]
     nzs : int
         Number of points used to compute the model solutions
+
+    Attributes:
+    -----------
+    zj_arcsec : float
+        Distance from the source to the internal working surface [arcsec]
+    L0_arcsec : float
+        Bowshock characteristic scale [arcsec]
+    rbf_arcsec : float
+        Final radius of the bowshock [arcsec] 
+    zbf_arcsec : float
+        z-coordinate at the final radius [arcsec]
     """
     def __init__(self, model, i, vsys, distpc, nzs, **kwargs):
         self.__dict__ = model.__dict__
@@ -529,17 +569,86 @@ class Bowshock2D(ObsModel):
     ----------
     obsmodel : class instance
         Instance of ObsModel
+
+    Attributes:
+    -----------
+    nzs : int
+        Number of points along the bowshock axis in which the model solutions
+        will be computed.
+    nvisos : int
+        Number of velocities to sample the model.
+    zs : numpy.ndarray
+        Array with the z-coordinates of the model [km].
+    dzs : numpy.ndarray
+        Array with the increments of z [km].
+    Rs : numpy.ndarray
+        Array with the radii of the model at each z-coordinate [km].
+    vs : numpy.ndarray
+        Array of the total velocity for each point of the model [km/s].
+    vrs : numpy.ndarray
+        Array of the radial component of the velocity at each point of the model
+        [km/s].
+    vzs : numpy.ndarray
+        Array of the z-coordinate component of the velocity at each point of the
+        model [km/s].
+    thetas : numpy.ndarray
+        Array of the polar angle of the position vector at each point of the
+        model [radians].
+    xps_phi90 : numpy.ndarray
+        Array of the projected distance from the source of points of the model
+        with azimuthal angle equal to 90deg [km].
+    xps_phi0 : numpy.ndarray
+        Array of the projected distance from the source of points of the model
+        with azimuthal angle equal to 0deg [km].
+    xps_phi180 : numpy.ndarray
+        Array of the projected distance from the source of points of the model
+        with azimuthal angle equal to 180deg [km].
+    vzps_phi0 : numpy.ndarray
+        Array of the projected velocities along the line-of-sight of points of
+        the model with azimuthal angle equal to 0deg [km/s].
+    vzps_phi90 : numpy.ndarray
+        Array of the projected velocities along the line-of-sight of points of
+        the model with azimuthal angle equal to 90deg [km/s].
+    vzps_phi180 : numpy.ndarray
+        Array of the projected velocities along the line-of-sight of points of
+        the model with azimuthal angle equal to 180deg [km/s].
+    maxviso : float
+        Maximum velocity in which the model has been sampled [km/s].
+    minviso : float
+        Minimum velocity in which the model has been sampled [km/s].
+    visos : numpy.ndarray
+        Array of the velocities in which the model has been sampled [km/s].
+    Rs_arcsec : numpy.ndarray
+        Array with the radii of the model at each z-coordinate [arcsec].
+    zs_arcsec : numpy.ndarray
+        Array with the z-coordinates of the model [km].
+    xps_phi0_arcsec : numpy.ndarray
+        Array of the projected distance from the source of points of the model
+        with azimuthal angle equal to 0deg [km].
+    xps_phi90_arcsec : numpy.ndarray
+        Array of the projected distance from the source of points of the model
+        with azimuthal angle equal to 90deg [km].
+    xps_phi180_arcsec : numpy.ndarray
+        Array of the projected distance from the source of points of the model
+        with azimuthal angle equal to 180deg [km].
+    surfdenss : numpy.ndarray 
+        Array of the surfance density of the shell at each z-coordinate [Msun
+        km-2]
+    surfdenss_gcm2 : numpy.ndarray
+        Array of the surfance density of the shell at each z-coordinate [g cm-2]
     """
     nzs_init = 200
     nvisos_init = 200
     def __init__(self, obsmodel, **kwargs):
         self.__dict__ = obsmodel.__dict__
         for kwarg in self.default_kwargs:
-            kwarg_attr = kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
+            kwarg_attr = kwargs[kwarg] if kwarg in kwargs \
+                else self.default_kwargs[kwarg]
             setattr(self, kwarg, kwarg_attr)
 
         self.nzs = self.nzs_init if "nzs" not in kwargs else kwargs["nzs"]
-        self.nvisos = self.nvisos_init if "nvisos" not in kwargs else kwargs["nvisos"]
+        self.nvisos = self.nvisos_init if "nvisos" not in kwargs \
+            else kwargs["nvisos"]
         self.zsextended = np.array([])
         self.zs = np.array([])
         self.dzs = np.array([])
@@ -547,7 +656,6 @@ class Bowshock2D(ObsModel):
         self.vs = np.array([])
         self.vrs = np.array([])
         self.vzs = np.array([])
-        self.vs = np.array([])
         self.thetas = np.array([])
         self.xps_phi90 = np.array([])
         self.xps_phi0 = np.array([])
@@ -558,6 +666,14 @@ class Bowshock2D(ObsModel):
         self.maxviso = None
         self.minviso = None
         self.visos = np.array([])
+        self.Rs_arcsec = np.array([])
+        self.zs_arcsec = np.array([])
+        self.xps_phi0_arcsec = np.array([])
+        self.xps_phi90_arcsec = np.array([])
+        self.xps_phi180_arcsec = np.array([])
+        self.surfdenss = np.array([])
+        self.surfdenss_gcm2 = np.array([])
+
         self._calc_solutions()
 
     def _calc_solutions(self):
@@ -628,6 +744,13 @@ class Bowshock2DPlots(Bowshock2D):
         Instance of ObsModel to plot
     modelname : str
         Name of the model
+
+    Attributes:
+    -----------
+    axs : dict`
+        Dictionary of `~matplotlib.axes.Axes` in the figure
+    cbaxs : dict`
+        Dictionary of `~matplotlib.axes.Axes` of the colorbars in the figure
     """
     narrows = 10
     def __init__(self, obsmod, modelname, **kwargs):
@@ -903,7 +1026,7 @@ class BowshockCube(ObsModel):
         which the distances are measured. The first index is the R.A. axis, the
         second is the  Dec. axis [[int, int] or None] 
     CIC : optional, bolean
-        Set to True to perform Cloud in Cell interpolation.
+        Set to True to perform Cloud in Cell interpolation [1].
     vt : optional, str | float
         Thermal+turbulent line-of-sight velocity dispersion [km/s] If
         thermal+turbulent line-of-sight velocity dispersion is smaller than the
@@ -915,10 +1038,40 @@ class BowshockCube(ObsModel):
         being populated when their difference in velocity with respect to vch is
         higher than this factor times vt. The lower the factor, the quicker will
         be the code, but the total mass will be underestimated. If vt is not
-        None, compare the total mass of the output cube with the 'mass'
-        parameter that the user has defined 
+        None, compare the total mass of the output cube with the mass parameter
+        that the user has defined 
     verbose : optional, bolean
         Set True to verbose messages about the computation
+
+    Attributes:
+    -----------
+    nrs : int
+        Number of model points to which the solution has been computed.
+    rs : numpy.ndarray
+        Array of the radii of the model.
+    dr : float
+        Increment of radii between the points, which is constant.
+    zs : numpy.ndarray
+        Array of the z-coordinates of the model.
+    dzs : numpy.ndarray
+        Increment of z-coordinates between the points.
+    phis : numpy.ndarray
+        Array of the azimuthal angles of the model.
+    dphi : float
+        Increment in azimuthal angle of the points of the model.
+    vs : numpy.ndarray
+        Array with the velocities of the points of the model.
+    velchans : numpy.ndarray
+        Array with the line-of-sight velocities of the channels of the spectral
+        cube.
+    cube : numpy.ndarray
+        Spectral cube of the masses of the bowshock model.
+
+    References:
+    -----------
+    [1] Fehske, H., Schneider, R., & Weiße, A. (2008), Computational
+    Many-Particle Physics, Vol.  739 (Springer), doi: 10.1007/978-3-540-74686-7.
+
     """
 
     def __init__(
@@ -958,7 +1111,6 @@ class BowshockCube(ObsModel):
         self.velchans = np.array([])
 
         self.cube = None
-        self.cubes = {}
 
     def _DIMENSION_ERROR(self, fromcube):
             sys.exit(f"""
@@ -1027,8 +1179,8 @@ at least one of three reasons:
         Parameters:
         -----------
         fromcube : optional, numpy.ndarray
-            Cube to which the model will be populated. If None, and empty cube
-            will be considered. 
+            Cube that will be populated with the model data. If None, and empty
+            cube will be considered. 
         """
         if self.verbose:
             ts = []
@@ -1106,7 +1258,63 @@ class CubeProcessing(BowshockCube):
 
     Parameters:
     -----------
+    bscube :  class instance
+        Instance of BowshockCube
+    J : optional, str
+        CO rotational transition (e.g. "3-2")
+    XCO : optional, str
+        CO abundance
+    meanmass : optional, astropy.unit.Quantity
+        Mean mass per H molecule
+    Tex : optional, astropy.unit.Quantity
+        Excitation temperature
+    Tbg : optional, astropy.unit.Quantity
+        Excitation temperature
+    coordcube : optional, str
+        Set to "sky" if you would like to set the cube headers in sky
+        coordinates, or "offset" if you prefer them in offsets relative to the
+        origin (the source).
+    ra_source_deg : optional, float
+        Source right ascension [deg]
+    dec_source_deg : optional, float
+        Source declination [deg]
+    bmin : optional, float
+        Beam minor axis [arcsec]
+    bmaj : optional, float
+        Beam major axis [arcsec]
+    pabeam : float
+        Beam position angle [degrees]
+    papv : float
+        Position angle used to calculate the PV [degrees]
+    parot : float
+        Angle to rotate the image [degrees]
+    sigma_beforeconv : float
+        Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
+    maxcube2noise : float
+        Standard deviation of the noise of the map, before convolution, relative to the maximum pixel in the cube. The actual noise will be computed after convolving. This parameter would not be used if sigma_beforeconve is not None.
 
+    Attributes:
+    -----------
+    x_FWHM : float or None
+        Full width half maximum of the gaussian beam for the x direction [pixel]
+    y_FWHM : float or None
+        Full width half maximum of the gaussian beam for the y direction [pixel]
+    beamarea : float or None
+        Area of the beam [pixel^2]
+    cubes : dict
+        Dictionary of the processed cubes. Keys are abbreviations of the
+        quantity of the cube and the operations performed to it 
+    refpixs : dict
+        Dictionary of the reference pixel of the cubes.  Keys are abbreviations
+        of the quantity of the cube and the operations performed to it 
+    hdrs : dict
+        Dictionary of the headers `astropy.io.fits.header.Header` of each cube. The headers are generated when savecube method is used.
+    areapix_cm : float 
+        Area of a pixel in cm.
+    beamarea_sr : `astropy.units.Quantity`
+        Area of the beam in stereoradians.
+    listmompvs : list
+        List of cubes to which the moments and the position velocity diagrams are going to performed when the method self.momentsandpv_all and self.momentsandpv_and_params_all are called
     """
     default_kwargs = {
     }
@@ -1464,27 +1672,21 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             strings indicating the quantities of the desired cubes. These are
             the available quantities of the spectral cubes:
             
-            - "mass": Total mass of molecular hydrogen in solar mass
+            - "mass": Total mass of molecular hydrogen in solar mass.
             - "CO_column_density": Column density of the CO in cm-2.
             - "intensity": Intensity in Jy/beam.
-            - "intensity_opthin": Intensity in Jy/beam, using the optically thin
-            approximation.  
+            - "intensity_opthin": Intensity in Jy/beam, using the optically thin approximation.  
             - "tau": Opacities.
         
             The values of the dictionary are lists of strings indicating the
             operations to be performed over the cube. These are the available
             operations:
             
-            - "add_source": Add a source at the reference pixel, just for
-            spatial reference purposes.
-            - "rotate": Rotate the whole spectral cube by an angle given by
-            parot parameter.
-            - "add_noise": Add gaussian noise, defined by maxcube2noise
-            parameter.
-            - "convolve": Convolve with a gaussian defined by the parameters
-            bmaj, bmin, and pabeam.
-            - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum
-            intensity and the PV diagram.
+            - "add_source": Add a source at the reference pixel, just for spatial reference purposes.
+            - "rotate": Rotate the whole spectral cube by an angle given by parot parameter.
+            - "add_noise": Add gaussian noise, defined by maxcube2noise parameter.
+            - "convolve": Convolve with a gaussian defined by the parameters bmaj, bmin, and pabeam.
+            - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity and the PV diagram.
         
             The operations will be performed folowing the order of the strings
             in the list (from left to right). The list can be left empty if no
@@ -1493,14 +1695,14 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
     
         Example:
         --------
-        >>> bscp = bs.CubeProcessing(bsc, ...)
+        >>> cp = bs.CubeProcessing(...)
         >>> outcubes = {
         >>>    "intensity": ["add_noise", "convolve", "moments_and_pv"],
         >>>    "opacity": [],
         >>>    "CO_column_density": ["convolve"],
         >>>    "mass": [],
         >>> }
-        >>> bscp.calc(outputcubes)
+        >>> cp.calc(outcubes)
 
         will save 4 spectral cubes in fits format. The first one are the
         intensities with gaussian noise added, it will be convolved, and the
@@ -1607,7 +1809,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         Parameters:
         -----------
         ck : str
-            Key of the cube to perfomr the PV-diagram.
+            Key of the cube to perform the PV-diagram.
         halfwidth : optional, int
             Number of pixels around xpv that will be taking into account to
             compute the PV-diagram.
@@ -1617,6 +1819,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
+
+        Returns:
+        --------
+        pvimage : numpy.ndarray
+            Position velocity diagram
         """
         pvimage = moments.pv(
             self.cubes[ck],
@@ -1673,6 +1880,13 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
+
+        Returns:
+        --------
+        sumint : numpy.ndarray 
+            Image of the summation of the pixels of the cube along the velocty
+            axis
+ 
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         sumintimage = moments.sumint(
@@ -1727,6 +1941,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
+
+        Returns:
+        --------
+        mom0 : numpy.ndarray 
+            Moment 0 image of the cube
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
@@ -1778,13 +1997,18 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Two element list with the last and first channels used to compute
             the summation. If None, the whole cube will be considered.
         clipping : float
-            Pixels with values smaller than the one given by clipping parameter will not be masked with 0 values.
+            Pixels with values smaller than the one given by clipping parameter will be masked with 0 values.
         save : boolean
             If True, save the PV-diagram in fits format.
         filename : str
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
+
+        Returns:
+        --------
+        mom1 : numpy.ndarray 
+            Moment 1 image of the cube
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
@@ -1842,13 +2066,18 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Two element list with the last and first channels used to compute
             the summation. If None, the whole cube will be considered.
         clipping : float
-            Pixels with values smaller than the one given by clipping parameter will not be masked with 0 values.
+            Pixels with values smaller than the one given by clipping parameter will be masked with 0 values.
         save : boolean
             If True, save the PV-diagram in fits format.
         filename : str
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
+
+        Returns:
+        --------
+        mom2 : numpy.ndarray 
+            Moment 2 image of the cube
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
@@ -1907,13 +2136,19 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             the summation. If None, the whole cube will be considered.
         clipping : float
             Pixels with values smaller than the one given by clipping parameter
-            will not be masked with 0 values.
+            will be masked with 0 values.
         save : boolean
             If True, save the PV-diagram in fits format.
         filename : str
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
+
+        Returns:
+        --------
+        mom8 : numpy.ndarray 
+            Maximum value of the pixels of the cubes along the velocity axis 
+
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         # chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
@@ -1960,7 +2195,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
     def plotpv(self, pvimage, rangex, chan_vels, **kwargs):
         """
-        Plots the position velocity diagram
+        Plots the position velocity diagram.
 
         Parameters:
         -----------
@@ -1971,44 +2206,120 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         chan_vels: list or numpy.ndarray
             1-dimensional array of the velocity corresponding to the channels.
         """
-        return ut.plotpv(pvimage, rangex, chan_vels, **kwargs)
+        pv_array = ut.plotpv(pvimage, rangex, chan_vels, **kwargs)
+        return pv_array
 
     def plotsumint(self, sumint, **kwargs):
         """
-        Plots the sum of the pixels of the cubes along the velocity axis
+        Plots the sum of the pixels of the cubes along the velocity axis.
 
         Parameters:
         -----------
         sumint : numpy.ndarray
             Sum of the pixels of the cubes along the velocity axis.
         """
- 
         return ut.plotsumint(sumint, **kwargs)
 
     def plotmom0(self, mom0, **kwargs):
+        """
+        Plots the moment 0.
+
+        Parameters:
+        -----------
+        mom0 : numpy.ndarray
+            Moment 0 image.
+        """
         return ut.plotmom0(mom0, **kwargs)
 
     def plotmom1(self, mom1, **kwargs):
+        """
+        Plots the moment 1.
+
+        Parameters:
+        -----------
+        mom1 : numpy.ndarray
+            Moment 1 image.
+        """
         return ut.plotmom1(mom1, **kwargs)
 
     def plotmom2(self, mom2, **kwargs):
+        """
+        Plots the moment 2.
+
+        Parameters:
+        -----------
+        mom2 : numpy.ndarray
+            Moment 2 image.
+        """
         return ut.plotmom2(mom2, **kwargs)
 
     def plotmom8(self, mom8, **kwargs):
+        """
+        Plots the moment 2.
+
+        Parameters:
+        -----------
+        mom8 : numpy.ndarray
+            Moment 8 image.
+        """
         return ut.plotmom8(mom8, **kwargs)
 
-    def momentsandpv_all(self, **kwargs):
-        for ck in self.listmompvs:
-            self.momentsandpv(ck, **kwargs)
+    def momentsandpv(
+            self, ck, savefits=False, saveplot=False,
+            mom1clipping=0, mom2clipping=0, verbose=True,
+            mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            mom8values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
+        ):
+        """
+        Computes the moments and position velocity diagram.
 
-    def momentsandpv(self, ck, savefits=False, saveplot=False,
-                      mom1clipping=0, mom2clipping=0, verbose=True,
-                      mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      mom8values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      ):
+        Parameters:
+        -----------
+        ck : str
+            Key of the cube to which the moments and the position velocity diagram will be computed.
+        savefits : bool
+            If True, the moments and the position velocity diagram will be saved in fits format
+        saveplot : bool
+            If True, a plot of the moments and position velocity diagrams will be saved
+        mom1clipping : float
+            Clipping to in order to compute the moment 1. Pixels with values
+            smaller than the one given by clipping parameter will be masked with
+            0 values.
+        mom2clipping : float
+            Clipping to in order to compute the moment 2. Pixels with values
+            smaller than the one given by clipping parameter will be masked with
+            0 values.
+        mom8clipping : float
+            Clipping to in order to compute the maximum value of the pixels along the velocity axis. Pixels with values smaller than the one given by clipping parameter will be masked with 0 values.
+        mom0values : dict or None
+            Dictionary with the maximum, central, and minimum value to show in
+            the plot of the moment 0. If the dictionary value is None for vmax,
+            vcenter, or vmin, then the maximum, central, or the minimum value of
+            the moment image will be considered, respectively. Example:
+            mom0values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+        mom1values : dict or None
+            Dictionary with the maximum, central, and minimum value to show in
+            the plot of the moment 1. If the dictionary value is None for vmax,
+            vcenter, or vmin, then the maximum, central, or the minimum value of
+            the moment image will be considered, respectively. Example:
+            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+        mom2values : dict or None
+            Dictionary with the maximum, central, and minimum value to show in
+            the plot of the moment 2. If the dictionary value is None for vmax,
+            vcenter, or vmin, then the maximum, central, or the minimum value of
+            the moment image will be considered, respectively. Example:
+            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+        mom8values : dict or None
+           Dictionary with the maximum, central, and minimum value to show in
+           the plot of the maximum value along the velocity axis. If the
+           dictionary value is None for vmax, vcenter, or vmin, then the
+           maximum, central, or the minimum value of the moment image will be
+           considered, respectively. Example: mom8values = {"vmax": None,
+           "vcenter": None, "vmin": None,}. 
+        """
         if verbose:
             print(
 """
@@ -2160,25 +2471,76 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 bbox_inches="tight",
                 )
 
-    def momentsandpv_and_params_all(self, bscs,**kwargs):
+    def momentsandpv_all(self, **kwargs):
+        """
+        Computes all the moments and pv to the cubes listed in self.listmompvs
+        """
         for ck in self.listmompvs:
-            self.momentsandpv_and_params(ck, bscs, **kwargs)
+            self.momentsandpv(ck, **kwargs)
 
-    def momentsandpv_and_params(self, ck, bscs, savefits=False, saveplot=False,
-                      mom1clipping=0, mom2clipping=0, verbose=True,
-                      mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      mom8values={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
-                      ):
+    def momentsandpv_and_params(
+            self, ck, bscs, savefits=False, saveplot=False,
+            mom1clipping=0, mom2clipping=0, verbose=True,
+            mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            mom8values={v: None for v in ["vmax", "vcenter", "vmin"]},
+            pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},):
+        """
+        Computes the moments and position velocity diagram including also the
+        main parameters of the model listed in the first ax
+        
+        Parameters:
+        -----------
+        ck : str
+            Key of the cube to which the moments and the position velocity diagram will be computed.
+        savefits : bool
+            If True, the moments and the position velocity diagram will be saved in fits format
+        saveplot : bool
+            If True, a plot of the moments and position velocity diagrams will be saved
+        mom1clipping : float
+            Clipping to in order to compute the moment 1. Pixels with values
+            smaller than the one given by clipping parameter will be masked with
+            0 values.
+        mom2clipping : float
+            Clipping to in order to compute the moment 2. Pixels with values
+            smaller than the one given by clipping parameter will be masked with
+            0 values.
+        mom8clipping : float
+            Clipping to in order to compute the maximum value of the pixels along the velocity axis. Pixels with values smaller than the one given by clipping parameter will be masked with 0 values.
+        mom0values : dict or None
+            Dictionary with the maximum, central, and minimum value to show in
+            the plot of the moment 0. If the dictionary value is None for vmax,
+            vcenter, or vmin, then the maximum, central, or the minimum value of
+            the moment image will be considered, respectively. Example:
+            mom0values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+        mom1values : dict or None
+            Dictionary with the maximum, central, and minimum value to show in
+            the plot of the moment 1. If the dictionary value is None for vmax,
+            vcenter, or vmin, then the maximum, central, or the minimum value of
+            the moment image will be considered, respectively. Example:
+            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+        mom2values : dict or None
+            Dictionary with the maximum, central, and minimum value to show in
+            the plot of the moment 2. If the dictionary value is None for vmax,
+            vcenter, or vmin, then the maximum, central, or the minimum value of
+            the moment image will be considered, respectively. Example:
+            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+        mom8values : dict or None
+           Dictionary with the maximum, central, and minimum value to show in
+           the plot of the maximum value along the velocity axis. If the
+           dictionary value is None for vmax, vcenter, or vmin, then the
+           maximum, central, or the minimum value of the moment image will be
+           considered, respectively. Example: mom8values = {"vmax": None,
+           "vcenter": None, "vmin": None,}. 
+        """
+ 
         if verbose:
             print(
 """
 \nComputing moments and the PV-diagram along the jet axis
 """
             )
-
 
         ckpv = ck + "R"
         if ckpv not in self.cubes:
@@ -2407,4 +2769,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 f"models/{self.modelname}/momentsandpv_and_params_{ck}.pdf",
                 bbox_inches="tight",
                 )
+
+    def momentsandpv_and_params_all(self, bscs, **kwargs):
+        """
+        Computes all the moments and pv to the cubes listed in self.listmompvs,
+        including a list of values of the main parameters of the model in the
+        first ax
+        """
+        for ck in self.listmompvs:
+            self.momentsandpv_and_params(ck, bscs, **kwargs)
+
+
 

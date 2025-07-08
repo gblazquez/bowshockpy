@@ -1,5 +1,5 @@
-API
-===
+API Reference
+=============
 
 The API reference guide contains detailed descriptions of the functions and classes of ``bowshockpy``
 

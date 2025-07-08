@@ -12,6 +12,7 @@ makedocs.sh
 
 # ignore files in folder
 models/*
+examples/models/*
 
 *ignore.ipynb
 

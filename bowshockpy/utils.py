@@ -159,6 +159,37 @@ def plotpv(pvimage, rangex, chan_vels, ax=None, cbax=None,
         vmax=None, vcenter=None, vmin=None,
         cmap="nipy_spectral", interpolation="bilinear",
         cbarlabel="Intensity [Jy/beam]",):
+    """
+    Plots the Position-Velocity diagram
+    
+    Parameters
+    ----------
+    pvimage : numpy.ndarray
+        Position velocity diagram to plot.
+    rangex : list or numpy.ndarray
+        2 element list or numpy.ndarray corresponding to the physical
+        coordinates of the boundaries of the image in the spatial direction.
+    chan_vels : list or numpy.ndarray 
+        list or numpy.ndarray with the velocities corresponding to the channels
+    ax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the position velodity diagram is
+        drawn.
+    cbax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the color bar is drawn.
+    vmax : optional, float
+        Maximum value of the colorbar
+    vcenter : optional, float
+        Center value of the colorbar
+    vmin : optional, float
+        Minimum value of the colorbar
+    cmap : optional, str
+        Label of the colorbar
+    interpolation : optional, str
+        Interpolation to pass to matplotlib.pyplot.imshow
+    cbarlabel : optional, str
+        String with information on the quantity represented in the Position
+        Velocity diagram
+    """
     if ax is None or cbax is None:
         plt.figure(figsize=(5,5))
         gs = GridSpec(
@@ -211,8 +242,36 @@ def plotpv(pvimage, rangex, chan_vels, ax=None, cbax=None,
 
 def plotsumint(sumint, ax=None, cbax=None, extent=None,
                vmax=None, vcenter=None, vmin=None,
-               interpolation="bilinear", cbarlabel="Intensity", ):
-
+               cmap="inferno", interpolation="bilinear",
+               cbarlabel="Intensity",):
+    """
+    Plots the sumation of all the pixels along the velocity axis
+    
+    Parameters
+    ----------
+    sumint : numpy.ndarray
+        Image of the sumation of all the pixels along the velocty axis.
+    ax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the position velodity diagram is
+        drawn.
+    cbax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the color bar is drawn.
+    extent : list
+        Physical coordinates of the boundaries of the image.
+    vmax : optional, float
+        Maximum value of the colorbar
+    vcenter : optional, float
+        Center value of the colorbar
+    vmin : optional, float
+        Minimum value of the colorbar
+    cmap : optional, str
+        Label of the colorbar
+    interpolation : optional, str
+        Interpolation to pass to matplotlib.pyplot.imshow
+    cbarlabel : optional, str
+        String with information on the quantity represented in the plot
+    """
+ 
     if ax is None or cbax is None:
         plt.figure(figsize=(5,5.5))
         gs = GridSpec(
@@ -233,7 +292,7 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
     im = ax.imshow(
         sumint,
         origin="lower",
-        cmap="inferno",
+        cmap=cmap,
         norm=norm,
         interpolation=interpolation,
         extent=extent,
@@ -264,8 +323,36 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
 
 def plotmom0(mom0, ax=None, cbax=None, extent=None,
             vmax=None, vcenter=None, vmin=None,
+            cmap="inferno",
             interpolation="bilinear", cbarlabel="Moment 0 [Jy/beam km/s]",):
-
+    """
+    Plots the moment 0 
+    
+    Parameters
+    ----------
+    mom0 : numpy.ndarray
+        Image of the moment 0.
+    ax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the position velodity diagram is
+        drawn.
+    cbax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the color bar is drawn.
+    extent : list
+        Physical coordinates of the boundaries of the image.
+    vmax : optional, float
+        Maximum value of the colorbar
+    vcenter : optional, float
+        Center value of the colorbar
+    vmin : optional, float
+        Minimum value of the colorbar
+    cmap : optional, str
+        Label of the colorbar
+    interpolation : optional, str
+        Interpolation to pass to matplotlib.pyplot.imshow
+    cbarlabel : optional, str
+        String with information on the quantity represented in the plot
+    """
+ 
     if ax is None or cbax is None:
         plt.figure(figsize=(5,5.5))
         gs = GridSpec(
@@ -287,7 +374,7 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
     im = ax.imshow(
         mom0,
         origin="lower",
-        cmap="inferno",
+        cmap=cmap,
         norm=norm,
         interpolation=interpolation,
         extent=extent,
@@ -322,8 +409,42 @@ def plotmom1(mom1, ax=None, cbax=None, extent=None,
               bg="black", cmap_ref='jet_r',
               interpolation="bilinear", cbarlabel="Moment 1 [km/s]"):
     """
-    Moment 1
+    Plots the moment 1 
+    
+    Parameters
+    ----------
+    mom1 : numpy.ndarray
+        Image of the moment 1.
+    ax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the position velodity diagram is
+        drawn.
+    cbax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the color bar is drawn.
+    extent : list
+        Physical coordinates of the boundaries of the image.
+    vmax : optional, float
+        Maximum value of the colorbar
+    vcenter : optional, float
+        Center value of the colorbar
+    vmin : optional, float
+        Minimum value of the colorbar
+    extend_cbar : str,
+        Extremum to extend the colorbar: "max" or "min"
+    bg : str
+        Color of the background image.
+    cmap_ref : optional, str
+        Label of the colorbar used for reference.
+    interpolation : optional, str
+        Interpolation to pass to matplotlib.pyplot.imshow
+    cbarlabel : optional, str
+        String with information on the quantity represented in the plot
+
+    Returns:
+    -------- 
+    velcmap : matplotlib.colors.ListedColormap
+        Colormap created to plot the moment 1
     """
+ 
     if ax is None or cbax is None:
         plt.figure(figsize=(5,5.5))
         gs = GridSpec(
@@ -402,8 +523,42 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
               bg="black", cmap_ref='jet_r', cbarlabel="Moment 2 [km$^2$/s$^2$]",
               interpolation=None):
     """
-    Moment 1
+    Plots the moment 2 
+    
+    Parameters
+    ----------
+    mom2 : numpy.ndarray
+        Image of the moment 2.
+    ax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the position velodity diagram is
+        drawn.
+    cbax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the color bar is drawn.
+    extent : list
+        Physical coordinates of the boundaries of the image.
+    vmax : optional, float
+        Maximum value of the colorbar
+    vcenter : optional, float
+        Center value of the colorbar
+    vmin : optional, float
+        Minimum value of the colorbar
+    extend_cbar : str,
+        Extremum to extend the colorbar: "max" or "min"
+    bg : str
+        Color of the background image.
+    cmap_ref : optional, str
+        Label of the colorbar used for reference.
+    interpolation : optional, str
+        Interpolation to pass to matplotlib.pyplot.imshow
+    cbarlabel : optional, str
+        String with information on the quantity represented in the plot
+
+    Returns:
+    -------- 
+    velcmap : matplotlib.colors.ListedColormap
+        Colormap created to plot the moment 2
     """
+ 
     if ax is None or cbax is None:
         plt.figure(figsize=(5,5.5))
         gs = GridSpec(
@@ -473,9 +628,36 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
         pass
 
 def plotmom8(mom8, ax=None, cbax=None, extent=None,
-            vmax=None, vcenter=None, vmin=None,
+            vmax=None, vcenter=None, vmin=None, cmap="inferno",
             interpolation="bilinear", cbarlabel="Moment 8"):
-
+    """
+    Plots the maximum value of the pixels along the velocity axis
+    
+    Parameters
+    ----------
+    mom8 : numpy.ndarray
+        Image of the maximum pixel along the velocty axis.
+    ax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the position velodity diagram is
+        drawn.
+    cbax : optional, `~matplotlib.axes.Axes`
+        The `~.axes.Axes` instance in which the color bar is drawn.
+    extent : list
+        Physical coordinates of the boundaries of the image.
+    vmax : optional, float
+        Maximum value of the colorbar
+    vcenter : optional, float
+        Center value of the colorbar
+    vmin : optional, float
+        Minimum value of the colorbar
+    cmap : optional, str
+        Label of the colorbar
+    interpolation : optional, str
+        Interpolation to pass to matplotlib.pyplot.imshow
+    cbarlabel : optional, str
+        String with information on the quantity represented in the plot
+    """
+ 
     if ax is None or cbax is None:
         plt.figure(figsize=(5,5.5))
         gs = GridSpec(
@@ -497,7 +679,7 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
     im = ax.imshow(
         mom8,
         origin="lower",
-        cmap="inferno",
+        cmap=cmap,
         norm=norm,
         interpolation=interpolation,
         extent=extent,
