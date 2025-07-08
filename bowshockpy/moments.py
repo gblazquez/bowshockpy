@@ -37,7 +37,7 @@ def mom0(cube, chan_vels, chan_range):
     Return:
     -------
     mom0_im : numpy.ndarray
-        Moment of 0 order
+        Moment of order 0 
     
     References:
     -----------

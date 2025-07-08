@@ -66,7 +66,13 @@ x Change iws -> j in params figures
 
 - modular usage: Remember for the modular usage that you have available some of the important functons directly from bowshockpy as you have defined them n the __init__.py
 
-- test numerical vs anaytical
+x test numerical vs anaytical
+
+- use write_log in utils? If not, erease it
+
+- make an statement in the paper:
+  - What kind of user the software is targeted to?
+  - Softwares that compares to bowshockpy?
 
 import bowshockpy as bp
 

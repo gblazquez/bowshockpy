@@ -17,6 +17,18 @@ from datetime import datetime
 from bowshockpy._header_default import hdr_str_default
 
 def print_example(nexample):
+    """
+    Prints one of the available examples of input file to run bowshockpy.
+
+    Parameters:
+    -----------
+    nexample : str or int
+        Number of the example to print. There are 4 examples:
+            - Example 1: A redshfted bowshock
+            - Example 2: A blueshifted bowshock
+            - Example 3: A side-on bowshock
+            - Example 4: Several bowshocks in one cube
+    """
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     with open(f"example{nexample}.py", "w") as wr:
         with open(ROOT_DIR+f"/inputfiles/example{nexample}.py", "r") as re:
@@ -62,18 +74,51 @@ def write_log(path, mode, pars, printtime=False):
 
 def mb_sa_gaussian_f(maja, mina):
     """
-    Solid angle of a gaussian main beam and θmaj and θmin as
-    the half-power beam widths
+    Computes the solid angle of a gaussian main beam and θmaj and θmin as the
+    half-power beam widths
+
+    Parameters:
+    -----------
+    maja : `~astropy.units.Quantity`
+        Beam major axis in degrees or radians
+    mina : `~astropy.units.Quantity`
+        Beam minor axis  in degrees or radians
+
+    Returns:
+    --------
+    omega_M : `~astropy.units.sr`
+        Beam solid angle in stereoradians
     """
     omega_M = np.pi * maja * mina / (4 * np.log(2))
     return omega_M.to(u.sr)
 
 def gaussconvolve(data, x_FWHM, y_FWHM, pa, return_kernel=False):
     """
-    Gausskernel 0 and 1 entries are the FWHM, the third the PA
-    """
+    Convolves data with a Gaussian kernel
+
+    Parameters:
+    -----------
+    data : numpy.ndarray
+        Data to convolve
+    x_FWHM : float
+        Full width half maximum of the Gaussian kernel for the x direction
+    y_FWHM : float
+        Full width half maximum of the Gaussian kernel for the y direction
+    pa : float
+        Position angle in degrees
+    return_kernel : optional, bool
+        Whether to return the kernel or not
+
+    Returns:
+    --------
+    data_conv : numpy.ndarray
+        Convolved data
+    kernel : numpy.ndarray
+        Image of the Gaussian kernel. Is returned only if  return_kernel = True
+        """
     x_stddev = x_FWHM / (2 * np.sqrt(2 * np.log(2)))
     y_stddev = y_FWHM / (2 * np.sqrt(2 * np.log(2)))
+    # Gausskernel 0 and 1 entries are the FWHM, the third the PA
     kernel = Gaussian2DKernel(
         x_stddev=x_stddev,
         y_stddev=y_stddev,
@@ -88,6 +133,18 @@ def get_color(vel_range, vel, cmap, norm="linear"):
     """
     Gets the color that corresponds in a colormap linearly interpolated taking
     into account the values at the limits.
+
+    Parameters:
+    -----------
+    vel_range : list
+        List with 2 elements defining the range of values to be represented by
+        the colors
+    vel : float
+        Value to get the corresponding color from
+    cmap : str
+        Colormap label
+    norm : optional, str
+        Set "linear" for a linear scale, "log" for log scale.
     """
     cmapp = colormaps.get_cmap(cmap)
     if norm == "linear":
@@ -100,8 +157,8 @@ def get_color(vel_range, vel, cmap, norm="linear"):
 
 def plotpv(pvimage, rangex, chan_vels, ax=None, cbax=None,
         vmax=None, vcenter=None, vmin=None,
-        cmap="nipy_spectral", interpolation="bilinear", cbarlabel="Intensity [Jy/beam]",
-        ):
+        cmap="nipy_spectral", interpolation="bilinear",
+        cbarlabel="Intensity [Jy/beam]",):
     if ax is None or cbax is None:
         plt.figure(figsize=(5,5))
         gs = GridSpec(
