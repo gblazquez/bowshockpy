@@ -1,3 +1,6 @@
+.. _api:
+
+=============
 API Reference
 =============
 
@@ -7,13 +10,16 @@ bsmodels
 --------
 
 .. automodule:: bowshockpy.bsmodels
+   :noindex:
    :members:
    :show-inheritance:
+
 
 utils
 -----
 
 .. automodule:: bowshockpy.utils
+   :noindex:
    :members:
    :show-inheritance:
 
@@ -21,6 +27,7 @@ comass
 ------
 
 .. automodule:: bowshockpy.comass
+   :noindex:
    :members:
    :show-inheritance:
 
@@ -28,6 +35,7 @@ moments
 -------
 
 .. automodule:: bowshockpy.moments
+   :noindex:
    :members:
    :show-inheritance:
 

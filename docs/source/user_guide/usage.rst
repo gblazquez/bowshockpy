@@ -13,7 +13,7 @@ The easiest way to use ``bowshockpy`` is using an input file that contains all t
 
   (.venv) $ bowshockpy --read params.py 
 
-You can download some :doc:`examples<examples_inputfile>` of input files. See :doc:`parameters<inputparams>` for a description of the parameters.
+You can download some :doc:`examples<../examples/examples_inputfile>` of input files. See :doc:`parameters<inputparams>` for a description of the parameters.
 
 
 Importing bowshockpy module

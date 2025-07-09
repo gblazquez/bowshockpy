@@ -77,6 +77,9 @@ x test numerical vs anaytical
 
 - Unify meanmass con muH2. Keep muH2
 
+- Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy
+
+
 import bowshockpy as bp
 
 gen = bp.bowshock_generator()
@@ -133,4 +136,5 @@ Traceback (most recent call last):
   File "/home/guille/py_envs/bowpy/lib/python3.10/site-packages/bowshockpy/moments.py", line 45, in pv
     selected_data = cube[:, pixarray, :]
 IndexError: index 239 is out of bounds for axis 1 with size 200
+
 

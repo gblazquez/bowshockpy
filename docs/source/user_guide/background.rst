@@ -1,4 +1,4 @@
-How bowhsockpy works
+Background
 ====================
 
 The bowshock model
@@ -24,3 +24,15 @@ Below, we present a brief description of the workflow of ``bowshockpy``. The nam
 * In order to perform the mock observations, some parameters of dependent of the observer reference frame are used, mainly: the inclination angle of the bowshock axis (i), the observer distance to the source (distpc), the systemic velocity (vsys), and the position angle of the bowshock axis (PA). Together with some parameters defining the properties of the spectral cube, as the pixel size and channel width, ``bowshockpy`` computes, in projection, the mass of the bowshock shell at each pixel and velocity channel of the spectral cube. 
 
 * ``bowshockpy`` can also calculate the intensity spectral cubes of a low-J rotational CO transtion. Assuming a CO abundance (XCO), ``bowshockpy`` calculates first the column densities at each pixel and channel of the cube. Given the excitation temperature (Tex) and assuming Local Thermodinamic Equilibrium, the opacities are computed. Finally, ``bowshockpy`` performs the radiative transfer in order to compute the intensities. 
+
+   
+References
+----------
+
+- Tabone, B., Raga, A., Cabrit, S. & Pineau des Forêts, G. "Interaction between a pulsating jet and a surrounding disk wind. A hydrodynamical perspective." Astron. Astrophys. 614, A119 (2018).
+
+- Ostriker, E. C., Lee, C.-F., Stone, J. M. & Mundy, L. G. A Ballistic Bow Shock Model for Jet-driven Protostellar Outflow Shells. Astrophys. J. 557, 443–450 (2001).
+
+.. _Tabone et al. (2018): https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract
+.. _Ostriker et al. (2001): https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract
+ 

@@ -2,12 +2,23 @@
 
 # -- Project information
 
+
+# sys.path.insert(0, os.path.abspath(".."))
+# 
+# import bowshockpy 
+# from bowshockpy import __version__
+
+
+
 project = 'bowshockpy'
 copyright = '2025, Guillermo Blazquez-Calero'
 author = 'Guillermo Blazquez-Calero'
 
 release =  "0.2.0"
 version =  "0.2.0"
+
+# release = __version__
+# version = __version__
 
 # -- General configuration
 
@@ -17,6 +28,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'sphinx_design',
     'nbsphinx'
 ]
 
@@ -32,7 +44,15 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
+# html_theme = 'sphinx_rtd_theme'
+# html_theme = "furo"
+# html_theme = 'sphinx_book_theme'
+# html_theme = "press"
+
+html_theme_options = {
+    "github_url": "https://github.com/gblazquez/bowshockpy",
+}
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
