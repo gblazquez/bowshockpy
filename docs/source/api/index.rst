@@ -6,10 +6,10 @@ API Reference
 
 The API reference guide contains detailed descriptions of the functions and classes of ``bowshockpy``
 
-bsmodels
+models
 --------
 
-.. automodule:: bowshockpy.bsmodels
+.. automodule:: bowshockpy.models
    :noindex:
    :members:
    :show-inheritance:

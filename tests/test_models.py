@@ -3,7 +3,7 @@ import numpy as np
 
 from astropy import units as u
 
-from bowshockpy import bsmodels as bs
+from bowshockpy import models as bs
 
 
 def test_narrowjet():

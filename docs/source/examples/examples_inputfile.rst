@@ -1,10 +1,8 @@
 
-:html_theme.sidebar_secondary.remove: true
-
 Examples of input file
 =======================
 
-Here, some examples of input files are presented. See :doc:`usage<../user_guide/usage>` section for an explanation of how to use this input file, and :doc:`input parameters<../user_guide/inputparams>` section for a description of the parameters.
+Here, some examples of input files are presented. See :doc:`usage<../user_guide/usage>` section for an explanation of how to use this input file, and :doc:`input parameters<../user_guide/inputparams>` secton for a description of the parameters.
 
 You can copy and paste these examples to your local machine, download them from the `examples <https://github.com/gblazquez/bowshockpy/tree/main/examples>`_ folder available in the GitHub repository, or print them directy to your working directory
 

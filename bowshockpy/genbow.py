@@ -7,7 +7,7 @@ import os
 import warnings
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
-from bowshockpy import bsmodels as bs
+from bowshockpy import models as bs
 from bowshockpy import utils as ut
 from bowshockpy.version import __version__
 

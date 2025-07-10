@@ -28,7 +28,7 @@ Bowshockpy is an open-source Python package for generating synthetic spectral cu
 
 .. note::
 
-   This project is under active development.
+   This project is under development.
 
 
 
