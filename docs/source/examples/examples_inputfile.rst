@@ -1,4 +1,7 @@
 
+html-theme.sidebar_secondary.remove: true
+
+=======================
 Examples of input file
 =======================
 

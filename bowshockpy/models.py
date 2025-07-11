@@ -19,6 +19,7 @@ import sys
 import bowshockpy.utils as ut
 import bowshockpy.comass as comass
 import bowshockpy.moments as moments
+import bowshockpy.plots as pl
 
 
 class NarrowJet():
@@ -40,6 +41,8 @@ class NarrowJet():
         working surface [km/s]
     mass : float
         Total mass of the bowshock shell [Solar masses]
+    distpc : float
+        Distance between the source and the observer [pc]
     rbf_obs: optional, float
         Final radius of the bowshock [km]. If None, the theoretical final radius
         is calculated.
@@ -68,7 +71,15 @@ class NarrowJet():
     mpamb_f_solmassyr : float
         Mass rate of ambient material being incorporated into the
         bowshock shell [Msun / yr]
-        
+    zj_arcsec : float
+        Distance from the source to the internal working surface [arcsec]
+    L0_arcsec : float
+        Bowshock characteristic scale [arcsec]
+    rbf_arcsec : float
+        Final radius of the bowshock [arcsec] 
+    zbf_arcsec : float
+        z-coordinate at the final radius [arcsec]
+ 
     References:
     -----------
     [1] Tabone, B., Raga, A., Cabrit, S. & Pineau des Forêts, G. "Interaction
@@ -87,7 +98,9 @@ class NarrowJet():
         "rbf_niters": 1000,
     }
 
-    def __init__(self, L0, zj, vj, va, v0, mass, rbf_obs=None, **kwargs):
+    def __init__(
+            self, L0, zj, vj, va, v0, mass, 
+            distpc, rbf_obs=None, **kwargs):
         # for param in ps:
         #     setattr(self, param, ps[param])
         self.L0 = L0
@@ -97,6 +110,7 @@ class NarrowJet():
         self.v0 = v0
         self.mass = mass
         self.rbf_obs = rbf_obs
+        self.distpc = distpc
         for kwarg in self.default_kwargs:
             kwarg_attr = kwargs[kwarg] if kwarg in kwargs \
             else self.default_kwargs[kwarg]
@@ -106,6 +120,7 @@ class NarrowJet():
         else:
             self.rbf = self.rbf_obs
         self.zbf = self.zb_r(self.rbf)
+
         self.tj = self.zj / self.vj
         self.tj_yr = self.stoyr(self.tj)
         self.rhoa = self.rhoa_fromintmass_analytical(
@@ -117,6 +132,11 @@ class NarrowJet():
         self.mp0_solmassyr = self.mp0_calc(self.rhoa) / self.stoyr(1)
         self.mpamb_f = self.mpamb_f_calc(self.rhoa)
         self.mpamb_f_solmassyr = self.mpamb_f / self.stoyr(1)
+        self.zj_arcsec = self.km2arcsec(self.zj)
+        self.L0_arcsec = self.km2arcsec(self.L0)
+        self.rbf_arcsec = self.km2arcsec(self.rbf)
+        self.zbf_arcsec = self.km2arcsec(self.zbf)
+
 
     def stoyr(self, value):
         """
@@ -135,6 +155,17 @@ class NarrowJet():
         Converts solar masses/km**3 to g/cm**3
         """
         return value * (u.solMass/u.km**3).to(u.g/u.cm**3)
+
+    def km2arcsec(self, value):
+        """
+        Converts km to arcsec
+
+        Parameters
+        ----------
+        value : float
+            distance in km
+        """
+        return value * u.km.to(u.au) / self.distpc
 
     def gamma(self):
         """
@@ -458,6 +489,25 @@ class NarrowJet():
         mpamb_f = np.pi * rhoa * (self.vj - self.va) * self.rbf**2
         return mpamb_f
 
+    def plotmodel(self, **kwargs):
+        """
+        Plot a figure including the main parameters of the bowshock model, its
+        morphology and kinematics, and the distribution of the surface density
+        
+        Parameters:
+        -----------
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.BowshockModelPlot`
+
+        Returns:
+        --------
+        modelplot : `~bowshockpy.plot.BowshockModelPlot` class instance
+            An instance of a class BowshockModelPlot, which contains information
+            on the figure and the model data
+        """
+        modelplot = pl.BowshockModelPlot(self, **kwargs)
+        return modelplot
+
 
 class ObsModel(NarrowJet):
     """
@@ -472,27 +522,13 @@ class ObsModel(NarrowJet):
         [radians] 
     vsys : float
         Systemic velocity of the source [km/s]
-    distpc : float
-        Distance between the source and the observer [pc]
     nzs : int
         Number of points used to compute the model solutions
-
-    Attributes:
-    -----------
-    zj_arcsec : float
-        Distance from the source to the internal working surface [arcsec]
-    L0_arcsec : float
-        Bowshock characteristic scale [arcsec]
-    rbf_arcsec : float
-        Final radius of the bowshock [arcsec] 
-    zbf_arcsec : float
-        z-coordinate at the final radius [arcsec]
     """
-    def __init__(self, model, i, vsys, distpc, nzs, **kwargs):
+    def __init__(self, model, i, vsys, nzs, **kwargs):
         self.__dict__ = model.__dict__
         self.i = i
         self.vsys = vsys
-        self.distpc = distpc
         self.nzs = nzs
         # for param in model.__dict__:
         #     setattr(self, param, getattr(model, param))
@@ -500,22 +536,6 @@ class ObsModel(NarrowJet):
             kwarg_attr = kwargs[kwarg] if kwarg in kwargs \
             else self.default_kwargs[kwarg]
             setattr(self, kwarg, kwarg_attr)
-
-        self.zj_arcsec = self.km2arcsec(self.zj)
-        self.L0_arcsec = self.km2arcsec(self.L0)
-        self.rbf_arcsec = self.km2arcsec(self.rbf)
-        self.zbf_arcsec = self.km2arcsec(self.zbf)
-
-    def km2arcsec(self, value):
-        """
-        Converts km to arcsec
-
-        Parameters
-        ----------
-        value : float
-            distance in km
-        """
-        return value * u.km.to(u.au) / self.distpc
 
     def vzp(self, zb, phi):
         """
@@ -747,10 +767,10 @@ class Bowshock2DPlots(Bowshock2D):
 
     Attributes:
     -----------
-    axs : dict`
-        Dictionary of `~matplotlib.axes.Axes` in the figure
-    cbaxs : dict`
-        Dictionary of `~matplotlib.axes.Axes` of the colorbars in the figure
+    axs : dict
+        Dictionary of matplotlib.axes.Axes in the figure
+    cbaxs : dict
+        Dictionary of matplotlib.axes.Axes of the colorbars in the figure
     """
     narrows = 10
     def __init__(self, obsmod, modelname, **kwargs):
@@ -911,7 +931,7 @@ class Bowshock2DPlots(Bowshock2D):
         )
 
         self.axs[0].set_aspect("equal")
-        self.axs[0].set_xlabel("$Distance$ [arcsec]")
+        self.axs[0].set_xlabel("Distance [arcsec]")
         self.axs[0].set_ylabel("Radius [arcsec]")
 
         self.cbaxs[0].tick_params(

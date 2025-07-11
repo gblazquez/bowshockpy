@@ -92,13 +92,13 @@ Parameters read from {p.filename}
             va=ps["va"],
             v0=ps["v0"],
             mass=ps["mass"],
+            distpc=psobs["distpc"],
             rbf_obs=ps["rbf_obs"]
             )
         bsmobs = bs.ObsModel(
             model=bsm,
             i=psobs["i"],
             vsys=psobs["vsys"],
-            distpc=psobs["distpc"],
             nzs=psobs["nzs"],
             )
         if p.bs2Dplot:

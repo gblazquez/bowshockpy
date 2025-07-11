@@ -79,14 +79,14 @@ def mb_sa_gaussian_f(maja, mina):
 
     Parameters:
     -----------
-    maja : `~astropy.units.Quantity`
+    maja : astropy.units.Quantity
         Beam major axis in degrees or radians
-    mina : `~astropy.units.Quantity`
+    mina : astropy.units.Quantity
         Beam minor axis  in degrees or radians
 
     Returns:
     --------
-    omega_M : `~astropy.units.sr`
+    omega_M : astropy.units.sr
         Beam solid angle in stereoradians
     """
     omega_M = np.pi * maja * mina / (4 * np.log(2))
@@ -171,11 +171,10 @@ def plotpv(pvimage, rangex, chan_vels, ax=None, cbax=None,
         coordinates of the boundaries of the image in the spatial direction.
     chan_vels : list or numpy.ndarray 
         list or numpy.ndarray with the velocities corresponding to the channels
-    ax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the position velodity diagram is
-        drawn.
-    cbax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the color bar is drawn.
+    ax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes` instance in which the position velodity diagram is drawn.
+    cbax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the color bar is drawn.
     vmax : optional, float
         Maximum value of the colorbar
     vcenter : optional, float
@@ -251,11 +250,11 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
     ----------
     sumint : numpy.ndarray
         Image of the sumation of all the pixels along the velocty axis.
-    ax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the position velodity diagram is
+    ax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the position velodity diagram is
         drawn.
-    cbax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the color bar is drawn.
+    cbax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
     vmax : optional, float
@@ -332,11 +331,10 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
     ----------
     mom0 : numpy.ndarray
         Image of the moment 0.
-    ax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the position velodity diagram is
-        drawn.
-    cbax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the color bar is drawn.
+    ax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
+    cbax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
     vmax : optional, float
@@ -415,11 +413,10 @@ def plotmom1(mom1, ax=None, cbax=None, extent=None,
     ----------
     mom1 : numpy.ndarray
         Image of the moment 1.
-    ax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the position velodity diagram is
-        drawn.
-    cbax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the color bar is drawn.
+    ax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
+    cbax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
     vmax : optional, float
@@ -529,11 +526,10 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
     ----------
     mom2 : numpy.ndarray
         Image of the moment 2.
-    ax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the position velodity diagram is
-        drawn.
-    cbax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the color bar is drawn.
+    ax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
+    cbax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
     vmax : optional, float
@@ -637,11 +633,10 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
     ----------
     mom8 : numpy.ndarray
         Image of the maximum pixel along the velocty axis.
-    ax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the position velodity diagram is
-        drawn.
-    cbax : optional, `~matplotlib.axes.Axes`
-        The `~.axes.Axes` instance in which the color bar is drawn.
+    ax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
+    cbax : optional, matplotlib.axes.Axes
+        The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
     vmax : optional, float

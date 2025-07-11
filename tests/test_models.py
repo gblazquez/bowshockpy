@@ -18,7 +18,7 @@ def test_narrowjet():
 
     bsm = bs.NarrowJet(
         L0=L0, zj=zj, vj=vj, va=va,
-        v0=v0, mass=mass, rbf_obs=rbf_obs
+        v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
         )
 
     # Test that NarrowJet produce the expected values
