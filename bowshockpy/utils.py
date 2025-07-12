@@ -129,7 +129,7 @@ def gaussconvolve(data, x_FWHM, y_FWHM, pa, return_kernel=False):
     else:
         return data_conv
 
-def get_color(vel_range, vel, cmap, norm="linear"):
+def get_color(vel_range, vel, cmap, norm="linear", customnorm=None):
     """
     Gets the color that corresponds in a colormap linearly interpolated taking
     into account the values at the limits.
@@ -145,12 +145,17 @@ def get_color(vel_range, vel, cmap, norm="linear"):
         Colormap label
     norm : optional, str
         Set "linear" for a linear scale, "log" for log scale.
+    customnorm : optional, str
+        Custom norm from `matplotlib.colors`
     """
     cmapp = colormaps.get_cmap(cmap)
-    if norm == "linear":
+    if norm == "linear" and customnorm is None:
         norm = colors.Normalize(vmin=vel_range[0], vmax=vel_range[-1])
-    elif norm == "log":
+    elif norm == "log" and customnorm is None:
         norm = colors.LogNorm(vmin=vel_range[0], vmax=vel_range[-1])
+    elif customnorm is not None:
+        norm = customnorm
+
     rgba = cmapp(norm(vel))
     color = colors.to_hex(rgba)
     return color

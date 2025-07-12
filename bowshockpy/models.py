@@ -522,10 +522,10 @@ class ObsModel(NarrowJet):
         [radians] 
     vsys : float
         Systemic velocity of the source [km/s]
-    nzs : int
+    nzs : optional, int
         Number of points used to compute the model solutions
     """
-    def __init__(self, model, i, vsys, nzs, **kwargs):
+    def __init__(self, model, i, vsys, nzs=200, **kwargs):
         self.__dict__ = model.__dict__
         self.i = i
         self.vsys = vsys
@@ -579,6 +579,27 @@ class ObsModel(NarrowJet):
             azimuthal angle
         """
         return self.rb(zb) * np.sin(phi)
+
+    def plotmodel(self, **kwargs):
+        """
+        Plot a figure including the main parameters of the bowshock model, its
+        morphology and kinematics, and the distribution of the surface density
+        
+        Parameters:
+        -----------
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.BowshockModelPlot`
+
+        Returns:
+        --------
+        modelplot : `~bowshockpy.plot.BowshockModelPlot` class instance
+            An instance of a class BowshockModelPlot, which contains information
+            on the figure and the model data
+        """
+        modelplot = pl.BowshockObsModelPlot(self, **kwargs)
+        return modelplot
+
+
 
 
 class Bowshock2D(ObsModel):
