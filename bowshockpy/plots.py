@@ -710,7 +710,7 @@ class BowshockObsModelPlot():
             self.minpointsize,
             len(self.vlos_zs_phis.T)
             )[::op]
-        point_sizes = [[i]*len(plt_obsmodel.vlos_zs_phis) for i in range_point_sizes]
+        point_sizes = [[i]*len(self.vlos_zs_phis) for i in range_point_sizes]
         self.axs[0].scatter(
             self.mo.km2arcsec(self.xp_zs_phis.T[::op]),
             self.mo.km2arcsec(self.yp_zs_phis.T[::op]),
@@ -747,7 +747,7 @@ class BowshockObsModelPlot():
             self.minpointsize,
             len(self.vlos_zs_phis.T)
             )[::-op]
-        point_sizes = [[i]*len(plt_obsmodel.vlos_zs_phis) for i in range_point_sizes]
+        point_sizes = [[i]*len(self.vlos_zs_phis) for i in range_point_sizes]
         self.axs[1].scatter(
             self.mo.km2arcsec(self.xp_zs_phis.T[::-op]),
             self.mo.km2arcsec(self.yp_zs_phis.T[::-op]),
