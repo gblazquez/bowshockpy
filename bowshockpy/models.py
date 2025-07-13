@@ -550,7 +550,9 @@ class ObsModel(NarrowJet):
             azimuthal angle
         """
         a = self.alpha(zb)
-        return self.vtot(zb) * (np.cos(a)*np.cos(self.i) - np.sin(a)*np.cos(phi)*np.sin(self.i))
+        return self.vtot(zb) * (
+            np.cos(a)*np.cos(self.i) - np.sin(a)*np.cos(phi)*np.sin(self.i)
+            )
 
     def xp(self, zb, phi):
         """
@@ -579,6 +581,21 @@ class ObsModel(NarrowJet):
             azimuthal angle
         """
         return self.rb(zb) * np.sin(phi)
+
+    def zp(self, zb, phi):
+        """
+        Calculates the xp coordinate for a point of the bowshock shell
+        with (zb, phi)
+        
+        Parameters
+        ----------
+        zb : float
+            z coordinate of the bowshock
+        phi : float
+            azimuthal angle
+        """
+        return -self.rb(zb)*np.cos(phi)*np.sin(self.i) + zb*np.cos(self.i)
+
 
     def plotmodel(self, **kwargs):
         """
