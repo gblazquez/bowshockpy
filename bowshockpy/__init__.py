@@ -1,6 +1,6 @@
 from .utils import print_example, mb_sa_gaussian_f, gaussconvolve, get_color, plotpv, plotsumint, plotmom0, plotmom1, plotmom2, plotmom8
 
-from .models import NarrowJet, ObsModel, Bowshock2DPlots, BowshockCube, CubeProcessing
+from .models import NarrowJet, ObsModel, BowshockCube, CubeProcessing
 
 from .moments import sumint, mom0, mom1, mom2, mom8, pv
 
