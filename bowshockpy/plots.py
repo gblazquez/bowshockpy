@@ -397,12 +397,13 @@ class BowshockModelPlot():
         ----------
         figname : optional, str
             Full path name of the figure. If None, the the full path name will
-            be models/{self.modelname}/bowshock_plot.pdf. If the folder tree does not exist, it will be created. 
+            be models/{self.modelname}/bowshock_model.pdf. If the folder tree does not exist, it will be created. 
         """
         if figname is None:
             ut.make_folder(f"models/{self.modelname}")
-            figname = f"models/{self.modelname}/bowshock_plot.pdf"
+            figname = f"models/{self.modelname}/bowshock_model.pdf"
         self.fig_model.savefig(f"{figname}", bbox_inches="tight")
+
 
 
 class BowshockObsModelPlot():
@@ -418,7 +419,9 @@ class BowshockObsModelPlot():
     modelname : optional, str
         Name of the model to include in the plot
     nzs : optional, int
-        Number of points used to compute the model solutions
+        Number of z coordinates used to compute the model solutions
+    nphis : optional, int
+        Number of phi coordinates used to compute the model solutions
     figsize: optional, tuple
         Tuple passed to `matplotib.pyplot.figure` to define the dimensions of
         the figure
@@ -433,11 +436,10 @@ class BowshockObsModelPlot():
     maxpointsize : optional, float
         Minsize of the points to plot
 
-
     Attributes:
     -----------
-    nzs : int
-        Number of points used to compute the model solutions
+    nrs : int
+        Number of r coordinates used to compute the model solutions
     zs : numpy.ndarray
         Array of the z-coordinates of the model.
     dzs : numpy.ndarray
@@ -447,38 +449,6 @@ class BowshockObsModelPlot():
     thetas : numpy.ndarray
         Array of the polar angle of the position vector at each point of the
         model [radians].
-    xps_phi90 : numpy.ndarray
-        Array of the projected distance from the source of points of the model
-        with azimuthal angle equal to 90deg [km].
-    xps_phi0 : numpy.ndarray
-        Array of the projected distance from the source of points of the model
-        with azimuthal angle equal to 0deg [km].
-    xps_phi180 : numpy.ndarray
-        Array of the projected distance from the source of points of the model
-        with azimuthal angle equal to 180deg [km].
-    vzps_phi0 : numpy.ndarray
-        Array of the projected velocities along the line-of-sight of points of
-        the model with azimuthal angle equal to 0deg [km/s].
-    vzps_phi90 : numpy.ndarray
-        Array of the projected velocities along the line-of-sight of points of
-        the model with azimuthal angle equal to 90deg [km/s].
-    vzps_phi180 : numpy.ndarray
-        Array of the projected velocities along the line-of-sight of points of
-        the model with azimuthal angle equal to 180deg [km/s].
-    Rs_arcsec : numpy.ndarray
-        Array with the radii of the model at each z-coordinate [arcsec].
-    zs_arcsec : numpy.ndarray
-        Array with the z-coordinates of the model [km].
-    xps_phi0_arcsec : numpy.ndarray
-        Array of the projected distance from the source of points of the model
-        with azimuthal angle equal to 0deg [km].
-    xps_phi90_arcsec : numpy.ndarray
-        Array of the projected distance from the source of points of the model
-        with azimuthal angle equal to 90deg [km].
-    xps_phi180_arcsec : numpy.ndarray
-        Array of the projected distance from the source of points of the model
-        with azimuthal angle equal to 180deg [km].
- 
     vs : numpy.ndarray
         Array of the total velocity for each point of the model [km/s].
     vrs : numpy.ndarray
@@ -501,8 +471,9 @@ class BowshockObsModelPlot():
     def __init__(
             self, bsmobs, modelname="none",
             nzs=200,
+            nphis=300,
             figsize=(16,3), 
-            linespacing=0.08,
+            linespacing=0.09,
             textbox_widthratio=0.8,
             cmap="turbo",
             minpointsize=0.1,
@@ -511,7 +482,9 @@ class BowshockObsModelPlot():
         self.mo = bsmobs
         self.modelname = modelname
         self.nzs = nzs
+        self.nphis = nphis
         self.nrs = nzs
+        self.nphis = nphis
         self.figsize = figsize
         self.linespacing = linespacing
         self.textbox_widthratio = textbox_widthratio
@@ -555,10 +528,6 @@ class BowshockObsModelPlot():
         # self.plot()
 
     def _calc_solutions(self):
-        # self.zsextended = self.zb_r(
-        #     np.linspace(self.rbf, self.rj, self.nzs)
-        # )
-        # self.nrs = self.nzs
         self.rs = np.linspace(self.mo.rbf, 0, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
         self.zs = self.mo.zb_r(self.rs)
@@ -593,37 +562,80 @@ class BowshockObsModelPlot():
         self.xps_phi90_arcsec = self.mo.km2arcsec(self.xps_phi90)
         self.xps_phi180_arcsec = self.mo.km2arcsec(self.xps_phi180)
 
-        phi_0 = -np.pi/2 
-        phi_f = +np.pi*3/2
-        # phi_0 =  np.pi*2#np.pi/2
-        # phi_f = np.pi*2 + 3/2*np.pi
-        phis = 500
-        self.phis = np.linspace(phi_0, phi_f, phis)[:-1]
+        phi_0_1 = -np.pi/2 
+        phi_f_1 = +np.pi/2
+ 
+        nphis_half = int(self.nphis/2)
+        self.phis_1 = np.linspace(phi_0_1, phi_f_1, nphis_half)[:-1]
 
-        self.xp_zs_phis = np.array([
+        self.xp_zs_phis_1 = np.array([
             [self.mo.xp(zb, phi)
              for zb in self.zs]
-            for phi in self.phis]
+            for phi in self.phis_1]
         )
-        self.yp_zs_phis = np.array([
+        self.yp_zs_phis_1 = np.array([
             [self.mo.yp(zb, phi)
              for zb in self.zs]
-            for phi in self.phis]
+            for phi in self.phis_1]
         )
-        self.vlos_zs_phis = np.array([
+        self.vlos_zs_phis_1 = np.array([
             [-self.mo.vzp(zb, phi)
              for zb in self.zs]
-            for phi in self.phis]
+            for phi in self.phis_1]
+        )
+
+        phi_0_2 = +np.pi/2 
+        phi_f_2 = +np.pi*3/2
+ 
+        self.phis_2 = np.linspace(phi_0_2, phi_f_2, nphis_half)[:-1]
+
+        self.xp_zs_phis_2 = np.array([
+            [self.mo.xp(zb, phi)
+             for zb in self.zs]
+            for phi in self.phis_2]
+        )
+        self.yp_zs_phis_2 = np.array([
+            [self.mo.yp(zb, phi)
+             for zb in self.zs]
+            for phi in self.phis_2]
+        )
+        self.vlos_zs_phis_2 = np.array([
+            [-self.mo.vzp(zb, phi)
+             for zb in self.zs]
+            for phi in self.phis_2]
+        )
+
+        phi_0_3 = 0
+        phi_f_3 = np.pi
+        
+        nphis_half = int(self.nphis/2)
+        self.phis_3 = np.linspace(phi_0_3, phi_f_3, nphis_half)[:-1]
+        
+        self.xp_zs_phis_3 = np.array([
+            [self.mo.xp(zb, phi)
+             for zb in self.zs]
+            for phi in self.phis_3]
+        )
+        self.zp_zs_phis_3 = np.array([
+            [self.mo.zp(zb, phi)
+             for zb in self.zs]
+            for phi in self.phis_3]
+        )
+        self.vlos_zs_phis_3 = np.array([
+            [-self.mo.vzp(zb, phi)
+             for zb in self.zs]
+            for phi in self.phis_3]
         )
 
     def _create_axes(self):
-        nrow = 1
-        ncol = 4
+
+        nrow = 2
+        ncol = 1
         wspace = 0.15
         hspace = 0.4
-        width_ratios = [self.textbox_widthratio, 1, 1, 1]
-        height_ratios = [1] * nrow
-
+        width_ratios = [1,]
+        height_ratios = [1, 1] 
+        
         self.fig_model = plt.figure(figsize=self.figsize)
         gs = GridSpec(
             nrow, ncol,
@@ -631,39 +643,61 @@ class BowshockObsModelPlot():
             width_ratios=width_ratios,
             hspace=hspace, wspace=wspace
         )
+        
         gss = {}
-        gss[0] = gs[0, 1].subgridspec(
+        gss[0] = gs[0, 0].subgridspec(
+            1, 3,
+            height_ratios=[1],
+            width_ratios=[0.75, 1, 0.5],
+            hspace=0.05,
+        )
+        gss[1] = gs[1, 0].subgridspec(
+            1, 3,
+            height_ratios=[1],
+            width_ratios=[1, 1, 1],
+            hspace=0.05,
+        )
+        
+        gsss = {}
+        gsss[0] = gss[0][0, 0].subgridspec(
             2, 1,
             height_ratios=[0.05, 1],
             width_ratios=[1],
             hspace=0.05,
         )
-        gss[1] = gs[0, 2].subgridspec(
+        gsss[1] = gss[0][0, 1:2].subgridspec(
+            1, 2,
+            height_ratios=[1],
+            width_ratios=[1, 0.05],
+            wspace=0.05,
+        )
+        gsss[2] = gss[1][0, 0].subgridspec(
             2, 1,
             height_ratios=[0.05, 1],
             width_ratios=[1],
             hspace=0.05,
         )
-        gss[2] = gs[0, 3].subgridspec(
+        
+        gsss[3] = gss[1][0, 1].subgridspec(
             2, 1,
             height_ratios=[0.05, 1],
             width_ratios=[1],
             hspace=0.05,
         )
-        # gss[2] = gs[1, 1].subgridspec(
-        #     2, 1,
-        #     height_ratios=[0.05, 1],
-        #     width_ratios=[1],
-        #     hspace=0.05,
-        # )
-
-        self.axs["text"] = plt.subplot(gs[:, 0])
-        self.axs[0] = plt.subplot(gss[0][1, 0])
-        self.cbaxs[0] = plt.subplot(gss[0][0, 0])
-        self.axs[1] = plt.subplot(gss[1][1, 0])
-        self.cbaxs[1] = plt.subplot(gss[1][0, 0])
-        self.axs[2] = plt.subplot(gss[2][:, 0])
-        # self.cbaxs[2] = plt.subplot(gss[2][0, 0])
+        
+        gsss[4] = gss[1][0, 2].subgridspec(
+            2, 1,
+            height_ratios=[0.05, 1],
+            width_ratios=[1],
+            hspace=0.05,
+        )
+        
+        self.axs["text"] = plt.subplot(gsss[0][:, 0])
+        self.axs[0] = plt.subplot(gsss[1][0, 0])
+        self.cbaxs[0] = plt.subplot(gsss[1][0, 1])
+        self.axs[1] = plt.subplot(gsss[2][:, 0])
+        self.axs[2] = plt.subplot(gsss[3][:, 0])
+        self.axs[3] = plt.subplot(gsss[4][:, 0])
         self.axs["text"].set_axis_off()
 
     def plot(self):
@@ -698,7 +732,7 @@ class BowshockObsModelPlot():
         Projected shell Morph. and Kin.
         """
         
-        # controls the plotting order of the points 
+        # op controls the plotting order of the points 
         op = 1 if self.mo.i <= np.pi/2 else -1
         norm = colors.Normalize(
                     vmax=self.maxvlos + self.mo.vsys,
@@ -708,22 +742,156 @@ class BowshockObsModelPlot():
         range_point_sizes = np.linspace(
             self.maxpointsize,
             self.minpointsize,
-            len(self.vlos_zs_phis.T)
+            len(self.zs)
             )[::op]
-        point_sizes = [[i]*len(self.vlos_zs_phis) for i in range_point_sizes]
-        self.axs[0].scatter(
-            self.mo.km2arcsec(self.xp_zs_phis.T[::op]),
-            self.mo.km2arcsec(self.yp_zs_phis.T[::op]),
-            c=self.vlos_zs_phis.T[::op] + self.mo.vsys,
+        point_sizes = [[i]*len(self.vlos_zs_phis_1) for i in range_point_sizes]
+        xps_arcsec_1 = self.mo.km2arcsec(self.xp_zs_phis_1.T[::op])
+        yps_arcsec_1 = self.mo.km2arcsec(self.yp_zs_phis_1.T[::op])
+        vlos_1 = self.vlos_zs_phis_1.T[::op] + self.mo.vsys
+        self.axs[1].scatter(
+            xps_arcsec_1,
+            yps_arcsec_1,
+            c=vlos_1,
             cmap=self.cmap,
             vmax=self.maxvlos + self.mo.vsys,
             vmin=self.minvlos + self.mo.vsys,
             s=point_sizes,
         )
+        xps_arcsec_2 = self.mo.km2arcsec(self.xp_zs_phis_2.T[::op])
+        yps_arcsec_2 = self.mo.km2arcsec(self.yp_zs_phis_2.T[::op])
+        vlos_2 = self.vlos_zs_phis_2.T[::op] + self.mo.vsys
+        self.axs[1].scatter(
+            xps_arcsec_2,
+            yps_arcsec_2,
+            c=vlos_2,
+            cmap=self.cmap,
+            vmax=self.maxvlos + self.mo.vsys,
+            vmin=self.minvlos + self.mo.vsys,
+            s=point_sizes,
+        )
+        self.axs[1].set_aspect("equal")
+        oxlim = self.axs[1].get_xlim()
+        self.axs[1].set_xlim([oxlim[0], oxlim[1]+0.6])
+        text_obj = self.axs[1].text(
+            0.64, 0.80, "Observer's\n view", transform=self.axs[1].transAxes)
+
+        # text_obj = self.axs[1].text(
+        #     0.75, 0.83, "Observer\n view", transform=self.axs[1].transAxes)
+        # display_text_f = text_obj.get_window_extent().get_points()[-1]
+        # xtext_f, ytext_f = \
+        #     self.axs[1].transData.inverted().transform(display_text_f)
+        # oxlim = self.axs[1].get_xlim()
+        # self.axs[1].set_xlim([oxlim[0], np.max([xtext_f+1, oxlim[1]])])
+
+        self.axs[1].set_xlabel("Projected length [arcsec]")
+        self.axs[1].set_ylabel("Proj. radius [arcsec]")
+
+        range_point_sizes = np.linspace(
+            self.maxpointsize,
+            self.minpointsize,
+            len(self.zs)
+            )[::-op]
+        point_sizes = [[i]*len(self.vlos_zs_phis_1) for i in range_point_sizes]
+        xps_arcsec_1 = self.mo.km2arcsec(self.xp_zs_phis_2.T[::-op])
+        yps_arcsec_1 = self.mo.km2arcsec(self.yp_zs_phis_2.T[::-op])
+        vlos_1 = self.vlos_zs_phis_2.T[::-op] + self.mo.vsys
+        self.axs[2].scatter(
+            xps_arcsec_1,
+            yps_arcsec_1,
+            c=vlos_1,
+            cmap=self.cmap,
+            vmax=self.maxvlos + self.mo.vsys,
+            vmin=self.minvlos + self.mo.vsys,
+            s=point_sizes,
+        )
+        xps_arcsec_2 = self.mo.km2arcsec(self.xp_zs_phis_1.T[::-op])
+        yps_arcsec_2 = self.mo.km2arcsec(self.yp_zs_phis_1.T[::-op])
+        vlos_2 = self.vlos_zs_phis_1.T[::-op] + self.mo.vsys
+        self.axs[2].scatter(
+            xps_arcsec_2,
+            yps_arcsec_2,
+            c=vlos_2,
+            cmap=self.cmap,
+            vmax=self.maxvlos + self.mo.vsys,
+            vmin=self.minvlos + self.mo.vsys,
+            s=point_sizes,
+        )
+        self.axs[2].set_aspect("equal")
+        oxlim = self.axs[2].get_xlim()
+        self.axs[2].set_xlim([oxlim[0], oxlim[1]+0.6])
+        text_obj = self.axs[2].text(
+            0.8, 0.85, "Back", transform=self.axs[2].transAxes)
+        # display_text_f = text_obj.get_window_extent().get_points()[-1]
+        # xtext_f, ytext_f = \
+        #     self.axs[2].transData.inverted().transform(display_text_f)
+        # oxlim = self.axs[2].get_xlim()
+        # self.axs[2].set_xlim([oxlim[0], np.max([xtext_f+1, oxlim[1]])])
+
+        self.axs[2].set_xlabel("Projected length [arcsec]")
+
+        range_point_sizes = np.linspace(
+            self.maxpointsize,
+            self.minpointsize,
+            len(self.zs)
+            )[::1]
+        point_sizes = [[i]*len(self.vlos_zs_phis_1) for i in range_point_sizes]
+        
+        xps = self.xp_zs_phis_3.T[::1]
+        zps = self.zp_zs_phis_3.T[::1]
+        
+        xps_rot = xps*np.sin(self.mo.i) + zps * np.cos(self.mo.i)
+        zps_rot = -(xps*np.cos(self.mo.i) - zps * np.sin(self.mo.i))
+        xps_rot_arcsec = self.mo.km2arcsec(xps_rot)
+        zps_rot_arcsec = self.mo.km2arcsec(zps_rot)
+        
+        self.axs[0].scatter(
+            xps_rot_arcsec,
+            zps_rot_arcsec,
+            c=self.vlos_zs_phis_3.T[::1] + self.mo.vsys,
+            cmap=self.cmap,
+            vmax=self.maxvlos + self.mo.vsys,
+            vmin=self.minvlos + self.mo.vsys,
+            s=point_sizes,
+        )
+        
+        self.axs[0].plot(0, 0, "*k")
+        
+        larrow = 0.5
+        
+        # Necessary to transform from display to physical coordinates
+        self.axs[0].set_xlim(self.axs[0].get_xlim())
+        self.axs[0].set_ylim(self.axs[0].get_ylim())
+        display_coords_arrow = self.axs[0].transAxes.transform((0.98, 0.95))
+        zarrow, Rarrow =  self.axs[0].transData.inverted().transform(display_coords_arrow)
+        display_coords_text = self.axs[0].transAxes.transform((0.85, 0.83))
+        xtext, ytext =  self.axs[0].transData.inverted().transform(display_coords_text)
+
+        zarrow_tip = larrow*np.cos(self.mo.i) + zarrow
+        Rarrow_tip = larrow*np.sin(self.mo.i) + Rarrow
+
+        self.axs[0].annotate(
+            "",
+            xy=(zarrow_tip, Rarrow_tip,),
+            xytext=(zarrow, Rarrow,),
+            arrowprops=dict(arrowstyle="->")
+            )
+
+        text_obj = self.axs[0].text(xtext, ytext, "To observer")
+        display_text_f = text_obj.get_window_extent().get_points()[-1]
+        xtext_f, ytext_f = self.axs[0].transData.inverted().transform(display_text_f)
+
+        oxlim = self.axs[0].get_xlim()
+        oylim = self.axs[0].get_ylim()
+        
+        x_newlim = np.max([zarrow, zarrow_tip, oxlim[1], xtext_f])
+        y_newlim = np.max([Rarrow, Rarrow_tip, oylim[1]])
+        
+        self.axs[0].set_xlim([oxlim[0], x_newlim*1.1])
+        self.axs[0].set_ylim([oylim[0], y_newlim*1.1])
+        
         self.axs[0].set_aspect("equal")
-        self.axs[0].text(0.85, 0.85, "Front", transform=self.axs[0].transAxes)
-        self.axs[0].set_xlabel("Projected distance [arcsec]")
-        self.axs[0].set_ylabel("Proj. Radius [arcsec]")
+        self.axs[0].set_xlabel(r"Length [arcsec]")
+        self.axs[0].set_ylabel(r"Radius [arcsec]")
 
         cbar = plt.colorbar(
                cm.ScalarMappable(
@@ -731,58 +899,23 @@ class BowshockObsModelPlot():
                    cmap=self.cmap,
                ),
                cax=self.cbaxs[0],
-               orientation="horizontal",
+               orientation="vertical",
         )
-
+        
         self.cbaxs[0].tick_params(
             which="both",
-            bottom=False, labelbottom=False,
-            top=True, labeltop=True
+            left=False, labelleft=False,
+            right=True, labelright=True
         )
-        self.cbaxs[0].set_xlabel(r"LSR velocity [km/s]", )
-        self.cbaxs[0].xaxis.set_label_position('top')
+        self.cbaxs[0].set_ylabel(r"Line-of-sight velocity [km/s]", )
+        self.cbaxs[0].yaxis.set_label_position('right')
 
-        range_point_sizes = np.linspace(
-            self.maxpointsize,
-            self.minpointsize,
-            len(self.vlos_zs_phis.T)
-            )[::-op]
-        point_sizes = [[i]*len(self.vlos_zs_phis) for i in range_point_sizes]
-        self.axs[1].scatter(
-            self.mo.km2arcsec(self.xp_zs_phis.T[::-op]),
-            self.mo.km2arcsec(self.yp_zs_phis.T[::-op]),
-            c=self.vlos_zs_phis.T[::-op] + self.mo.vsys,
-            cmap=self.cmap,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
-            s=point_sizes,
-        )
-        self.axs[1].set_aspect("equal")
-        self.axs[1].text(0.85, 0.85, "Back", transform=self.axs[1].transAxes)
-
-        cbar = plt.colorbar(
-               cm.ScalarMappable(
-                   norm=norm,
-                   cmap=self.cmap,
-               ),
-               cax=self.cbaxs[1],
-               orientation="horizontal",
-        )
-        self.axs[1].set_xlabel("Projected distance [arcsec]")
-
-        self.cbaxs[1].tick_params(
-            which="both",
-            bottom=False, labelbottom=False,
-            top=True, labeltop=True
-        )
-        self.cbaxs[1].set_xlabel(r"LSR velocity [km/s]", )
-        self.cbaxs[1].xaxis.set_label_position('top')
 
 
         """
         PV diagram: projected velocity
         """
-        self.axs[2].scatter(
+        self.axs[3].scatter(
             self.xps_phi180_arcsec,
             self.vloss_phi180 + self.mo.vsys,
             marker="o",
@@ -791,46 +924,32 @@ class BowshockObsModelPlot():
             vmin=self.minvlos + self.mo.vsys,
             cmap=self.cmap,
         )
-        self.axs[2].scatter(
+        self.axs[3].scatter(
             self.xps_phi0_arcsec,
             self.vloss_phi0 + self.mo.vsys,
             marker="o",
             c=self.vloss_phi0 + self.mo.vsys,
             vmax=self.maxvlos + self.mo.vsys,
             vmin=self.minvlos + self.mo.vsys,
-            cmap=self.cmap
+            cmap=self.cmap,
+            label="PV diagram\n along axis"
         )
         allvelsarray = np.array([
             self.vloss_phi0[:-1] + self.mo.vsys,
             self.vloss_phi180[:-1] + self.mo.vsys]).ravel()
         argmaxvelpv = np.argmax(np.abs(allvelsarray))
         if allvelsarray[argmaxvelpv]<0:
-            self.axs[2].invert_yaxis()
+            self.axs[3].invert_yaxis()
         else:
             pass
 
-        self.axs[2].set_box_aspect(1) 
-        self.axs[2].set_xlabel("Projected distance [arcsec]")
-        self.axs[2].set_ylabel("LSR velocity [km/s]")
+        self.axs[3].set_box_aspect(1) 
+        self.axs[3].set_xlabel("Projected length [arcsec]")
+        self.axs[3].set_ylabel("Line-of-sight velocity [km/s]")
+        # self.axs[3].text(0.1, 0.8, "PV diagram\n along axis",
+        #                 transform=self.axs[3].transAxes)
 
-        # cbar = plt.colorbar(
-        #        cm.ScalarMappable(
-        #            norm=norm,
-        #            cmap=self.cmap,
-        #        ),
-        #        cax=self.cbaxs[2],
-        #        orientation="horizontal",
-        # )
-
-        # self.cbaxs[2].tick_params(
-        #     which="both",
-        #     bottom=False, labelbottom=False,
-        #     top=True, labeltop=True
-        # )
-        # self.cbaxs[1].set_xlabel(r"Surface density [g cm$^{-2}$]", )
-        # self.cbaxs[2].set_xlabel(r"LSR velocity [km/s]", )
-        # self.cbaxs[2].xaxis.set_label_position('top')
-
+        self.axs[3].legend(frameon=False, markerscale=0)
          
     def savefig(self, figname=None):
         """
@@ -840,12 +959,10 @@ class BowshockObsModelPlot():
         ----------
         figname : optional, str
             Full path name of the figure. If None, the the full path name will
-            be models/{self.modelname}/bowshock_plot.pdf. If the folder tree does not exist, it will be created. 
+            be models/{self.modelname}/bowshock_projected.pdf. If the folder tree does not exist, it will be created. 
         """
         if figname is None:
             ut.make_folder(f"models/{self.modelname}")
-            figname = f"models/{self.modelname}/bowshock_obs_plot.pdf"
+            figname = f"models/{self.modelname}/bowshock_projected.pdf"
         self.fig_model.savefig(f"{figname}", bbox_inches="tight")
-
-
 
