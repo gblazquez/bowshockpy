@@ -472,7 +472,7 @@ class BowshockObsModelPlot():
             self, bsmobs, modelname="none",
             nzs=200,
             nphis=300,
-            figsize=(16,3), 
+            figsize=(12,6), 
             linespacing=0.09,
             textbox_widthratio=0.8,
             cmap="turbo",
