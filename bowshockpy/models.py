@@ -489,7 +489,7 @@ class NarrowJet():
         mpamb_f = np.pi * rhoa * (self.vj - self.va) * self.rbf**2
         return mpamb_f
 
-    def plotmodel(self, **kwargs):
+    def modelplot(self, **kwargs):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
@@ -522,14 +522,11 @@ class ObsModel(NarrowJet):
         [radians] 
     vsys : float
         Systemic velocity of the source [km/s]
-    nzs : optional, int
-        Number of points used to compute the model solutions
     """
     def __init__(self, model, i, vsys, nzs=200, **kwargs):
         self.__dict__ = model.__dict__
         self.i = i
         self.vsys = vsys
-        self.nzs = nzs
         # for param in model.__dict__:
         #     setattr(self, param, getattr(model, param))
         for kwarg in self.default_kwargs:
@@ -597,7 +594,7 @@ class ObsModel(NarrowJet):
         return -self.rb(zb)*np.cos(phi)*np.sin(self.i) + zb*np.cos(self.i)
 
 
-    def plotmodel(self, **kwargs):
+    def modelplot(self, **kwargs):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
@@ -702,15 +699,16 @@ class BowshockCube(ObsModel):
     """
 
     def __init__(
-            self, obsmodel, nphis, vch0, vchf, xpmax, pa=0, nc=50, nxs=200,
-            nys=200, refpix=[0,0], CIC=True, vt="2xchannel", tolfactor_vt=None,
-            verbose=True, **kwargs):
+            self, obsmodel, nphis, vch0, vchf, xpmax, pa=0, nzs=200, nc=50,
+            nxs=200, nys=200, refpix=[0,0], CIC=True, vt="2xchannel",
+            tolfactor_vt=None, verbose=True, **kwargs):
         self.__dict__ = obsmodel.__dict__
         self.nphis = nphis
         self.vch0 = vch0
         self.vchf = vchf
         self.xpmax = xpmax
         self.pa = pa
+        self.nzs = nzs
         self.nc = nc
         self.nxs = nxs
         self.nys = nys
@@ -798,6 +796,21 @@ at least one of three reasons:
             self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
             self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
+    
+    def _check_mass_consistency(self):
+        print("Checking total mass consistency...")
+        intmass_cube = np.sum(self.cube)
+        mass_consistent = np.isclose(intmass_cube, self.mass)
+        massloss = (self.mass-intmass_cube) / self.mass * 100
+        if mass_consistent:
+            print(rf"Only {massloss:.1e} % of mass is lost due to numerical errors")
+        else:
+            print(rf"""
+WARNING: The integrated mass of the cube is {massloss:.1e} % less than the input
+total mass. Consider increasing the number of points of the model (increasing
+nzs, nphis parameter), or decreasing the number of pixels or channels (nxs, nys,
+nc).
+""")
 
     def makecube(self, fromcube=None):
         """
@@ -843,10 +856,17 @@ at least one of three reasons:
             if self.verbose:
                 t0 = datetime.now()
 
-            if iz != len(self.zs)-1:
-                dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
-            else:
+            if iz == 0:
+                # Treat outer boundary
+                intmass = self.intmass_analytical(self.rbf)
+                intmass_halfdr = self.intmass_analytical(self.rbf-self.dr/2)
+                dmass =  (intmass - intmass_halfdr) / self.nphis
+            elif iz == len(self.zs)-1:
+                # Treat head boundary
                 dmass = self.intmass_analytical(self.dr/2) / self.nphis
+            else:
+                # Treat the rest of the bowshock
+                dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
 
             for phi in self.phis:
                 _xp = self.rs[iz] * np.sin(phi)
@@ -875,8 +895,12 @@ at least one of three reasons:
                 ts.append(intervaltime)
                 ut.progressbar_bowshock(iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
 
+        self._check_mass_consistency()
+
         # TODO: def plot_channel(self, channel):
-        # TODO: check masses! Print total mass loss
+        # TODO: def plot_channels(self, ...):
+        # TODO: check masses! Print total mass loss (and make test of this)
+        # TODO: Check that the model is well sampled (nzs, nphis, given nxs, nys, vc)
 
 
 class CubeProcessing(BowshockCube):
@@ -968,12 +992,13 @@ class CubeProcessing(BowshockCube):
     momtol_clipping = 10**(-4)
 
     def __init__(
-            self, bscube, J="3-2", XCO=8.5*10**(-5), meanmass=2.8 /
+            self, bscube, modelname="none", J="3-2", XCO=8.5*10**(-5), meanmass=2.8 /
             (6.023*10**23) * u.g, Tex=100*u.K, Tbg=2.7*u.K, coordcube="offset",
             ra_source_deg=None, dec_source_deg=None, bmin=None, bmaj=None,
             pabeam=None, papv=None, parot=None, sigma_beforeconv=None,
             maxcube2noise=None, **kwargs):
         self.__dict__ = bscube.__dict__
+        self.modelname = modelname
         self.J = J
         self.XCO = XCO
         self.meanmass = meanmass

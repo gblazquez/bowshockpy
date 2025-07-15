@@ -99,10 +99,9 @@ Parameters read from {p.filename}
             model=bsm,
             i=psobs["i"],
             vsys=psobs["vsys"],
-            nzs=psobs["nzs"],
             )
         if p.bs2Dplot:
-            plt_model = bsm.plotmodel(
+            plt_model = bsm.modelplot(
                 modelname=ps["modelname"],
             )
             plt_model.plot()
@@ -111,12 +110,12 @@ Parameters read from {p.filename}
             plt_model.savefig(
                 f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
                 )
-            plt_obsmodel = bsmobs.plotmodel(
-                figsize=(12, 6),
+            plt_obsmodel = bsmobs.modelplot(
                 )
             plt_obsmodel.plot()
             plt_obsmodel.savefig(
-                f"models/{ps['modelname']}/bowshock_projected_{i+1}.pdf",
+                f"models/{ps['modelname']}/bowshock_projected_{i+1}.jpg",
+                dpi=300,
             )
             # bs2Dplot = bs.Bowshock2DPlots(bsmobs, ps['modelname'])
             # if i == 0:
@@ -187,6 +186,7 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
     )
     bscp = bs.CubeProcessing(
         bscs[-1],
+        modelname=ps["modelname"],
         J=mpars["J"],
         XCO=mpars["XCO"],
         meanmass=mpars["meanmass"],
@@ -220,7 +220,6 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
 
     # Save the file with all the parameters used to generate the bowshocks
     os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")
-
 
 
 class VarsInParamFile():

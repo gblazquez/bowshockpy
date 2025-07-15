@@ -389,7 +389,7 @@ class BowshockModelPlot():
         self.cbaxs[1].xaxis.set_ticks_position('top')
         self.cbaxs[1].xaxis.set_label_position('top') 
 
-    def savefig(self, figname=None):
+    def savefig(self, figname=None, **kwargs):
         """
         Saves the plot of the bowhsock model.       
 
@@ -402,7 +402,7 @@ class BowshockModelPlot():
         if figname is None:
             ut.make_folder(f"models/{self.modelname}")
             figname = f"models/{self.modelname}/bowshock_model.pdf"
-        self.fig_model.savefig(f"{figname}", bbox_inches="tight")
+        self.fig_model.savefig(f"{figname}", bbox_inches="tight", **kwargs)
 
 
 
@@ -470,14 +470,14 @@ class BowshockObsModelPlot():
 
     def __init__(
             self, bsmobs, modelname="none",
-            nzs=200,
-            nphis=300,
+            nzs=150,
+            nphis=150,
             figsize=(12,6), 
             linespacing=0.09,
             textbox_widthratio=0.8,
             cmap="turbo",
             minpointsize=0.1,
-            maxpointsize=5,
+            maxpointsize=10,
             ):
         self.mo = bsmobs
         self.modelname = modelname
@@ -951,7 +951,7 @@ class BowshockObsModelPlot():
 
         self.axs[3].legend(frameon=False, markerscale=0)
          
-    def savefig(self, figname=None):
+    def savefig(self, figname=None, **kwargs):
         """
         Saves the plot of the bowhsock model.       
 
@@ -963,6 +963,6 @@ class BowshockObsModelPlot():
         """
         if figname is None:
             ut.make_folder(f"models/{self.modelname}")
-            figname = f"models/{self.modelname}/bowshock_projected.pdf"
-        self.fig_model.savefig(f"{figname}", bbox_inches="tight")
+            figname = f"models/{self.modelname}/bowshock_projected.jpg"
+        self.fig_model.savefig(f"{figname}", bbox_inches="tight", **kwargs)
 
