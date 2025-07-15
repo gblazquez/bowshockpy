@@ -157,12 +157,18 @@ Spectral cube parameters
 *vt* (str or float)
     Thermal+turbulent line-of-sight velocity dispersion [km/s] If thermal+turbulent line-of-sight velocity dispersion is smaller than the instrumental spectral resolution, vt should be the spectral resolution. It can be also set to a integer times the channel width (e.g., "2xchannel")
 
-*CIC* (bolean)
-    Set to True to perform Cloud in Cell interpolation.
-
 *tolfactor_vt* (float)
-    Neighbour channel maps around a given channel map with vch will stop being populated when their difference in velocity with respect to vch is higher than this factor times vt. The lower the factor, the quicker will be the code, but the total mass will be underestimated. If vt is not None, compare the total mass of the output cube with the 'mass' parameter that the user has defined 
+    If the velocity dispersion vt is not 0, the masses corresponding to a channel
+    maps are spread along the whole cube in the velocity axis following a Gaussian
+    distribution. tolfactor_vt parameter truncates the gaussian distribution at
+    vt*tolfactor_vt in order to make the computation substatially faster. A low
+    tolfactor_vt can result in a warning reporting an underestimation of the total
+    mass of the model.
 
+*CIC* (bolean)
+    Set to True to perform 2D Cloud in Cell interpolation along the spatial
+    dimensions. If False, a nearest neighbour association will be perform.
+    
 *refpix* (list or None)
     Pixel coordinates (zero-based) of the source, i.e., the origin from which the distances are measured. The first index is the R.A. axis, the second is the  Dec. axis [[int, int] or None] 
 

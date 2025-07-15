@@ -186,11 +186,12 @@ vt = "2xchannel"
 # Cloud in Cell interpolation? [True/False]
 CIC = True
 
-# Neighbour channel maps around a given channel map with vch will stop being
-# populated when their difference in velocity with respect to vch is higher than
-# this factor times vt. The lower the factor, the quicker will be the code, but
-# the total mass will be underestimated. If vt is not None, compare the total
-# mass of the output cube with the 'mass' parameter that the user has defined
+# If the velocity dispersion vt is not 0, the masses corresponding to a channel
+# maps are spread along the whole cube in the velocity axis following a gaussian
+# distribution.  tolfactor_vt parameter truncates the gaussian distribution at
+# vt*tolfactor_vt in order to make the computation substatially faster. A low
+# tolfactor_vt can result in a warning reporting an underestimation of the total
+# mass of the model.
 tolfactor_vt = 3
 
 # Reference pixel [[int, int] or None]

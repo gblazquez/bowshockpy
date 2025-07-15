@@ -797,20 +797,22 @@ at least one of three reasons:
             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
             self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
     
-    def _check_mass_consistency(self):
+    def _check_mass_consistency(self, return_isconsistent=False):
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
         mass_consistent = np.isclose(intmass_cube, self.mass)
         massloss = (self.mass-intmass_cube) / self.mass * 100
         if mass_consistent:
-            print(rf"Only {massloss:.1e} % of mass is lost due to numerical errors")
+            print(rf"Only {massloss:.1e} % of the total mass is lost due to numerical errors")
         else:
             print(rf"""
 WARNING: The integrated mass of the cube is {massloss:.1e} % less than the input
 total mass. Consider increasing the number of points of the model (increasing
-nzs, nphis parameter), or decreasing the number of pixels or channels (nxs, nys,
-nc).
+nzs, nphis parameter), increasing tolfactor_vt parameter, or decreasing the
+number of pixels or channels (nxs, nys, nc).
 """)
+        if return_isconsistent:
+            return mass_consistent
 
     def makecube(self, fromcube=None):
         """
