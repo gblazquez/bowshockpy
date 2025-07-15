@@ -899,9 +899,20 @@ number of pixels or channels (nxs, nys, nc).
 
         self._check_mass_consistency()
 
-        # TODO: def plot_channel(self, channel):
+    def plot_channel(self, chan, vmax=None, vmin=None, cmap="inferno"):
+        pl.plot_channel(
+            cube=self.cube,
+            chan=chan,
+            arcsecpix=self.arcsecpix,
+            velchans=self.velchans,
+            vmax=vmax,
+            vmin=vmin,
+            cmap=cmap,
+            units="Mass [Msun]",
+            refpix=self.refpix
+        )
+
         # TODO: def plot_channels(self, ...):
-        # TODO: check masses! Print total mass loss (and make test of this)
         # TODO: Check that the model is well sampled (nzs, nphis, given nxs, nys, vc)
 
 
@@ -1860,7 +1871,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         chan_vels: list or numpy.ndarray
             1-dimensional array of the velocity corresponding to the channels.
         """
-        pv_array = ut.plotpv(pvimage, rangex, chan_vels, **kwargs)
+        pv_array = pl.plotpv(pvimage, rangex, chan_vels, **kwargs)
         return pv_array
 
     def plotsumint(self, sumint, **kwargs):
@@ -1872,7 +1883,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         sumint : numpy.ndarray
             Sum of the pixels of the cubes along the velocity axis.
         """
-        return ut.plotsumint(sumint, **kwargs)
+        return pl.plotsumint(sumint, **kwargs)
 
     def plotmom0(self, mom0, **kwargs):
         """
@@ -1883,7 +1894,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom0 : numpy.ndarray
             Moment 0 image.
         """
-        return ut.plotmom0(mom0, **kwargs)
+        return pl.plotmom0(mom0, **kwargs)
 
     def plotmom1(self, mom1, **kwargs):
         """
@@ -1894,7 +1905,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom1 : numpy.ndarray
             Moment 1 image.
         """
-        return ut.plotmom1(mom1, **kwargs)
+        return pl.plotmom1(mom1, **kwargs)
 
     def plotmom2(self, mom2, **kwargs):
         """
@@ -1905,7 +1916,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom2 : numpy.ndarray
             Moment 2 image.
         """
-        return ut.plotmom2(mom2, **kwargs)
+        return pl.plotmom2(mom2, **kwargs)
 
     def plotmom8(self, mom8, **kwargs):
         """
@@ -1916,7 +1927,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom8 : numpy.ndarray
             Moment 8 image.
         """
-        return ut.plotmom8(mom8, **kwargs)
+        return pl.plotmom8(mom8, **kwargs)
 
     def momentsandpv(
             self, ck, savefits=False, saveplot=False,

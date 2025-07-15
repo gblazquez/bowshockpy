@@ -222,14 +222,6 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
     os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")
 
 
-class VarsInParamFile():
-    def __init__(self, params):
-        self.filename = params["__file__"]
-        for key in params:
-            if key.startswith("__") is False:
-                setattr(self, key, params[key])
-
-
 def main():
     # bpf_str = input(
     # """
@@ -279,7 +271,7 @@ https://bowshockpy.readthedocs.io/en/latest/
     nexample = args.inputfile_example
     if filename != "None":
         parameters = runpy.run_path(filename)
-        p = VarsInParamFile(parameters)
+        p = ut.VarsInParamFile(parameters)
         generate_bowshock(p)
     if nexample != "None":
         ut.print_example(nexample)

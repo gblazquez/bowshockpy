@@ -1,4 +1,4 @@
-from .utils import print_example, mb_sa_gaussian_f, gaussconvolve, get_color, plotpv, plotsumint, plotmom0, plotmom1, plotmom2, plotmom8
+from .utils import print_example, mb_sa_gaussian_f, gaussconvolve, get_color
 
 from .models import NarrowJet, ObsModel, BowshockCube, CubeProcessing
 
