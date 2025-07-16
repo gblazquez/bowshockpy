@@ -160,7 +160,7 @@ Spectral cube parameters
 *tolfactor_vt* (float)
     If the velocity dispersion vt is not 0, the masses corresponding to a channel
     maps are spread along the whole cube in the velocity axis following a Gaussian
-    distribution. tolfactor_vt parameter truncates the gaussian distribution at
+    distribution. tolfactor_vt parameter truncates the Gaussian distribution at
     vt*tolfactor_vt in order to make the computation substatially faster. A low
     tolfactor_vt can result in a warning reporting an underestimation of the total
     mass of the model.

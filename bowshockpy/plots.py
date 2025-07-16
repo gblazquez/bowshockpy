@@ -776,9 +776,11 @@ class BowshockObsModelPlot():
         )
         self.axs[1].set_aspect("equal")
         oxlim = self.axs[1].get_xlim()
+        oylim = self.axs[1].get_ylim()
         self.axs[1].set_xlim([oxlim[0], oxlim[1]+0.6])
+        self.axs[1].set_ylim([oylim[0], oylim[1]+0.3])
         text_obj = self.axs[1].text(
-            0.64, 0.80, "Observer's\n view", transform=self.axs[1].transAxes)
+            0.64, 0.75, "Observer's\n view", transform=self.axs[1].transAxes)
 
         # text_obj = self.axs[1].text(
         #     0.75, 0.83, "Observer\n view", transform=self.axs[1].transAxes)
@@ -823,7 +825,9 @@ class BowshockObsModelPlot():
         )
         self.axs[2].set_aspect("equal")
         oxlim = self.axs[2].get_xlim()
+        oylim = self.axs[2].get_ylim()
         self.axs[2].set_xlim([oxlim[0], oxlim[1]+0.6])
+        self.axs[2].set_ylim([oylim[0], oylim[1]+0.3])
         text_obj = self.axs[2].text(
             0.8, 0.85, "Back", transform=self.axs[2].transAxes)
         # display_text_f = text_obj.get_window_extent().get_points()[-1]

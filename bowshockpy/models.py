@@ -489,7 +489,7 @@ class NarrowJet():
         mpamb_f = np.pi * rhoa * (self.vj - self.va) * self.rbf**2
         return mpamb_f
 
-    def modelplot(self, **kwargs):
+    def get_modelplot(self, **kwargs):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
@@ -594,7 +594,7 @@ class ObsModel(NarrowJet):
         return -self.rb(zb)*np.cos(phi)*np.sin(self.i) + zb*np.cos(self.i)
 
 
-    def modelplot(self, **kwargs):
+    def get_modelplot(self, **kwargs):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
@@ -756,8 +756,8 @@ at least one of three reasons:
     - The model is far away from the image center. Try to change the reference
     pixel where the physical center (the source) is found (parameter refpix).
     - The model is outside your velocity coverage. Try to change the range of
-    velocity channels of the spectral cube (parameters vch0 and vchf, which
-    should be negative floats if the model is blueshifted).\n
+    velocity channels of the spectral cube (parameters vch0 and vchf, consider
+    negative floats if the model is blueshifted).\n
 """)
 
     def _calc_params_init(self):
@@ -803,13 +803,25 @@ at least one of three reasons:
         mass_consistent = np.isclose(intmass_cube, self.mass)
         massloss = (self.mass-intmass_cube) / self.mass * 100
         if mass_consistent:
-            print(rf"Only {massloss:.1e} % of the total mass is lost due to numerical errors")
+            print(rf"Only {massloss:.1e} % of the total mass of the bowshock model is lost due to numerical errors")
         else:
             print(rf"""
 WARNING: The integrated mass of the cube is {massloss:.1e} % less than the input
-total mass. Consider increasing the number of points of the model (increasing
-nzs, nphis parameter), increasing tolfactor_vt parameter, or decreasing the
-number of pixels or channels (nxs, nys, nc).
+total mass of the bowshock. This can be due to several factors:
+    - Part of the model lie outside the grid of the spectral cube. If this is
+    not intended, try to solve it by making the maps larger, changing the
+    reference pixel to center the model in the maps, or increasing the velocity
+    coverage of the spectral cube.  
+    - The difference between the integrated mass of the cube and the input total
+    mass of the bowshock model is due to numerical errors. If you think that the
+    difference is too big, you can reduce it by increasing the number of points
+    of the model (inceasng nzs or/and nphis parameters).
+    - If the velocity dispersion vt is not 0, the masses corresponding to a
+    channel maps are spread along the cube in the velocity axis following a
+    Gaussian distribution. This distribution is truncated at vt*tolfactor_vt in
+    order to make the computation substatially faster, but it can result in an
+    underestimation of the integrated mass of the spectral cube. Try to make
+    tolfactor_vt larger.
 """)
         if return_isconsistent:
             return mass_consistent
@@ -826,7 +838,7 @@ number of pixels or channels (nxs, nys, nc).
         """
         if self.verbose:
             ts = []
-            print("\nComputing masses...")
+            print("\nComputing spectral cube of masses...")
 
         self.nrs = self.nzs
         self.rs = np.linspace(self.rbf, 0, self.nrs)
@@ -839,6 +851,8 @@ number of pixels or channels (nxs, nys, nc).
 
         self.vs = np.array([self.vtot(zb) for zb in self.zs])
         self.velchans = np.linspace(self.vch0, self.vchf, self.nc)
+        minvelchans = np.min(self.velchans)
+        maxvelchans = np.max(self.velchans)
 
         if fromcube is None:
             self.cube = np.zeros((self.nc, self.nys, self.nxs))
@@ -882,11 +896,19 @@ number of pixels or channels (nxs, nys, nc).
                 ypixcoord = self.km2arcsec(yp) / self.arcsecpix + self.refpix[1]
                 xpix = int(xpixcoord)
                 ypix = int(ypixcoord)
-                if (xpix+1<self.nxs) and (ypix+1<self.nys) and (xpix>0) and (ypix>0):
+                # Conditions model point inside cube
+                condition_inside_map = \
+                    (xpix+1<self.nxs) and (ypix+1<self.nys) \
+                    and (xpix>0) and (ypix>0)
+                condition_inside_velcoverage = \
+                    vlsr <= maxvelchans and vlsr >= minvelchans
+                if condition_inside_map and condition_inside_velcoverage:
                     dxpix = xpixcoord - xpix
                     dypix = ypixcoord - ypix
                     for chan, vchan in enumerate(self.velchans):
-                        self._wxpyp(chan, vchan, xpix, ypix, dxpix, dypix, vlsr, dmass)
+                        self._wxpyp(
+                            chan, vchan, xpix, ypix,
+                            dxpix, dypix, vlsr, dmass)
                 else:
                     if outsidegrid_warning:
                         self._OUTSIDEGRID_WARNING()
@@ -900,7 +922,7 @@ number of pixels or channels (nxs, nys, nc).
         self._check_mass_consistency()
 
     def plot_channel(self, chan, vmax=None, vmin=None,
-        cmap="inferno", return_fig_axs=False):
+        cmap="inferno", savefig=None):
         """
         Plots a channel map of a cube
 
@@ -916,12 +938,10 @@ number of pixels or channels (nxs, nys, nc).
             the channel is chosen.
         cmap : str, optional
             Label of the colormap, by default "inferno".
-        return_fig_axs : bool, optional
-           If True, returns a tuple of the figure and axes of the channel map
-           and the colorbar.  If False, does not return anything. By default,
-           False.
+        savefig : str, optional String of the full path to save the figure. If
+            None, no figure is saved. By default, None.
         """
-        pl.plot_channel(
+        fig, axs, cbax = pl.plot_channel(
             cube=self.cube,
             chan=chan,
             arcsecpix=self.arcsecpix,
@@ -931,21 +951,19 @@ number of pixels or channels (nxs, nys, nc).
             cmap=cmap,
             units="Mass [Msun]",
             refpix=self.refpix,
-            return_fig_axs=return_fig_axs,
+            return_fig_axs=True
         )
+        if figsave is not None:
+            fig.savefig(figname=savefig, bbox_inches="tight")
 
-    def plot_channels(self, **kwargs):
+
+
+    def plot_channels(self, figsave=None, **kwargs):
         """
         Plots several channel map of a spectral cube.
     
         Parameters
         ----------
-        cube : numpy.ndarray()
-            Spectral cube from which the channel is plotted
-        arcsecpix : float
-            Arcseconds per pixel
-        velchans : list or numpy.ndarray()
-            Array with the velocities of each channel
         ncol : int, optional
             Number of columns in the figure, by default 4
         nrow : int, optional
@@ -979,28 +997,22 @@ number of pixels or channels (nxs, nys, nc).
             Minor locator in y-axis, by default 0.2
         refpix : list, optional
             Pixel of reference, by default [0,0]
-        return_fig_axs : bool, optional
-            If True, returns a tuple of the ax of the channel map and the colorbar.
-            If False, does not return anything.
-            
-        Returns:
-        --------
-        (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map and the
-            colorbar, only returns if return_axs=True.
+        savefig : str, optional String of the full path to save the figure. If
+            None, no figure is saved. By default, None.
         """
-        pl.plot_channels(
+        fig, ax, cbax = pl.plot_channels(
             cube=self.cube,
             arcsecpix=self.arcsecpix,
             velchans=self.velchans,
             units="Mass [Msun]",
             refpix=self.refpix,
+            return_fig_axs=True
             **kwargs,
         )
+        if figsave is not None:
+            fig.savefig(figname=savefig, bbox_inches="tight")
 
 
-
-
-        # TODO: def plot_channels(self, ...):
         # TODO: Check that the model is well sampled (nzs, nphis, given nxs, nys, vc)
 
 
