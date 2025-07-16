@@ -101,7 +101,7 @@ Parameters read from {p.filename}
             vsys=psobs["vsys"],
             )
         if p.bs2Dplot:
-            plt_model = bsm.modelplot(
+            plt_model = bsm.get_modelplot(
                 modelname=ps["modelname"],
             )
             plt_model.plot()
@@ -110,19 +110,13 @@ Parameters read from {p.filename}
             plt_model.savefig(
                 f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
                 )
-            plt_obsmodel = bsmobs.modelplot(
+            plt_obsmodel = bsmobs.get_modelplot(
                 )
             plt_obsmodel.plot()
             plt_obsmodel.savefig(
                 f"models/{ps['modelname']}/bowshock_projected_{i+1}.jpg",
                 dpi=300,
             )
-            # bs2Dplot = bs.Bowshock2DPlots(bsmobs, ps['modelname'])
-            # if i == 0:
-            #     ut.make_folder(f"models/{ps['modelname']}")
-            # bs2Dplot.savefig(
-            #     f"models/{ps['modelname']}/2D_{i+1}.pdf",
-            #     )
         if len(p.outcubes) != 0:
             print(f"""
 
