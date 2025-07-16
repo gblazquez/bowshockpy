@@ -7,6 +7,9 @@ from matplotlib import cm
 from matplotlib import colors
 from matplotlib import colormaps
 
+from itertools import product
+from matplotlib import ticker
+
 import bowshockpy.utils as ut
 
 class BowshockModelPlot():
@@ -971,7 +974,7 @@ class BowshockObsModelPlot():
 
 def plot_channel(cube, chan, arcsecpix, velchans,
     vmax=None, vmin=None, cmap="inferno", units="Mass [Msun]",
-    refpix=[0,0],):
+    refpix=[0,0], return_fig_axs=False):
     """
     Plots a channel map of a spectral cube
 
@@ -997,6 +1000,14 @@ def plot_channel(cube, chan, arcsecpix, velchans,
         Units of the values of the cube, by default "Mass [Msun]"
     refpix : list, optional
         Pixel of reference, by default [0,0]
+    return_fig_axs : bool, optional
+        If True, returns a tuple of the ax of the channel map and the colorbar.
+        If False, does not return anything.
+        
+    Returns:
+    --------
+    (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map and the
+        colorbar, only returns if return_axs=True.
     """
 
     fig = plt.figure(figsize=(4,3.75))
@@ -1054,6 +1065,162 @@ def plot_channel(cube, chan, arcsecpix, velchans,
     
     ax.set_ylabel("Dec. [arcsec]")
     ax.set_xlabel("R.A. [arcsec]")
+
+    if return_fig_axs:
+        return (fig, ax, cbax)
+
+
+def plot_channels(cube, arcsecpix, velchans, 
+    ncol=4, nrow=4, figsize=None, wspace=0.05, hspace=0.0, vmax=None,
+    vcenter=None, vmin=None, cmap="inferno", units="Mass [Msun]",
+    xmajor_locator=1, xminor_locator=0.2, ymajor_locator=1, yminor_locator=0.2,
+    refpix=[0,0], return_figs_axs=False):
+    """
+    Plots several channel map of a spectral cube.
+
+    Parameters
+    ----------
+    cube : numpy.ndarray()
+        Spectral cube from which the channel is plotted
+    arcsecpix : float
+        Arcseconds per pixel
+    velchans : list or numpy.ndarray()
+        Array with the velocities of each channel
+    ncol : int, optional
+        Number of columns in the figure, by default 4
+    nrow : int, optional
+        Number of rows of the figure, by default 4
+    figsize : tuple, optional
+        Size of the figure. If None, an optimal size will be computed. By
+        default None.
+    wspace : float, optional
+        Width space between the channel plots, by default 0.05
+    hspace : float, optional
+        Height space between the cannel plots, by default 0.0
+    vmax : float, optional
+        Maximum value of the colormap. If None (default), the maximum value of
+        the channel is chosen.
+    vcenter : _type_, optional
+        _description_, by default None
+    vmin : float, optional
+        Minimum value of the colormap. If None (default), the minimum value of
+        the channel is chosen.
+    cmap : str, optional
+        Label of the colormap, by default "inferno".
+    units : str, optional
+        Units of the values of the cube, by default "Mass [Msun]"
+    xmajor_locator : float, optional
+        Major locator in x-axis, by default 1
+    xminor_locator : float, optional
+        Minor locator in x-axis, by default 0.2
+    ymajor_locator : float, optional
+        Major locator in y-axis, by default 1
+    yminor_locator : float, optional
+        Minor locator in y-axis, by default 0.2
+    refpix : list, optional
+        Pixel of reference, by default [0,0]
+    return_fig_axs : bool, optional
+        If True, returns a tuple of the ax of the channel map and the colorbar.
+        If False, does not return anything.
+        
+    Returns:
+    --------
+    (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map and the
+        colorbar, only returns if return_axs=True.
+    """
+
+    size_factor = 2.5
+    figsize = figsize if figsize is not None \
+        else (ncol*size_factor, nrow*size_factor)
+    fig = plt.figure(figsize=figsize)
+    gs = GridSpec(nrow, ncol+1, 
+                  height_ratios=[1]*nrow,
+                  width_ratios=[1]*ncol+[0.1])
+    gs.update(wspace=wspace, hspace=hspace)
+    
+    axs = {}
+    for n, (i,j) in enumerate(product(np.arange(nrow), np.arange(ncol))):
+        axs[n] = plt.subplot(gs[i,j])
+    cbax = plt.subplot(gs[:, ncol])
+    
+    nc, nys, nxs = np.shape(cube)
+    nchanscube = nrow*ncol
+    chans_plot = nc 
+    selint = int(chans_plot/nchanscube)
+    initchan = selint 
+    vmin = vmin if vmin is not None else np.min(cube)
+    vmax = vmax if vmax is not None else np.max(cube)
+    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
+    norm = colors.TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
+        
+    iter_grid = [
+        i for i in product(
+            [i for i in range(nrow)],
+            [j for j in range(ncol)]
+        )
+    ]
+    
+    extent = np.array(
+        [-(-0.5-refpix[0]),
+         -(nxs-0.5-refpix[0]),
+         (-0.5-refpix[1]),
+         (nys-0.5-refpix[1]),
+        ]) * arcsecpix
+     
+    for chan, (i, j) in enumerate(iter_grid):
+        data = cube[initchan::selint][chan]
+        im = axs[chan].imshow(
+            data,
+            origin="lower",
+            extent=extent,
+            norm=norm,
+            cmap="inferno",
+        )   
+        axs[chan].set_aspect("equal")
+       
+        axs[chan].text(0.05, 0.9,
+                s=f"{velchans[initchan::selint][chan]:.2f} km/s",
+                color="w",
+                transform=axs[chan].transAxes,
+                fontsize=10)
+        axs[chan].tick_params(
+            which="both",
+            top=True,
+            right=True,
+            direction="in",
+            color="w",
+        )
+        axs[chan].xaxis.set_major_locator(
+            ticker.MultipleLocator(xmajor_locator))    
+        axs[chan].yaxis.set_major_locator(
+            ticker.MultipleLocator(ymajor_locator))    
+        axs[chan].xaxis.set_minor_locator(
+            ticker.MultipleLocator(xminor_locator))    
+        axs[chan].yaxis.set_minor_locator(
+            ticker.MultipleLocator(yminor_locator))    
+        if (j > 0) and (i < nrow-1):
+            axs[chan].set_xticklabels([])
+            axs[chan].set_yticklabels([])
+        if (i == (nrow-1)) and (j > 0):
+            axs[chan].set_yticklabels([])
+        if (i < (nrow-1)) and (j == 0):
+            axs[chan].set_xticklabels([])
+        
+    cbar = plt.colorbar(
+           cm.ScalarMappable(
+               norm=norm,
+               cmap=cmap,
+           ),
+           cax=cbax,
+           orientation="vertical",
+    )
+    cbax.tick_params(
+        axis="y", right=True, left=False,
+        labelright=True, direction="in", color="w"
+    )
+    cbax.set_ylabel(units)
+    if return_figs_axs:
+        return (fig, axs, cbax)
      
 
 

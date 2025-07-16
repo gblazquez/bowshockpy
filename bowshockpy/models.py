@@ -899,7 +899,28 @@ number of pixels or channels (nxs, nys, nc).
 
         self._check_mass_consistency()
 
-    def plot_channel(self, chan, vmax=None, vmin=None, cmap="inferno"):
+    def plot_channel(self, chan, vmax=None, vmin=None,
+        cmap="inferno", return_fig_axs=False):
+        """
+        Plots a channel map of a cube
+
+        Parameters
+        ----------
+        chan : int
+            Channel map to plot
+        vmax : float, optional
+            Maximum value of the colormap. If None (default), the maximum value of
+            the channel is chosen.
+        vmin : float, optional
+            Minimum value of the colormap. If None (default), the minimum value of
+            the channel is chosen.
+        cmap : str, optional
+            Label of the colormap, by default "inferno".
+        return_fig_axs : bool, optional
+           If True, returns a tuple of the figure and axes of the channel map
+           and the colorbar.  If False, does not return anything. By default,
+           False.
+        """
         pl.plot_channel(
             cube=self.cube,
             chan=chan,
@@ -909,8 +930,75 @@ number of pixels or channels (nxs, nys, nc).
             vmin=vmin,
             cmap=cmap,
             units="Mass [Msun]",
-            refpix=self.refpix
+            refpix=self.refpix,
+            return_fig_axs=return_fig_axs,
         )
+
+    def plot_channels(self, **kwargs):
+        """
+        Plots several channel map of a spectral cube.
+    
+        Parameters
+        ----------
+        cube : numpy.ndarray()
+            Spectral cube from which the channel is plotted
+        arcsecpix : float
+            Arcseconds per pixel
+        velchans : list or numpy.ndarray()
+            Array with the velocities of each channel
+        ncol : int, optional
+            Number of columns in the figure, by default 4
+        nrow : int, optional
+            Number of rows of the figure, by default 4
+        figsize : tuple, optional
+            Size of the figure. If None, an optimal size will be computed. By
+            default None.
+        wspace : float, optional
+            Width space between the channel plots, by default 0.05
+        hspace : float, optional
+            Height space between the cannel plots, by default 0.0
+        vmax : float, optional
+            Maximum value of the colormap. If None (default), the maximum value of
+            the channel is chosen.
+        vcenter : _type_, optional
+            _description_, by default None
+        vmin : float, optional
+            Minimum value of the colormap. If None (default), the minimum value of
+            the channel is chosen.
+        cmap : str, optional
+            Label of the colormap, by default "inferno".
+        units : str, optional
+            Units of the values of the cube, by default "Mass [Msun]"
+        xmajor_locator : float, optional
+            Major locator in x-axis, by default 1
+        xminor_locator : float, optional
+            Minor locator in x-axis, by default 0.2
+        ymajor_locator : float, optional
+            Major locator in y-axis, by default 1
+        yminor_locator : float, optional
+            Minor locator in y-axis, by default 0.2
+        refpix : list, optional
+            Pixel of reference, by default [0,0]
+        return_fig_axs : bool, optional
+            If True, returns a tuple of the ax of the channel map and the colorbar.
+            If False, does not return anything.
+            
+        Returns:
+        --------
+        (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map and the
+            colorbar, only returns if return_axs=True.
+        """
+        pl.plot_channels(
+            cube=self.cube,
+            arcsecpix=self.arcsecpix,
+            velchans=self.velchans,
+            units="Mass [Msun]",
+            refpix=self.refpix,
+            **kwargs,
+        )
+
+
+
 
         # TODO: def plot_channels(self, ...):
         # TODO: Check that the model is well sampled (nzs, nphis, given nxs, nys, vc)
