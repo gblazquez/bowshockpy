@@ -161,7 +161,7 @@ Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
                     ]
                 bscs[i].makecube(fromcube=bscs[i-1].cube)
     bscs[-1].plot_channels(
-        vmax=np.percentile(bscs[-1], 99.9),
+        vmax=np.percentile(bscs[-1].cube, 99.9),
         savefig=f"models/{ps['modelname']}/bowshock_cube_{i+1}.pdf",
     )
 
