@@ -801,7 +801,8 @@ at least one of three reasons:
     def _check_mass_consistency(self, return_isconsistent=False):
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
-        mass_consistent = np.isclose(intmass_cube, self.mass+self._fromcube_mass)
+        mass_consistent = np.isclose(
+            intmass_cube, self.mass+self._fromcube_mass)
         massloss = (self.mass+self._fromcube_mass-intmass_cube) / self.mass * 100
         if mass_consistent:
             print(rf"Only {massloss:.1e} % of the total mass of the bowshock model is lost due to numerical errors")
@@ -839,7 +840,7 @@ total mass of the bowshock. This can be due to several factors:
         """
         if self.verbose:
             ts = []
-            print("\nComputing spectral cube of masses...")
+            print("\nComputing masses in the spectral cube...")
 
         self.nrs = self.nzs
         self.rs = np.linspace(self.rbf, 0, self.nrs)
@@ -919,8 +920,8 @@ total mass of the bowshock. This can be due to several factors:
                 tf = datetime.now()
                 intervaltime = (tf-t0).total_seconds()
                 ts.append(intervaltime)
-                ut.progressbar_bowshock(iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
-
+                ut.progressbar_bowshock(
+                    iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
         self._check_mass_consistency()
 
     def plot_channel(self, chan, vmax=None, vmin=None,
@@ -1362,7 +1363,14 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print(f"\nConvolving {nck}... ")
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
+
+        if self.verbose:
+            ts = []
+            ut.progressbar_bowshock(0, self.nzs,
+                length=50, timelapsed=0, intervaltime=0)
         for chan in range(np.shape(self.cubes[ck])[0]):
+            if self.verbose:
+                t0 = datetime.now()
             self.cubes[nck][chan] = ut.gaussconvolve(
                 self.cubes[ck][chan],
                 x_FWHM=self.x_FWHM,
@@ -1370,6 +1378,12 @@ class CubeProcessing(BowshockCube):
                 pa=self.pabeam,
                 return_kernel=False,
             )
+            if self.verbose:
+                tf = datetime.now()
+                intervaltime = (tf-t0).total_seconds()
+                ts.append(intervaltime)
+                ut.progressbar_bowshock(
+                    chan+1, self.nc, np.sum(ts), intervaltime, length=50)
         self.refpixs[nck] = self.refpixs[ck]
         self.noisychans[nck] = ut.gaussconvolve(
             self.noisychans[ck],

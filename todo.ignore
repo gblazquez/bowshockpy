@@ -27,6 +27,7 @@ x Make an __init__.py that only imports the usefull objects
 - think of tests:
  - Test on coordinates?
  x test on mass?: try to test only with NarrowJet! or obsmod??
+ - Test on convolution: masses/intensities are conserved
 
  
 x allow install from pipy
