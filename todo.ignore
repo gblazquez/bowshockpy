@@ -26,7 +26,7 @@ x Make an __init__.py that only imports the usefull objects
 
 - think of tests:
  - Test on coordinates?
- - test on mass?: try to test only with NarrowJet! or obsmod??
+ x test on mass?: try to test only with NarrowJet! or obsmod??
 
  
 x allow install from pipy
@@ -53,7 +53,7 @@ x Add contributing statement
 
 x Change iws -> j in params figures
 
-- Include image of the channel maps?
+x Include image of the channel maps?
 
 - Include IWS model? It has been applied several times
 
@@ -69,7 +69,7 @@ x Change iws -> j in params figures
 
 x test numerical vs anaytical
 
-- use write_log in utils? If not, erease it
+x use write_log in utils? If not, erease it
 
 - make an statement in the paper:
   - What kind of user the software is targeted to?
@@ -77,7 +77,7 @@ x test numerical vs anaytical
 
 - Unify meanmass con muH2. Keep muH2
 
-- Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy
+- (?) Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy [I don't know if this makes sense, you can always run it from the terminal with os.system or magical %]
 
 
 import bowshockpy as bp

@@ -166,6 +166,10 @@ Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
                         tolfactor_vt=pscube["tolfactor_vt"],)
                     ]
                 bscs[i].makecube(fromcube=bscs[i-1].cube)
+    bscs[-1].plot_channels(
+        vmax=np.percentile(bscs[-1], 99.9),
+        savefig=f"models/{ps['modelname']}/bowshock_cube_{i+1}.pdf",
+    )
 
     print(
 f"""

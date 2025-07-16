@@ -978,7 +978,7 @@ class BowshockObsModelPlot():
 
 def plot_channel(cube, chan, arcsecpix, velchans,
     vmax=None, vmin=None, cmap="inferno", units="Mass [Msun]",
-    refpix=[0,0], return_fig_axs=False):
+    refpix=[0,0], markorigin=True, return_fig_axs=False):
     """
     Plots a channel map of a spectral cube
 
@@ -1004,6 +1004,8 @@ def plot_channel(cube, chan, arcsecpix, velchans,
         Units of the values of the cube, by default "Mass [Msun]"
     refpix : list, optional
         Pixel of reference, by default [0,0]
+    markorigin : boolean, optional
+        If True, a marker will be plot at [0,0]. Default True.
     return_fig_axs : bool, optional
         If True, returns a tuple of the ax of the channel map and the colorbar.
         If False, does not return anything.
@@ -1046,6 +1048,8 @@ def plot_channel(cube, chan, arcsecpix, velchans,
         cmap=cmap,
         extent=extent,
     )
+    if markorigin:
+        ax.plot(0, 0, "w+")
     ax.set_aspect("equal")
     ax.minorticks_on()
     ax.tick_params(
@@ -1078,7 +1082,7 @@ def plot_channels(cube, arcsecpix, velchans,
     ncol=4, nrow=4, figsize=None, wspace=0.05, hspace=0.0, vmax=None,
     vcenter=None, vmin=None, cmap="inferno", units="Mass [Msun]",
     xmajor_locator=1, xminor_locator=0.2, ymajor_locator=1, yminor_locator=0.2,
-    refpix=[0,0], return_figs_axs=False):
+    refpix=[0,0], markorigin=True, return_fig_axs=False):
     """
     Plots several channel map of a spectral cube.
 
@@ -1123,6 +1127,8 @@ def plot_channels(cube, arcsecpix, velchans,
         Minor locator in y-axis, by default 0.2
     refpix : list, optional
         Pixel of reference, by default [0,0]
+    markorigin : boolean, optional
+        If True, a marker will be plot at [0,0]. Default True.
     return_fig_axs : bool, optional
         If True, returns a tuple of the ax of the channel map and the colorbar.
         If False, does not return anything.
@@ -1180,6 +1186,8 @@ def plot_channels(cube, arcsecpix, velchans,
             norm=norm,
             cmap="inferno",
         )   
+        if markorigin:
+            axs[chan].plot(0, 0, "w+")
         axs[chan].set_aspect("equal")
        
         axs[chan].text(0.05, 0.9,
@@ -1223,7 +1231,7 @@ def plot_channels(cube, arcsecpix, velchans,
         labelright=True, direction="in", color="w"
     )
     cbax.set_ylabel(units)
-    if return_figs_axs:
+    if return_fig_axs:
         return (fig, axs, cbax)
      
 

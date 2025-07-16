@@ -735,6 +735,7 @@ class BowshockCube(ObsModel):
         self.vs = np.array([])
         self.velchans = np.array([])
 
+        self._fromcube_mass = 0
         self.cube = None
 
     def _DIMENSION_ERROR(self, fromcube):
@@ -800,8 +801,8 @@ at least one of three reasons:
     def _check_mass_consistency(self, return_isconsistent=False):
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
-        mass_consistent = np.isclose(intmass_cube, self.mass)
-        massloss = (self.mass-intmass_cube) / self.mass * 100
+        mass_consistent = np.isclose(intmass_cube, self.mass+self._fromcube_mass)
+        massloss = (self.mass+self._fromcube_mass-intmass_cube) / self.mass * 100
         if mass_consistent:
             print(rf"Only {massloss:.1e} % of the total mass of the bowshock model is lost due to numerical errors")
         else:
@@ -857,7 +858,8 @@ total mass of the bowshock. This can be due to several factors:
         if fromcube is None:
             self.cube = np.zeros((self.nc, self.nys, self.nxs))
         elif (fromcube is not None) and np.shape(fromcube)==((self.nc, self.nys, self.nxs)):
-            self.cube = fromcube
+            self.cube = np.copy(fromcube)
+            self._fromcube_mass = np.sum(fromcube)
         else:
             self._DIMENSION_ERROR(fromcube)
 
@@ -953,12 +955,10 @@ total mass of the bowshock. This can be due to several factors:
             refpix=self.refpix,
             return_fig_axs=True
         )
-        if figsave is not None:
-            fig.savefig(figname=savefig, bbox_inches="tight")
+        if savefig is not None:
+            fig.savefig(savefig, bbox_inches="tight")
 
-
-
-    def plot_channels(self, figsave=None, **kwargs):
+    def plot_channels(self, savefig=None, **kwargs):
         """
         Plots several channel map of a spectral cube.
     
@@ -1006,11 +1006,11 @@ total mass of the bowshock. This can be due to several factors:
             velchans=self.velchans,
             units="Mass [Msun]",
             refpix=self.refpix,
-            return_fig_axs=True
+            return_fig_axs=True,
             **kwargs,
         )
-        if figsave is not None:
-            fig.savefig(figname=savefig, bbox_inches="tight")
+        if savefig is not None:
+            fig.savefig(savefig, bbox_inches="tight")
 
 
         # TODO: Check that the model is well sampled (nzs, nphis, given nxs, nys, vc)
