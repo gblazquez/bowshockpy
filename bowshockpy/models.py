@@ -1581,6 +1581,101 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         for ck in cks:
             self.savecube(ck)
 
+    def plot_channel(self, ck, chan, vmax=None, vmin=None,
+        cmap="inferno", savefig=None):
+        """
+        Plots a channel map of a cube
+
+        Parameters
+        ----------
+        ck : str
+            Key of the cube to plot (see keys of self.cubes dictionary)
+        chan : int
+            Channel map to plot
+        vmax : float, optional
+            Maximum value of the colormap. If None (default), the maximum value of
+            the channel is chosen.
+        vmin : float, optional
+            Minimum value of the colormap. If None (default), the minimum value of
+            the channel is chosen.
+        cmap : str, optional
+            Label of the colormap, by default "inferno".
+        savefig : str, optional String of the full path to save the figure. If
+            None, no figure is saved. By default, None.
+        """
+        fig, axs, cbax = pl.plot_channel(
+            cube=self.cubes[ck],
+            chan=chan,
+            arcsecpix=self.arcsecpix,
+            velchans=self.velchans,
+            vmax=vmax,
+            vmin=vmin,
+            cmap=cmap,
+            units=self._getunitlabel(ck),
+            refpix=self.refpix,
+            return_fig_axs=True
+        )
+        if savefig is not None:
+            fig.savefig(savefig, bbox_inches="tight")
+
+    def plot_channels(self, ck, savefig=None, **kwargs):
+        """
+        Plots several channel map of a spectral cube.
+    
+        Parameters
+        ----------
+        ck : str
+            Key of the cube to plot (see keys of self.cubes dictionary)
+        ncol : int, optional
+            Number of columns in the figure, by default 4
+        nrow : int, optional
+            Number of rows of the figure, by default 4
+        figsize : tuple, optional
+            Size of the figure. If None, an optimal size will be computed. By
+            default None.
+        wspace : float, optional
+            Width space between the channel plots, by default 0.05
+        hspace : float, optional
+            Height space between the cannel plots, by default 0.0
+        vmax : float, optional
+            Maximum value of the colormap. If None (default), the maximum value of
+            the channel is chosen.
+        vcenter : _type_, optional
+            _description_, by default None
+        vmin : float, optional
+            Minimum value of the colormap. If None (default), the minimum value of
+            the channel is chosen.
+        cmap : str, optional
+            Label of the colormap, by default "inferno".
+        units : str, optional
+            Units of the values of the cube, by default "Mass [Msun]"
+        xmajor_locator : float, optional
+            Major locator in x-axis, by default 1
+        xminor_locator : float, optional
+            Minor locator in x-axis, by default 0.2
+        ymajor_locator : float, optional
+            Major locator in y-axis, by default 1
+        yminor_locator : float, optional
+            Minor locator in y-axis, by default 0.2
+        refpix : list, optional
+            Pixel of reference, by default [0,0]
+        savefig : str, optional String of the full path to save the figure. If
+            None, no figure is saved. By default, None.
+        """
+        fig, ax, cbax = pl.plot_channels(
+            cube=self.cubes[ck],
+            arcsecpix=self.arcsecpix,
+            velchans=self.velchans,
+            units=self._getunitlabel(ck),
+            refpix=self.refpix,
+            return_fig_axs=True,
+            **kwargs,
+        )
+        if savefig is not None:
+            fig.savefig(savefig, bbox_inches="tight")
+
+
+
     def pvalongz(self, ck, halfwidth=0, save=False, filename=None):
         """
         Performs the position velocity diagram along the self.papv direction
