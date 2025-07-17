@@ -1,5 +1,7 @@
 import numpy as np
 
+from itertools import groupby
+
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib.colors import TwoSlopeNorm
@@ -164,3 +166,24 @@ class VarsInParamFile():
         for key in params:
             if key.startswith("__") is False:
                 setattr(self, key, params[key])
+
+def allequal(iterable):
+    """
+    Checks if all elements of an iterale object are equal
+
+    Parameters
+    ----------
+    iterable : list or numpy.ndarray
+        Iterable object to check that all its elements are equal
+
+    Returns
+    -------
+    boolean
+        True if all elements are equal, False if they are not
+    """
+    if type(iterable[0]) == np.ndarray:
+        _iterable = [list(i) for i in iterable]
+    else:
+        _iterable = iterable
+    g = groupby(_iterable)
+    return next(g, True) and not next(g, False)

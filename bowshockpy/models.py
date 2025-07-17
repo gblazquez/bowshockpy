@@ -616,12 +616,6 @@ class ObsModel(NarrowJet):
 
 
 class BowshockCube(ObsModel):
-    # def __init__(self, ps, psobs, pscube, **kwargs):
-    #     super().__init__(ps, psobs, **kwargs)
-    #     self.ps = ps.copy()
-    #     self.psobs = psobs.copy()
-    #     for param in pscube:
-    #         setattr(self, param, pscube[param])
     """
     Computes the spectral cube of the bowshock model
 
@@ -1081,8 +1075,7 @@ class CubeProcessing(BowshockCube):
     listmompvs : list
         List of cubes to which the moments and the position velocity diagrams are going to performed when the method self.momentsandpv_all and self.momentsandpv_and_params_all are called
     """
-    default_kwargs = {
-    }
+    default_kwargs = { }
     btypes = {
         "m": "mass",
         "I": "Intensity",
@@ -1104,14 +1097,22 @@ class CubeProcessing(BowshockCube):
         "c": "convolve",
     }
     momtol_clipping = 10**(-4)
+    attribs_to_get_from_cubes = [
+        "arcsecpix", "nxs", "nys", "nc", "vch0", "velchans", "vchf", "xpmax",
+        "distpc", "refpix", "abschanwidth"
+    ]
 
     def __init__(
-            self, bscube, modelname="none", J="3-2", XCO=8.5*10**(-5), meanmass=2.8 /
+            self, modelcubes, modelname="none", J="3-2", XCO=8.5*10**(-5), meanmass=2.8 /
             (6.023*10**23) * u.g, Tex=100*u.K, Tbg=2.7*u.K, coordcube="offset",
             ra_source_deg=None, dec_source_deg=None, bmin=None, bmaj=None,
             pabeam=None, papv=None, parot=None, sigma_beforeconv=None,
-            maxcube2noise=None, **kwargs):
-        self.__dict__ = bscube.__dict__
+            maxcube2noise=None, verbose=True, **kwargs):
+        if type(modelcubes) == list:
+            self.concatenate_cubes(modelcubes)
+        else:
+            for att in self.attribs_to_get_from_cubes:
+                setattr(self, att, modelcubes.__getattribute__(att))
         self.modelname = modelname
         self.J = J
         self.XCO = XCO
@@ -1128,6 +1129,7 @@ class CubeProcessing(BowshockCube):
         self.parot = parot
         self.sigma_beforeconv = sigma_beforeconv
         self.maxcube2noise = maxcube2noise
+        self.verbose = verbose
         if bmin is not None and bmaj is not None:
             self.x_FWHM = self.bmin / self.arcsecpix
             self.y_FWHM = self.bmaj / self.arcsecpix
@@ -1177,6 +1179,22 @@ class CubeProcessing(BowshockCube):
 
     def _calc_areapix_cm(self):
         self.areapix_cm = ((self.arcsecpix * self.distpc * u.au)**2).to(u.cm**2)
+    
+    def _check_concat_possibility(self, modelcubes):
+        for att in self.attribs_to_get_from_cubes:
+            if not ut.allequal(
+                [mc.__getattribute__(att) for mc in modelcubes]
+                ):
+                raise ValueError(
+                    f"Trying to concatenate cubes with different {att}"
+                    )
+
+    def concatenate_cubes(self, modelcubes):
+        self._check_concat_possibility(modelcubes)
+        self.cube = np.sum(
+            [modelcube.cube for modelcube in modelcubes], axis=0)
+        for att in self.attribs_to_get_from_cubes:
+            setattr(self, att, modelcubes[0].__getattribute__(att))
 
     def calc_NCO(self,):
         """
@@ -1366,7 +1384,7 @@ class CubeProcessing(BowshockCube):
 
         if self.verbose:
             ts = []
-            ut.progressbar_bowshock(0, self.nzs,
+            ut.progressbar_bowshock(0, self.nc,
                 length=50, timelapsed=0, intervaltime=0)
         for chan in range(np.shape(self.cubes[ck])[0]):
             if self.verbose:
@@ -2274,6 +2292,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbaxs[ik] = plt.subplot(gss[ik][0,0])
 
         ak = "text"
+        # TODO: Get these lists as attributes
         ies = [bsc.i*180/np.pi for bsc in bscs]
         #rjs = [bsc.rj for bsc in bscs]
         L0s = [bsc.L0_arcsec for bsc in bscs]
