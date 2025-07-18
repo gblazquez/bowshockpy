@@ -1099,7 +1099,7 @@ class CubeProcessing(BowshockCube):
     momtol_clipping = 10**(-4)
     attribs_to_get_from_cubes = [
         "arcsecpix", "nxs", "nys", "nc", "vch0", "velchans", "vchf", "xpmax",
-        "distpc", "refpix", "abschanwidth"
+        "distpc", "refpix", "abschanwidth", "vsys"
     ]
 
     def __init__(
@@ -1108,11 +1108,30 @@ class CubeProcessing(BowshockCube):
             ra_source_deg=None, dec_source_deg=None, bmin=None, bmaj=None,
             pabeam=None, papv=None, parot=None, sigma_beforeconv=None,
             maxcube2noise=None, verbose=True, **kwargs):
+
+        if type(modelcubes) != list:
+            self.nmodels = 1
+            modelcubes = [modelcubes]
         if type(modelcubes) == list:
+            self.nmodels = len(modelcubes)
             self.concatenate_cubes(modelcubes)
-        else:
-            for att in self.attribs_to_get_from_cubes:
-                setattr(self, att, modelcubes.__getattribute__(att))
+
+        for att in self.attribs_to_get_from_cubes:
+            setattr(self, att, modelcubes[0].__getattribute__(att))
+
+        self.ies = np.array([mc.i for mc in modelcubes])
+        self.L0s = np.array([mc.L0_arcsec for mc in modelcubes])
+        self.zjs = np.array([mc.zj_arcsec for mc in modelcubes])
+        self.vjs = np.array([mc.vj for mc in modelcubes])
+        self.vas = np.array([mc.va for mc in modelcubes])
+        self.v0s = np.array([mc.v0 for mc in modelcubes])
+        self.rbfs = np.array([mc.rbf_arcsec for mc in modelcubes])
+        self.tjs = np.array([mc.tj_yr for mc in modelcubes])
+        self.masss = np.array([mc.mass for mc in modelcubes])
+        self.rhoas = np.array([mc.rhoa_gcm3 for mc in modelcubes])
+        self.m0s = np.array([mc.mp0_solmassyr for mc in modelcubes])
+        self.mwfs = np.array([mc.mpamb_f_solmassyr for mc in modelcubes])
+
         self.modelname = modelname
         self.J = J
         self.XCO = XCO
@@ -1169,7 +1188,11 @@ class CubeProcessing(BowshockCube):
         return ck.split("_")[0] if "_" in ck else ck
 
     def _getunitlabel(self, ck):
-        return f"{self.btypes[self._q(ck)]} [{self.bunits[self._q(ck)]}]"
+        if self.bunits[self._q(ck)] == "-":
+            unitlabel = f"{self.btypes[self._q(ck)]}"
+        else:
+            unitlabel = f"{self.btypes[self._q(ck)]} [{self.bunits[self._q(ck)]}]"
+        return unitlabel
 
     def _calc_beamarea_sr(self):
         self.beamarea_sr = ut.mb_sa_gaussian_f(
@@ -1193,8 +1216,6 @@ class CubeProcessing(BowshockCube):
         self._check_concat_possibility(modelcubes)
         self.cube = np.sum(
             [modelcube.cube for modelcube in modelcubes], axis=0)
-        for att in self.attribs_to_get_from_cubes:
-            setattr(self, att, modelcubes[0].__getattribute__(att))
 
     def calc_NCO(self,):
         """
@@ -1594,7 +1615,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cube will be named I_nc.fits, the second tau.fits, the third NCO_c.fits,
         and the fourth m.fits.  
         """
- 
         cks = self._useroutputcube2dostr(userdic)
         for ck in cks:
             self.savecube(ck)
@@ -1691,8 +1711,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         )
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
-
-
 
     def pvalongz(self, ck, halfwidth=0, save=False, filename=None):
         """
@@ -2085,7 +2103,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 print(f'models/{self.modelname}/fits/{ck}_mom8.fits saved')
         return mom8
 
-    def plotpv(self, pvimage, rangex, chan_vels, **kwargs):
+    def plotpv(
+            self, ck, halfwidth, ax=None, cbax=None,
+            savefits=False, return_im=False, **kwargs
+            ):
         """
         Plots the position velocity diagram.
 
@@ -2093,15 +2114,38 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         pvimage : numpy.ndarray
             PV-diagram.
-        rangex : optional, list
-            TODO
         chan_vels: list or numpy.ndarray
             1-dimensional array of the velocity corresponding to the channels.
         """
-        pv_array = pl.plotpv(pvimage, rangex, chan_vels, **kwargs)
-        return pv_array
+        ckpv = ck + "R"
+        if ckpv not in self.cubes:
+            self.rotate(ck, forpv=True)
 
-    def plotsumint(self, sumint, **kwargs):
+        pvimage = self.pvalongz(
+            ckpv,
+            halfwidth=halfwidth,
+            save=savefits,
+            )
+        rangex = np.array([
+            -0.5-self.refpixs[ckpv][0],
+            self.nxs-0.5-self.refpixs[ckpv][0]
+            ]) * self.arcsecpix
+        pl.plotpv(
+            pvimage,
+            rangex=rangex,
+            chan_vels=self.velchans,
+            ax=ax,
+            cbax=cbax,
+            cbarlabel=self._getunitlabel(ckpv),
+            **kwargs,
+            )
+        if return_im:
+            return pvimage
+
+    def plotsumint(
+            self, ck, chan_range=None, ax=None, cbax=None,
+            savefits=False, return_im=False, **kwargs
+            ):
         """
         Plots the sum of the pixels of the cubes along the velocity axis.
 
@@ -2110,9 +2154,32 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         sumint : numpy.ndarray
             Sum of the pixels of the cubes along the velocity axis.
         """
-        return pl.plotsumint(sumint, **kwargs)
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        sumint = self.sumint(
+            ck, chan_range=chan_range, save=savefits,
+            )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        pl.plotsumint(
+            sumint,
+            extent=extent,
+            interpolation=None,
+            ax=ax,
+            cbax=cbax,
+            cbarlabel="Integrated " + self._getunitlabel(ck).rstrip("]") + " km/s]",
+            **kwargs,
+            )
+        if return_im:
+            return sumint
 
-    def plotmom0(self, mom0, **kwargs):
+    def plotmom0(
+            self, ck, chan_range=None, ax=None, cbax=None,
+            savefits=False, return_im=False, **kwargs
+            ):
         """
         Plots the moment 0.
 
@@ -2121,9 +2188,33 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom0 : numpy.ndarray
             Moment 0 image.
         """
-        return pl.plotmom0(mom0, **kwargs)
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        mom0 = self.mom0(
+            ck, chan_range=chan_range, save=savefits,
+            )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        pl.plotmom0(
+            mom0,
+            extent=extent,
+            interpolation=None,
+            ax=ax,
+            cbax=cbax,
+            cbarlabel="Integrated " + self._getunitlabel(ck).rstrip("]") + " km/s]",
+            **kwargs,
+            )
+        if return_im:
+            return mom0
 
-    def plotmom1(self, mom1, **kwargs):
+    def plotmom1(
+            self, ck, chan_range=None, mom1clipping=0, 
+            ax=None, cbax=None, savefits=False, 
+            return_im=False, **kwargs
+            ):
         """
         Plots the moment 1.
 
@@ -2132,9 +2223,38 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom1 : numpy.ndarray
             Moment 1 image.
         """
-        return pl.plotmom1(mom1, **kwargs)
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        clipping = float(mom1clipping.split("x")[0]) * self.sigma_noises[ck] \
+            if mom1clipping !=0 else 0
+        mom1 = self.mom1(
+                ck,
+                chan_range=chan_range,
+                save=savefits,
+                clipping=clipping,
+            )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        pl.plotmom1(
+            mom1,
+            extent=extent,
+            interpolation=None,
+            ax=ax,
+            cbax=cbax,
+            cbarlabel="Mean velocity [km/s]",
+            **kwargs,
+            )
+        if return_im:
+            return mom1
 
-    def plotmom2(self, mom2, **kwargs):
+    def plotmom2(
+            self, ck, chan_range=None, mom2clipping=0, 
+            ax=None, cbax=None, savefits=False,
+            return_im=False, **kwargs
+            ):
         """
         Plots the moment 2.
 
@@ -2143,22 +2263,72 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom2 : numpy.ndarray
             Moment 2 image.
         """
-        return pl.plotmom2(mom2, **kwargs)
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        clipping = float(mom2clipping.split("x")[0]) * self.sigma_noises[ck]\
+            if mom2clipping !=0 else 0
+        mom2 = self.mom2(
+                    ck,
+                    chan_range=chan_range,
+                    save=savefits,
+                    clipping=clipping,
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        pl.plotmom2(
+            mom2,
+            extent=extent,
+            interpolation=None,
+            ax=ax,
+            cbax=cbax,
+            cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
+            **kwargs,
+            )
+        if return_im:
+            return mom2
 
-    def plotmom8(self, mom8, **kwargs):
+    def plotmom8(
+            self, ck, chan_range=None, ax=None, cbax=None,
+            savefits=False, return_im=False, **kwargs
+            ):
         """
-        Plots the moment 2.
+        Plots the moment 8.
 
         Parameters:
         -----------
         mom8 : numpy.ndarray
             Moment 8 image.
         """
-        return pl.plotmom8(mom8, **kwargs)
+        chan_range = chan_range if chan_range is not None else [0, self.nc]
+        mom8 = self.mom8(
+                    ck,
+                    chan_range=chan_range,
+                    save=savefits,
+                )
+        extent = np.array([
+            -(-0.5-self.refpixs[ck][0]),
+            -(self.nxs-0.5-self.refpixs[ck][0]),
+            (-0.5-self.refpixs[ck][1]),
+            (self.nys-0.5-self.refpixs[ck][1]),
+            ]) * self.arcsecpix
+        pl.plotmom8(
+            mom8,
+            extent=extent,
+            ax=ax,
+            cbax=cbax,
+            cbarlabel="Peak " + self._getunitlabel(ck),
+            **kwargs,
+            )
+        if return_im:
+            return mom8
 
     def momentsandpv_and_params(
-            self, ck, bscs, savefits=False, saveplot=False,
+            self, ck, savefits=False, saveplot=False,
             mom1clipping=0, mom2clipping=0, verbose=True,
+            chan_range=None, halfwidth_pv=0,
             mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
             mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
             mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
@@ -2220,9 +2390,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 """
             )
 
-        ckpv = ck + "R"
-        if ckpv not in self.cubes:
-            self.rotate(ck, forpv=True)
+        # ckpv = ck + "R"
+        # if ckpv not in self.cubes:
+        #     self.rotate(ck, forpv=True)
 
         fig = plt.figure(figsize=(14,10))
         gs = GridSpec(
@@ -2292,171 +2462,101 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbaxs[ik] = plt.subplot(gss[ik][0,0])
 
         ak = "text"
-        # TODO: Get these lists as attributes
-        ies = [bsc.i*180/np.pi for bsc in bscs]
-        #rjs = [bsc.rj for bsc in bscs]
-        L0s = [bsc.L0_arcsec for bsc in bscs]
-        zjs = [bsc.zj_arcsec for bsc in bscs]
-        vjs = [bsc.vj for bsc in bscs]
-        vas = [bsc.va for bsc in bscs]
-        v0s = [bsc.v0 for bsc in bscs]
-        rbfs = [bsc.rbf_arcsec for bsc in bscs]
-        tjs = [bsc.tj_yr for bsc in bscs]
-        masss = [bsc.mass*10**4 for bsc in bscs]
-        rhoas = [bsc.rhoa_gcm3*10**20 for bsc in bscs]
-        m0s = [bsc.mp0_solmassyr*10**6 for bsc in bscs]
-        mwfs = [bsc.mpamb_f_solmassyr*10**6 for bsc in bscs]
 
         showtext = \
         fr"""
-        {bscs[0].modelname}
-        Number of bowshocks: {len(bscs)}
+        {self.modelname}
+        Number of bowshocks: {self.nmodels}
         Tex = {self.Tex.value} K
-        $i = {{{ut.list2str(ies)}}}^\circ$
+        $i = {{{ut.list2str(self.ies*180/np.pi)}}}^\circ$
         $v_\mathrm{{sys}} = {self.vsys}$ km/s
-        $v_\mathrm{{j}} = {{{ut.list2str(vjs)}}}$ km/s
-        $v_0 = {{{ut.list2str(v0s)}}}$ km/s
-        $v_a = {{{ut.list2str(vas)}}}$ km/s
-        $L_0 = {{{ut.list2str(L0s)}}}$ arcsec
-        $z_\mathrm{{j}} = {{{ut.list2str(zjs)}}}$ arcsec
-        $r_\mathrm{{b,f}} = {{{ut.list2str(rbfs)}}}$ arcsec
-        $t_\mathrm{{j}} = {{{ut.list2str(tjs)}}}$ yr
-        mass $= {{{ut.list2str(masss)}}}\times 10^{{-4}}$ M$_\odot$
-        $\rho_a = {{{ut.list2str(rhoas)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
-        $\dot{{m}}_0 = {{{ut.list2str(m0s)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-        $\dot{{m}}_{{a,f}} = {{{ut.list2str(mwfs)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+        $v_\mathrm{{j}} = {{{ut.list2str(self.vjs)}}}$ km/s
+        $v_0 = {{{ut.list2str(self.v0s)}}}$ km/s
+        $v_a = {{{ut.list2str(self.vas)}}}$ km/s
+        $L_0 = {{{ut.list2str(self.L0s)}}}$ arcsec
+        $z_\mathrm{{j}} = {{{ut.list2str(self.zjs)}}}$ arcsec
+        $r_\mathrm{{b,f}} = {{{ut.list2str(self.rbfs)}}}$ arcsec
+        $t_\mathrm{{j}} = {{{ut.list2str(self.tjs)}}}$ yr
+        mass $= {{{ut.list2str(self.masss*10**4)}}}\times 10^{{-4}}$ M$_\odot$
+        $\rho_a = {{{ut.list2str(self.rhoas*10**20)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+        $\dot{{m}}_0 = {{{ut.list2str(self.m0s*10**6)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+        $\dot{{m}}_{{a,f}} = {{{ut.list2str(self.mwfs*10**6)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
         """
         for n, line in enumerate(showtext.split("\n")):
-            axs["text"].text(0, 0.99-0.06*n, line, fontsize=12-len(bscs),
+            axs["text"].text(0, 0.99-0.06*n, line, fontsize=12-self.nmodels,
                               transform=axs["text"].transAxes)
 
         ak = "mom0"
-        mom0 = self.mom0(
-            ck,
-            chan_range=[0, self.nc],
-            save=savefits,
-            )
-        extent = np.array([
-            -(-0.5-self.refpixs[ck][0]),
-            -(self.nxs-0.5-self.refpixs[ck][0]),
-            (-0.5-self.refpixs[ck][1]),
-            (self.nys-0.5-self.refpixs[ck][1]),
-            ]) * self.arcsecpix
         self.plotmom0(
-            mom0,
-            extent=extent,
-            interpolation=None,
+            ck=ck,
+            chan_range=chan_range,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel="Integrated " + self._getunitlabel(ck).rstrip("]") + " km/s]",
-            **mom0values,
+            savefits=False,
+            return_im=False,
+            **mom0values
             )
 
         ak = "mom1"
-        clipping = float(mom1clipping.split("x")[0]) * self.sigma_noises[ck] \
-            if mom1clipping !=0 else 0
-        mom1 = self.mom1(
-                    ck,
-                    chan_range=[0, self.nc],
-                    save=savefits,
-                    clipping=clipping,
-                )
-        extent = np.array([
-            -(-0.5-self.refpixs[ck][0]),
-            -(self.nxs-0.5-self.refpixs[ck][0]),
-            (-0.5-self.refpixs[ck][1]),
-            (self.nys-0.5-self.refpixs[ck][1]),
-            ]) * self.arcsecpix
         self.plotmom1(
-            mom1,
-            extent=extent,
-            interpolation=None,
+            ck=ck,
+            chan_range=chan_range,
+            mom1clipping=mom1clipping,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel="Mean velocity [km/s]",
+            savefits=False,
+            return_im=False,
             **mom1values,
             )
 
         ak = "mom2"
-        clipping = float(mom2clipping.split("x")[0]) * self.sigma_noises[ck]\
-            if mom1clipping !=0 else 0
-        mom2 = self.mom2(
-                    ck,
-                    chan_range=[0, self.nc],
-                    save=savefits,
-                    clipping=clipping,
-                )
-        extent = np.array([
-            -(-0.5-self.refpixs[ck][0]),
-            -(self.nxs-0.5-self.refpixs[ck][0]),
-            (-0.5-self.refpixs[ck][1]),
-            (self.nys-0.5-self.refpixs[ck][1]),
-            ]) * self.arcsecpix
         self.plotmom2(
-            mom2,
-            extent=extent,
-            interpolation=None,
+            ck=ck,
+            chan_range=chan_range,
+            mom2clipping=mom2clipping,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
+            savefits=False,
+            return_im=False,
             **mom2values,
             )
 
         ak = "pv"
-        pvimage = self.pvalongz(
-            ckpv,
-            halfwidth=0,
-            save=savefits,
-            )
-        rangex = np.array([
-            -0.5-self.refpixs[ckpv][0],
-            self.nxs-0.5-self.refpixs[ckpv][0]
-            ]) * self.arcsecpix
-        chan_vels = self.velchans
         self.plotpv(
-            pvimage,
-            rangex=rangex,
-            chan_vels=chan_vels,
+            ck=ck,
+            halfwidth=halfwidth_pv,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel=self._getunitlabel(ckpv),
+            savefits=False,
+            return_im=False,
             **pvvalues,
             )
 
         ak = "mom8"
-        mom8 = self.mom8(
-                    ck,
-                    chan_range=[0, self.nc],
-                    save=savefits,
-                )
-        extent = np.array([
-            -(-0.5-self.refpixs[ck][0]),
-            -(self.nxs-0.5-self.refpixs[ck][0]),
-            (-0.5-self.refpixs[ck][1]),
-            (self.nys-0.5-self.refpixs[ck][1]),
-            ]) * self.arcsecpix
         self.plotmom8(
-            mom8,
-            extent=extent,
+            ck=ck,
+            chan_range=chan_range,
             ax=axs[ak],
             cbax=cbaxs[ak],
-            cbarlabel="Peak " + self._getunitlabel(ck),
-            **mom8values,
+            savefits=False,
+            return_im=False,
+            **mom8values
             )
+
         if saveplot:
             fig.savefig(
                 f"models/{self.modelname}/momentsandpv_and_params_{ck}.pdf",
                 bbox_inches="tight",
                 )
 
-    def momentsandpv_and_params_all(self, bscs, **kwargs):
+    def momentsandpv_and_params_all(self, **kwargs):
         """
         Computes all the moments and pv to the cubes listed in self.listmompvs,
         including a list of values of the main parameters of the model in the
         first ax
         """
         for ck in self.listmompvs:
-            self.momentsandpv_and_params(ck, bscs, **kwargs)
+            self.momentsandpv_and_params(ck, **kwargs)
 
 
 

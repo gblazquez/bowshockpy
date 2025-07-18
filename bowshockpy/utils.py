@@ -167,23 +167,23 @@ class VarsInParamFile():
             if key.startswith("__") is False:
                 setattr(self, key, params[key])
 
-def allequal(iterable):
+def allequal(inputlist):
     """
     Checks if all elements of an iterale object are equal
 
     Parameters
     ----------
-    iterable : list or numpy.ndarray
-        Iterable object to check that all its elements are equal
+    inputlist : list
+        List object to check that all its elements are equal
 
     Returns
     -------
     boolean
         True if all elements are equal, False if they are not
     """
-    if type(iterable[0]) == np.ndarray:
-        _iterable = [list(i) for i in iterable]
+    if type(inputlist[0]) == np.ndarray:
+        _list = [list(i) for i in inputlist]
     else:
-        _iterable = iterable
-    g = groupby(_iterable)
+        _list = inputlist 
+    g = groupby(_list)
     return next(g, True) and not next(g, False)

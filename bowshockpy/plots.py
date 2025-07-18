@@ -1108,8 +1108,9 @@ def plot_channels(cube, arcsecpix, velchans,
     vmax : float, optional
         Maximum value of the colormap. If None (default), the maximum value of
         the channel is chosen.
-    vcenter : _type_, optional
-        _description_, by default None
+    vcenter : float, optional
+        Center value of the colormap. If None (default), the middle vale will be
+        chosen.
     vmin : float, optional
         Minimum value of the colormap. If None (default), the minimum value of
         the channel is chosen.
@@ -1160,7 +1161,7 @@ def plot_channels(cube, arcsecpix, velchans,
     initchan = selint 
     vmin = vmin if vmin is not None else np.min(cube)
     vmax = vmax if vmax is not None else np.max(cube)
-    vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2.
+    vcenter = vcenter if vcenter is not None else (vmax + vmin) / 2.
     norm = colors.TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
         
     iter_grid = [
