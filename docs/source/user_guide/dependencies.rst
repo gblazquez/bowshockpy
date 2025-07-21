@@ -5,5 +5,4 @@ Dependencies
    * ``numpy``
    * ``scipy``
    * ``astropy``
-   * ``matplotlb``
-   
+   * ``photutils``

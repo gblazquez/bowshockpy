@@ -44,7 +44,7 @@ x Make an option to add the same noise instead to relative to the maximum
 
 x Example 3 of input files. 
 
-- Add a description section in the documentation (also in the draft? with the pipeline scheme?)
+x Add a description section in the documentation (also in the draft? with the pipeline scheme?)
 
 x Incorporate the docs (make it first)
 
@@ -64,9 +64,9 @@ x Include image of the channel maps?
 
 - make the standalone comass a nother module
 
-- bsmodels should only contain NarrowJet (and probably IWS). Make other modules for the rest. 
+x(no for now) bsmodels should only contain NarrowJet (and probably IWS). Make other modules for the rest. 
 
-- modular usage: Remember for the modular usage that you have available some of the important functons directly from bowshockpy as you have defined them n the __init__.py
+x modular usage: Remember for the modular usage that you have available some of the important functons directly from bowshockpy as you have defined them n the __init__.py
 
 x test numerical vs anaytical
 
@@ -138,4 +138,34 @@ Traceback (most recent call last):
     selected_data = cube[:, pixarray, :]
 IndexError: index 239 is out of bounds for axis 1 with size 200
 
+
+
+
+Concatenate example:
+
+
+from PIL import Image, ImageDraw, ImageFont
+
+nx = 200
+ny = 200
+nz = 50
+text_coords = (int(nx/4), int(ny/3))
+font = ImageFont.load_default(size=20)
+image_text = Image.new("L",(nx,ny),"black",)
+draw = ImageDraw.Draw(image_text)
+draw.text(text_coords, "Initial cube", "white", font=font)
+array_text = np.array(image_text, dtype=float)[::-1]
+cube_text = np.array([array_text for i in range(nz)])
+cube_text[cube_text!=0] = np.max(model_cube.cube)/20
+
+model_cube_concat = copy.deepcopy(model_cube)
+model_cube_concat.makecube(
+    fromcube=cube_text
+    )
+
+model_cube_concat.plot_channels(
+    nrow=5, ncol=4, 
+    vmax=np.percentile(model_cube_concat.cube, 99.9),
+    savefig="models/prueba3.pdf",
+    )
 

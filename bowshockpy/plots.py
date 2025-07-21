@@ -7,6 +7,9 @@ from matplotlib import cm
 from matplotlib import colors
 from matplotlib import colormaps
 
+from photutils.isophote import EllipseGeometry
+from photutils.aperture import EllipticalAperture, RectangularAperture
+
 from itertools import product
 from matplotlib import ticker
 
@@ -978,7 +981,11 @@ class BowshockObsModelPlot():
 
 def plot_channel(cube, chan, arcsecpix, velchans,
     vmax=None, vmin=None, cmap="inferno", units="Mass [Msun]",
-    refpix=[0,0], markorigin=True, return_fig_axs=False):
+    refpix=[0,0], markorigin=True, return_fig_axs=False, add_beam=False,
+    pabeam=None, bmaj=None, bmin=None, xbpos=None, ybpos=None,
+    add_beam_rectangle=False, beam_factor_rectangle=2,
+    beam_color_rectangle="k", beam_edgecolor_rectangle="w",
+    beam_fill_rectangle=False, beam_color="w", beam_fill=True):
     """
     Plots a channel map of a spectral cube
 
@@ -1065,7 +1072,45 @@ def plot_channel(cube, chan, arcsecpix, velchans,
         transform=ax.transAxes,
         #fontsize=10,
         )
-    
+
+    if add_beam:
+        pa = pabeam * np.pi/180. + np.pi/2
+        # in radians
+        # semi-major axis in pixels or arcsec if offset_coordinates
+        a = bmaj * 3600 
+        # semi-minor axis in pixels or arcsec if offset_coordinates
+        b = bmin * 3600
+
+        geometry = EllipseGeometry(
+            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
+
+        if add_beam_rectangle:
+            aper_rectangle = RectangularAperture(
+                (geometry.x0, geometry.y0),
+                geometry.sma * 2 * beam_factor_rectangle,
+                geometry.sma * 2 * beam_factor_rectangle)
+            aper_rectangle.plot(
+                ax=ax,
+                color=beam_color_rectangle,
+                ec=beam_edgecolor_rectangle,
+                fc=beam_color_rectangle,
+                fill=beam_fill_rectangle,
+                zorder=10000,
+            )
+
+        aper = EllipticalAperture(
+            (geometry.x0, geometry.y0), geometry.sma,
+             geometry.sma*(1 - geometry.eps),
+             geometry.pa)
+
+        aper.plot(
+            ax,
+            color=beam_color,
+            fill=beam_fill,
+            # linewidth=beam_linewidth,
+            zorder=10000,
+            )
+
     cbar = plt.colorbar(im, label=units, cax=cbax)
     cbax.tick_params(
         axis="y", right=True, left=False,

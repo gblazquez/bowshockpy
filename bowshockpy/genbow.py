@@ -159,11 +159,6 @@ Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
                         vt=pscube["vt"],
                         tolfactor_vt=pscube["tolfactor_vt"],)
                     ]
-                bscs[i].makecube(fromcube=bscs[i-1].cube)
-    bscs[-1].plot_channels(
-        vmax=np.percentile(bscs[-1].cube, 99.9),
-        savefig=f"models/{ps['modelname']}/bowshock_cube_{i+1}.pdf",
-    )
 
     print(
 f"""
@@ -183,7 +178,7 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
 """
     )
     bscp = bs.CubeProcessing(
-        bscs[-1],
+        bscs,
         modelname=ps["modelname"],
         J=mpars["J"],
         XCO=mpars["XCO"],
@@ -200,11 +195,15 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
         parot=pscube["parot"],
         sigma_beforeconv=pscube["sigma_beforeconv"],
         maxcube2noise=pscube["maxcube2noise"],
-            )
+        )
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
+    for ck in bscp.listmompvs:
+        bscp.plot_channels( ck,
+            savefig=f"models/{ps['modelname']}/bowshock_cube_{ck}.pdf",
+        )
+ 
     bscp.momentsandpv_and_params_all(
-         bscs,
          savefits=p.savefits,
          saveplot=p.saveplot,
          mom1clipping=p.mom1clipping,
@@ -219,13 +218,7 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
     # Save the file with all the parameters used to generate the bowshocks
     os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")
 
-
 def main():
-    # bpf_str = input(
-    # """
-    # Enter the name of the file where the parameters are defined (default: bowshock_params):
-    # """
-    # )
     import argparse
     import runpy
 
