@@ -136,13 +136,9 @@ def A_j_jm1(nu, J, mu):
     Ajmj1 : astropy.units.quantity
         Spontaneous emission coefficient in s**(-1)
     """
-    # aj_jm1 = 1.165 * 10**(-11) * mu.to(u.D).value**2 * (J/(2*J+1)) * nu.to(u.GHz).value**3
-    # return aj_jm1 * u.s**(-1)
     aj_jm1 = 64 * np.pi**4 * nu.to(u.Hz).value**3 * J * (mu.to(u.D).value*10**(-18))**2 \
              / (3 * const.c.cgs.value**3 * const.h.cgs.value * (2*J+1))
     return aj_jm1 * u.s**(-1)
-    #aj_jm1 = 64 * np.pi**4 / (3*const.h*const.c**3) * (mu**2*J/(2*J+1)) * nu**3
-    #return aj_jm1
 
 
 def Ej(nu, J):
@@ -193,7 +189,7 @@ def column_density_CO(m, meanmass, area, XCO):
     ----------
     m : astropy.units.quantity
         Mass
-    meanmolmass : astropy.units.quantity
+    meanmolmass : float
         Mean molecular mass per hydrogen molecule
     area : astropy.units.quantity
         Projected area
@@ -243,7 +239,7 @@ def Inu_tau(nu, Tex, Tbg, tau):
     Parameters
     ----------
     nu : astropy.units.quantity
-        Frequency
+        Frequency of the transition
     Tex : astropy.units.quntity
         Excitation temperature
     Tbg: astropy.units.quantity
@@ -267,7 +263,7 @@ def Inu_tau_thin(nu, Tex, Tbg, tau):
     Parameters
     ----------
     nu : astropy.units.quantity
-        Frequency
+        Frequency of the transition
     Tex : astropy.units.quntity
         Excitation temperature
     Tbg: astropy.units.quantity
@@ -282,15 +278,69 @@ def Inu_tau_thin(nu, Tex, Tbg, tau):
     """
     return (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)) * tau
 
+
 def Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv):
     """
-    Column density for the optically thin case.
+    Column density for the optically thin case for a given intensity times
+    channel velocity width
+    
+    Parameters
+    ----------
+    nu : astropy.units.quantity
+        Frequency of the transition
+    J : int
+        Upper level of the rotational transition
+    mu : astropy.units.quantity
+        Dipole moment of the molecule
+    Tex : astropy.units.quntity
+        Excitation temperature
+    Tbg: astropy.units.quantity
+        Background temperature
+    Inudv : astropy.units.quantity
+        Intensity (Jy per solid angle units) times channel map width (velocity
+        units)
+        
+    Returns
+    -------
+    Ntot_opthin : astropy.units.quantity
+        Column density (particles per unit or area)
     """
-    return 8 * np.pi * nu**3 * Qpart(nu,J,Tex) * Inudv \
+    Ntot_opthin =  8 * np.pi * nu**3 * Qpart(nu,J,Tex) * Inudv \
     / (A_j_jm1(nu,J,mu) * gJ(J) * const.c**3 * (exp_hnkt(nu, Tex)-1)
        * np.exp(-Ej(nu,J)/(const.k_B*Tex)) * (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)))
+    return Ntot_opthin
 
-def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmass, abund):
+def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmass, XCO):
+    """
+    _summary_
+
+    Parameters
+    ----------
+    nu : astropy.units.quantity
+        Frequency of the transition
+    J : int
+        Upper level of the rotational transition
+    mu : astropy.units.quantity
+        Dipole moment of the molecule
+    Tex : astropy.units.quntity
+        Excitation temperature
+    Tbg : astropy.units.quantity
+        Background temperature
+    Inudv : astropy.units.quantity
+        Intensity (Jy per solid angle units) times channel map width (velocity
+        units)
+    area : astropy.units.quantity
+        Projected area of a pixel
+    meanmolmass : float
+        Mean molecular mass per hydrogen molecule
+    XCO : float
+        CO abundance relative to molecular hydrogen
+
+    Returns
+    -------
+    totmass : astropy.units.quantity
+        Total mass (H2 + heavier elements) in astropy.units.Msun
+    """
     Ntot = Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv)
-    totmass = area * Ntot * meanmass / abund
+    totmass = area * Ntot * meanmass / XCO 
     return totmass.to(u.Msun)
