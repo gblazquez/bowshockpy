@@ -17,7 +17,7 @@ from datetime import datetime
 import sys
 
 import bowshockpy.utils as ut
-import bowshockpy.comass as comass
+import bowshockpy.radtrans as rt
 import bowshockpy.moments as moments
 import bowshockpy.plots as pl
 
@@ -1241,8 +1241,8 @@ class CubeProcessing(BowshockCube):
             self.calc_NCO()
         if self.verbose:
             print(f"\nComputing opacities...")
-        self.cubes["tau"] = comass.tau_N(
-            nu=comass.freq_caract_CO[self.J],
+        self.cubes["tau"] = rt.tau_N(
+            nu=rt.freq_caract_CO[self.J],
             J=float(self.J[0]),
             mu=0.112*u.D,
             Tex=self.Tex,
@@ -1262,10 +1262,10 @@ class CubeProcessing(BowshockCube):
             self.calc_tau()
         if self.verbose:
             print(f"\nComputing intensities...")
-        func_I = comass.Inu_tau_thin if opthin else comass.Inu_tau
+        func_I = rt.Inu_tau_thin if opthin else rt.Inu_tau
         ckI = "Ithin" if opthin else "I"
         self.cubes[ckI] = (func_I(
-            nu=comass.freq_caract_CO[self.J],
+            nu=rt.freq_caract_CO[self.J],
             Tex=self.Tex,
             Tbg=self.Tbg,
             tau=self.cubes["tau"],

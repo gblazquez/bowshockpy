@@ -4,7 +4,7 @@ from .models import NarrowJet, ObsModel, BowshockCube, CubeProcessing
 
 from .moments import sumint, mom0, mom1, mom2, mom8, pv
 
-from .comass import Bnu_f, B0, gJ, Qpart, A_j_jm1, Ej, coldens, Tex, tau_f, Inu_tau, Inu_tau_thin, tau_N, coldens_thick_dv, totalmass_thick_dv, coldens_thin_dv, totalmass
+from .radtrans import Bnu_f, B0, gJ, Qpart, A_j_jm1, Ej, Inu_tau, Inu_tau_thin, tau_N
 
 from .genbow import generate_bowshock
 
