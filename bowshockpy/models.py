@@ -1023,7 +1023,7 @@ class CubeProcessing(BowshockCube):
         CO rotational transition (e.g. "3-2")
     XCO : optional, str
         CO abundance
-    meanmass : optional, astropy.unit.Quantity
+    meanmolmass : optional, astropy.unit.Quantity
         Mean mass per H molecule
     Tex : optional, astropy.unit.Quantity
         Excitation temperature
@@ -1105,8 +1105,7 @@ class CubeProcessing(BowshockCube):
     ]
 
     def __init__(
-            self, modelcubes, modelname="none", J="3-2", XCO=8.5*10**(-5), meanmass=2.8 /
-            (6.023*10**23) * u.g, Tex=100*u.K, Tbg=2.7*u.K, coordcube="offset",
+            self, modelcubes, modelname="none", J="3-2", XCO=8.5*10**(-5), meanmolmass=2.8, Tex=100*u.K, Tbg=2.7*u.K, coordcube="offset",
             ra_source_deg=None, dec_source_deg=None, bmin=None, bmaj=None,
             pabeam=None, papv=None, parot=None, sigma_beforeconv=None,
             maxcube2noise=None, verbose=True, **kwargs):
@@ -1137,7 +1136,7 @@ class CubeProcessing(BowshockCube):
         self.modelname = modelname
         self.J = J
         self.XCO = XCO
-        self.meanmass = meanmass
+        self.meanmolmass = meanmolmass
         self.Tex = Tex
         self.Tbg = Tbg
         self.coordcube = coordcube
@@ -1228,7 +1227,7 @@ class CubeProcessing(BowshockCube):
             print(f"\nComputing column densities...")
         self.cubes["Ntot"] = rt.column_density_tot(
             m=self.cubes["m"] * u.solMass,
-            meanmass=self.meanmass,
+            meanmolmass=self.meanmolmass,
             area=self.areapix_cm,
         ).to(u.cm**(-2)).value
         self.refpixs["Ntot"] = self.refpixs["m"]
@@ -1245,7 +1244,7 @@ class CubeProcessing(BowshockCube):
             print(f"\nComputing CO column densities...")
         self.cubes["NCO"] = rt.column_density_CO(
             m=self.cubes["m"] * u.solMass,
-            meanmass=self.meanmass,
+            meanmolmass=self.meanmolmass,
             area=self.areapix_cm,
             XCO=self.XCO,
         ).to(u.cm**(-2)).value

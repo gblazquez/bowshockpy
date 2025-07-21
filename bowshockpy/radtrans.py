@@ -159,7 +159,7 @@ def Ej(nu, J):
     return const.h * nu * (J+1) / 2
 
 
-def column_density_tot(m, meanmass, area):
+def column_density_tot(m, meanmolmass, area):
     """
     Computes the total (H2 + heavier components) column density given the mass
     and the projected area
@@ -177,10 +177,10 @@ def column_density_tot(m, meanmass, area):
     -------
     column_density : astropy.units.quantity
     """
-    return m / meanmass / area
+    return m / (meanmolmass * const.m_p * area) 
 
 
-def column_density_CO(m, meanmass, area, XCO):
+def column_density_CO(m, meanmolmass, area, XCO):
     """
     Computes the CO column density given the mass
     and the projected area
@@ -201,7 +201,7 @@ def column_density_CO(m, meanmass, area, XCO):
     column_density : astropy.units.quantity
         CO column density
     """
-    return column_density_tot(m, meanmass, area) * XCO
+    return column_density_tot(m, meanmolmass, area) * XCO
 
 
 def tau_N(nu, J, mu, Tex, dNdv):
@@ -310,7 +310,7 @@ def Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv):
        * np.exp(-Ej(nu,J)/(const.k_B*Tex)) * (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)))
     return Ntot_opthin
 
-def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmass, XCO):
+def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, XCO):
     """
     _summary_
 
@@ -342,5 +342,5 @@ def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmass, XCO):
         Total mass (H2 + heavier elements) in astropy.units.Msun
     """
     Ntot = Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv)
-    totmass = area * Ntot * meanmass / XCO 
+    totmass = area * Ntot * meanmolmass * const.m_p / XCO 
     return totmass.to(u.Msun)

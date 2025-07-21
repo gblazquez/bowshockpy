@@ -48,7 +48,7 @@ bscp = bs.CubeProcessing(
     [bsc1, bsc3],
     J="3-2",
     XCO=8.5 * 10**(-5),
-    meanmass=2.8 / (6.023*10**23) * u.g,
+    meanmolmass=2.8,
     Tex=100 * u.K,
     Tbg=2.7 * u.K,
     coordcube="offset",
@@ -86,7 +86,7 @@ def test_intensities():
         Tbg=2.7*u.K,
         Inudv=Inudv,
         area=bscp.areapix_cm,
-        meanmass=bscp.meanmass,
+        meanmolmass=bscp.meanmolmass,
         XCO=bscp.XCO,
     ).to(u.Msun).value
     assert np.isclose(totmass_opthin, np.sum(bscp.cubes["m"])), "Intensities calculated in the optically thin regime does not correspond to total mass of the cube"
