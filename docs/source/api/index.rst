@@ -23,10 +23,10 @@ utils
    :members:
    :show-inheritance:
 
-comass
-------
+radtrans
+--------
 
-.. automodule:: bowshockpy.comass
+.. automodule:: bowshockpy.radtrans
    :noindex:
    :members:
    :show-inheritance:

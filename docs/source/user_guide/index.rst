@@ -16,5 +16,4 @@ This guide provide documentation about ``BowshockPy``
     inputparams
     outputs
     background
-    comass
     citation

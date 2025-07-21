@@ -28,7 +28,10 @@ x Make an __init__.py that only imports the usefull objects
  - Test on coordinates?
  x test on mass?: try to test only with NarrowJet! or obsmod??
  - Test on convolution: masses/intensities are conserved
+ - Test on total mass calculation from the integrated intensity of the cube in
+ the optically thin regime
 
+- calcuation of NH2
  
 x allow install from pipy
 
@@ -62,7 +65,7 @@ x Include image of the channel maps?
 
 - change comass name: radtrans
 
-- make the standalone comass a nother module
+x (no for now) make the standalone comass a nother module
 
 x(no for now) bsmodels should only contain NarrowJet (and probably IWS). Make other modules for the rest. 
 
