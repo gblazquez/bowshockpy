@@ -4,10 +4,10 @@ from astropy import units as u
 from astropy import constants as const
 
 freq_caract_CO = {
-    '1-0':115.27120180*u.GHz,
-    '2-1':230.53800000*u.GHz,
-    '3-2':345.79598990*u.GHz,
-    '13CO_3-2':330.58796530*u.GHz
+    '1-0': 115.27120180 * u.GHz,
+    '2-1': 230.53800000 * u.GHz,
+    '3-2': 345.79598990 * u.GHz,
+    '13CO_3-2': 330.58796530 * u.GHz
     }
 
 def exp_hnkt(nu, T):
@@ -282,177 +282,15 @@ def Inu_tau_thin(nu, Tex, Tbg, tau):
     """
     return (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)) * tau
 
+def Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv):
+    """
+    Column density for the optically thin case.
+    """
+    return 8 * np.pi * nu**3 * Qpart(nu,J,Tex) * Inudv \
+    / (A_j_jm1(nu,J,mu) * gJ(J) * const.c**3 * (exp_hnkt(nu, Tex)-1)
+       * np.exp(-Ej(nu,J)/(const.k_B*Tex)) * (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)))
 
-# def coldens(nu, J, mu, Tex, Tbg, Iint):
-#     """
-#     Column density for the optically thin case.
-#     """
-#     return 8 * np.pi * nu**3 * Qpart(nu,J,Tex) * Iint \
-#     / (A_j_jm1(nu,J,mu) * gJ(J) * const.c**3 * (exp_hnkt(nu, Tex)-1)
-#        * np.exp(-Ej(nu,J)/(const.k_B*Tex)) * (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)))
-
-# def Tex(nu21, nu32, I32_21):
-#     return const.h/(2*const.k_B) * (3*nu21.to(u.Hz)-4*nu32.to(u.Hz)) /
-#     np.log(I32_21*(nu21/nu32)**4)
-
-# def coldens_thick_dv(nu, J, mu, Tex, Tbg, Inu):
-#     tau = tau_f(nu, Tex, Tbg, Inu)
-#     return 8 * np.pi * nu**3 * Qpart(nu,J,Tex) * tau \
-#     / (A_j_jm1(nu,J,mu) * gJ(J) * const.c**3 * (exp_hnkt(nu, Tex)-1)
-#        * np.exp(-Ej(nu,J)/(const.k_B*Tex)))
-
-# def totalmass_thick_dv(nu, J, mu, Tex, Tbg, Inu, distorarea, abund,
-#                        meanmass):
-#     if Inu.unit.is_equivalent(u.Jy):
-#         dist = distorarea
-#         return dist**2 * coldens_thick_dv(nu, J, mu, Tex, Tbg, Inu)/u.sr \
-#                 * meanmass  / abund
-#     elif Inu.unit.is_equivalent(u.Jy / u.sr):
-#         area = distorarea
-#         return area * coldens_thick_dv(nu, J, mu, Tex, Tbg, Inu) \
-#                 * meanmass  / abund
-
-# def tau_f(nu, Tex, Tbg, Inu):
-#     """
-#     Computes the opacity given the intensity (energy per unit of area, time,
-#     frequency and solid angle)
-#     
-#     Parameters
-#     ----------
-#     nu : astropy.units.quantity
-#         Frequency of the transition
-#     Tex : astropy.units.quantity
-#         Excitation temperature
-#     Tbg: astropy.units.quantity
-#         Background temperature
-#     Inu : astropy.units.quantity
-#         Intensity 
-# 
-#     Returns
-#     -------
-#     opacity : int
-#     """
-#     return - np.log(1 - Inu / (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)))
-# 
-# def coldens_thin_dv(nu, J, mu, Tex, Tbg, Inu):
-#     """
-#     Column density for the optically thin case.
-#     """
-#     return 8 * np.pi * nu**3 * Qpart(nu,J,Tex) * Inu \
-#     / (A_j_jm1(nu,J,mu) * gJ(J) * const.c**3 * (exp_hnkt(nu, Tex)-1)
-#        * np.exp(-Ej(nu,J)/(const.k_B*Tex)) * (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)))
-
-
-# def totalmass(nu, J, mu, Tex, Tbg, Iint, dist, abund, total_mass=False,
-#               meanmolweight=2.8):
-#     """
-#     From CO line emission, estimates the total mass through the calculation of
-#     the column density in the optically thin approximation and considering LTE
-#     conditions.
-# 
-#     Parameters
-#     ----------
-#     nu: astropy.units.Unit
-#         Frequency of the transition
-#     J: int
-#         upper rotational state of the transition
-#     mu: astropy.units.Unit
-#         dipole moment, should be in Debye units
-#     Tex: astropy.units.Unit
-#         Excitation temperature
-#     Tbg: astropy.units.Unit
-#         Background temperature
-#     Iint: astropy.units.Unit
-#         Integrated flux in u.Jy*u.km/u.s measured over an area, or the
-#         intensity in u.Jy * u.km / u.s / u.sr. Note that this decision
-#         determines the quantity of parameter dist. Note also that this quantity
-#         corresponds to I_nu \delta v, where \delta v is the velocity width of
-#         the channel or the integration range of a zeroth order moment.
-#     dist: astropy.units.Unit
-#         If Iint is u.Jy*u.km/u.s, dist should be the distance to the source; if
-#         Iint is in u.Jy*u.km/u.s/u.sr, dist should be the physical area of the
-#         region
-#     abund: float
-#         Abundance of CO
-#     total_mass: bool
-#         The output is the total mass of H2 (if total_mass is False), or a total
-#         mass taking into account extra material heavier but less abundant than
-#         H2 assuming a mean mass of the interestelar medium of meanmolweight
-#         (default 2.8 times the mass of the hydrogen atom) for molecule (if
-#         total_mass is True)
-#     meanmolweight: float
-#         Mean molecular weight times the mass of a hydrogen atom taking into
-#         account the abundance of helium and other trace constituents, only
-#         taken into account if total_mass = True
-#     """
-#     h2mass = 2.01588 / (6.023*10**23) * u.g
-#     meanmass = meanmolweight / (6.023*10**23) * u.g
-#     if total_mass:
-#         m = meanmass
-#     else:
-#         m = h2mass
-#     if Iint.unit.is_equivalent(u.Jy * u.km / u.s):
-#         return dist**2 * coldens(nu, J, mu, Tex, Tbg, Iint)/u.sr * m  / abund
-#     elif Iint.unit.is_equivalent(u.Jy * u.km / (u.s * u.sr)):
-#         area = dist
-#         return area * coldens(nu, J, mu, Tex, Tbg, Iint) * m  / abund
-# 
-# if __name__ == "__main__":
-#     import argparse
-# 
-#     description = """DESCRIPTION: From CO line emission, estimates the total
-#                      mass through the calculation of the column density in the
-#                      optically thin approximation and considering LTE
-#                      conditions."""
-# 
-#     parser = argparse.ArgumentParser(description=description)
-#     parser.add_argument("--nu", type=float,
-#                         help="Frequency of the transition in GHz",
-#                         default=freq_caract_CO["3-2"].value)
-#     parser.add_argument("--J", type=int,
-#                         help="Upper rotational state of the transition",
-#                         default=3)
-#     parser.add_argument("--mu", type=float, help="Dipole moment in Debye units",
-#                         default=0.112)
-#     parser.add_argument("--Tex", type=float, help="Excitation temperature in K",
-#                         default=25)
-#     parser.add_argument("--Tbg", type=float, help="Background temperature in K",
-#                         default=2.7)
-#     parser.add_argument("--Iint", type=float,
-#                         help="Integrated intensity in u.Jy*u.km/u.s",
-#                         default=1)
-#     parser.add_argument("--dist", type=float,
-#                         help="distance to the source in pc",
-#                         default=300)
-#     parser.add_argument("--abund", type=float,
-#                         help="CO abundance",
-#                         default=8.5 * 10**(-5))
-#     parser.add_argument("--total_mass", type=str,
-#                         help="""total mass of H2 (if total mass is false), or a
-#                         total mass taking into account extra material heavier
-#                         but less abundant than H2, assuming a mean mass of the
-#                         interestelar medium equal to the parameter
-#                         meanmolweight (if total mass is true) """,
-#                         default="false")
-#     parser.add_argument("--meanmolweight", type=float,
-#                         help="""Mean molecular weight times the mass of a
-#                         hydrogen atom taking into account the abundance of
-#                         helium and other trace constituents, only taken into
-#                         account if total_mass = true""",
-#                         default=2.4)
-# 
-#     args = parser.parse_args()
-#     total_mass = True if args.total_mass == "true" else False
-#     totmass = totalmass(nu = args.nu * u.GHz,
-#                         J = args.J,
-#                         mu = args.mu * u.D,
-#                         Tex = args.Tex * u.K,
-#                         Tbg = args.Tbg * u.K,
-#                         Iint = args.Iint * u.Jy * u.km / u.s,
-#                         dist = args.dist * u.pc,
-#                         abund = args.abund,
-#                         total_mass = total_mass,
-#                         meanmolweight = args.meanmolweight).to(u.solMass).value
-# 
-#     print("{:.16f} solar masses".format(totmass))
-# 
+def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmass, abund):
+    Ntot = Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv)
+    totmass = area * Ntot * meanmass / abund
+    return totmass.to(u.Msun)

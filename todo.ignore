@@ -31,7 +31,9 @@ x Make an __init__.py that only imports the usefull objects
  - Test on total mass calculation from the integrated intensity of the cube in
  the optically thin regime
 
-- calcuation of NH2
+x calcuation of NH2
+
+- do a proper header.
  
 x allow install from pipy
 
@@ -63,7 +65,7 @@ x Include image of the channel maps?
 
 - Add warning (or error) if the number of points do not fully fill voxels space
 
-- change comass name: radtrans
+x change comass name: radtrans
 
 x (no for now) make the standalone comass a nother module
 
@@ -80,6 +82,8 @@ x use write_log in utils? If not, erease it
   - Softwares that compares to bowshockpy?
 
 - Unify meanmass con muH2. Keep muH2
+
+- J should be the upper level
 
 - (?) Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy [I don't know if this makes sense, you can always run it from the terminal with os.system or magical %]
 

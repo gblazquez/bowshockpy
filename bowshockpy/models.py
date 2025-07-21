@@ -1080,6 +1080,7 @@ class CubeProcessing(BowshockCube):
         "m": "mass",
         "I": "Intensity",
         "Ithin": "Intensity",
+        "Ntot": "Total column density",
         "NCO": "CO column density",
         "tau": "Opacity"
     }
@@ -1087,6 +1088,7 @@ class CubeProcessing(BowshockCube):
         "m": "SolarMass",
         "I": "Jy/beam",
         "Ithin": "Jy/beam",
+        "Ntot": "cm-2",
         "NCO": "cm-2",
         "tau": "-"
     }
@@ -1217,16 +1219,36 @@ class CubeProcessing(BowshockCube):
         self.cube = np.sum(
             [modelcube.cube for modelcube in modelcubes], axis=0)
 
+    def calc_Ntot(self,):
+        """
+        Computes the total (molecular hydrogen + heavier components) column
+        densities of the model cube
+        """
+        if self.verbose:
+            print(f"\nComputing column densities...")
+        self.cubes["Ntot"] = rt.column_density_tot(
+            m=self.cubes["m"] * u.solMass,
+            meanmass=self.meanmass,
+            area=self.areapix_cm,
+        ).to(u.cm**(-2)).value
+        self.refpixs["Ntot"] = self.refpixs["m"]
+        self.noisychans["Ntot"] = self.noisychans["m"]
+        self.sigma_noises["Ntot"] = self.sigma_noises["m"]
+        if self.verbose:
+            print(f"column densities has been calculated\n")
+
     def calc_NCO(self,):
         """
         Computes the CO column densities of the model cube
         """
         if self.verbose:
-            print(f"\nComputing column densities...")
-        self.cubes["NCO"] = (
-            self.cubes["m"] * u.solMass * self.XCO \
-            / self.meanmass / self.areapix_cm
-        ).to(u.cm**(-2)).value #* self.NCOfactor
+            print(f"\nComputing CO column densities...")
+        self.cubes["NCO"] = rt.column_density_CO(
+            m=self.cubes["m"] * u.solMass,
+            meanmass=self.meanmass,
+            area=self.areapix_cm,
+            XCO=self.XCO,
+        ).to(u.cm**(-2)).value
         self.refpixs["NCO"] = self.refpixs["m"]
         self.noisychans["NCO"] = self.noisychans["m"]
         self.sigma_noises["NCO"] = self.sigma_noises["m"]
@@ -1450,6 +1472,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             "intensity": "I",
             "intensity_opthin": "Ithin",
             "CO_column_density": "NCO",
+            "tot_column_density": "Ntot",
             "opacity": "tau",
             "add_source": "s",
             "rotate": "r",

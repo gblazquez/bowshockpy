@@ -4,6 +4,7 @@ import numpy as np
 from astropy import units as u
 
 from bowshockpy import models as bs
+from bowshockpy import radtrans as rt
 
 import copy
 
@@ -45,9 +46,20 @@ bsc1.makecube()
 bsc3 = copy.deepcopy(bsc1)
 bscp = bs.CubeProcessing(
     [bsc1, bsc3],
-    bmin=0.1, bmaj=0.1,
+    J="3-2",
+    XCO=8.5 * 10**(-5),
+    meanmass=2.8 / (6.023*10**23) * u.g,
+    Tex=100 * u.K,
+    Tbg=2.7 * u.K,
+    coordcube="offset",
+    bmin=0.1,
+    bmaj=0.10,
+    pabeam=-20.,
+    papv=bsc1.pa,
+    parot=0,
+    sigma_beforeconv=0.02,
+    maxcube2noise=0,
 )
-
 
 def test_cube_mass_consistency():
     massconsistent = bsc1._check_mass_consistency(return_isconsistent=True)
@@ -57,13 +69,33 @@ def test_makecube_fromcube():
     ones = np.ones_like(bsc1.cube)
     bsc2.makecube(fromcube=ones)
     massconsistent = bsc2._check_mass_consistency(return_isconsistent=True)
-    assert massconsistent, "Mass consistency failed while creating cube from an intial cube"
+    assert massconsistent, "Mass consistency test failed while creating cube from an intial cube"
 
 def test_concat_cubes():
-    assert np.sum(bscp.cube) == np.sum(bsc1.cube) + np.sum(bsc3.cube), "Mass consistency failed while concatenating cubes"
+    assert np.sum(bscp.cube) == np.sum(bsc1.cube) + np.sum(bsc3.cube), "Mass consistency test failed while concatenating cubes"
 
-# def test_convolution():
-#     bsc
+def test_intensities():
+    bscp.calc_Ithin()
+    sumintens = np.sum(bscp.cubes["Ithin"])
+    Inudv = sumintens * u.Jy/bscp.beamarea_sr*bscp.abschanwidth*u.km/u.s
+    totmass_opthin = rt.totmass_opthin(
+        nu=rt.freq_caract_CO["3-2"],
+        J=3,
+        mu=0.112*u.D,
+        Tex=100*u.K,
+        Tbg=2.7*u.K,
+        Inudv=Inudv,
+        area=bscp.areapix_cm,
+        meanmass=bscp.meanmass,
+        abund=bscp.XCO,
+    ).to(u.Msun).value
+    assert np.isclose(totmass_opthin, np.sum(bscp.cubes["m"])), "Intensities calculated in the optically thin regime does not correspond to total mass of the cube"
+
+def test_convolution():
+    bscp.calc_I()
+    bscp.convolve("I")
+    assert np.isclose(np.sum(bscp.cubes["I"]), np.sum(bscp.cubes["I_c"])), "Convolution failed: flux is not conserved"
+
 #     massconsistent = bsc._check_mass_consistency(return_isconsistent=True)
 #     assert massconsistent, "Mass consistency check failed"
 
