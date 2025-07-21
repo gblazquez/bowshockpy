@@ -4,8 +4,8 @@
 
 
 # sys.path.insert(0, os.path.abspath(".."))
-# 
-# import bowshockpy 
+#
+# import bowshockpy
 # from bowshockpy import __version__
 
 
@@ -14,8 +14,8 @@ project = 'bowshockpy'
 copyright = '2025, Guillermo Blazquez-Calero'
 author = 'Guillermo Blazquez-Calero'
 
-release =  "0.2.0"
-version =  "0.2.0"
+release =  "0.2.1"
+version =  "0.2.1"
 
 # release = __version__
 # version = __version__
