@@ -931,7 +931,8 @@ coincides with the total mass of the cube.
                 # Treat the rest of the bowshock
                 dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
 
-            for phi in self.phis:
+            # for phi in self.phis:
+            for phi in self.phis+self.dphi/2*iz:
                 _xp = self.rs[iz] * np.sin(phi)
                 _yp = self.rs[iz] * np.cos(phi) * ci + z * si
                 xp = _xp * cpa - _yp * spa
