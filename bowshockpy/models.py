@@ -1019,8 +1019,9 @@ class CubeProcessing(BowshockCube):
     -----------
     bscube :  class instance
         Instance of BowshockCube
-    J : optional, str
-        CO rotational transition (e.g. "3-2")
+    J : optional, int
+        Upper level of the CO rotational transition (e.g. 3 for transition
+        "3-2")
     XCO : optional, str
         CO abundance
     meanmolmass : optional, astropy.unit.Quantity
@@ -1048,10 +1049,14 @@ class CubeProcessing(BowshockCube):
     parot : float
         Angle to rotate the image [degrees]
     sigma_beforeconv : float
-        Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
+        Standard deviation of the noise of the map, before convolution. Set to
+        None if maxcube2noise is used.
     maxcube2noise : float
-        Standard deviation of the noise of the map, before convolution, relative to the maximum pixel in the cube. The actual noise will be computed after convolving. This parameter would not be used if sigma_beforeconve is not None.
-
+        Standard deviation of the noise of the map, before convolution, relative
+        to the maximum pixel in the cube. The actual noise will be computed
+        after convolving. This parameter would not be used if sigma_beforeconve
+        is not None.
+        
     Attributes:
     -----------
     x_FWHM : float or None
@@ -1105,7 +1110,7 @@ class CubeProcessing(BowshockCube):
     ]
 
     def __init__(
-            self, modelcubes, modelname="none", J="3-2", XCO=8.5*10**(-5), meanmolmass=2.8, Tex=100*u.K, Tbg=2.7*u.K, coordcube="offset",
+            self, modelcubes, modelname="none", J=3, XCO=8.5*10**(-5), meanmolmass=2.8, Tex=100*u.K, Tbg=2.7*u.K, coordcube="offset",
             ra_source_deg=None, dec_source_deg=None, bmin=None, bmaj=None,
             pabeam=None, papv=None, parot=None, sigma_beforeconv=None,
             maxcube2noise=None, verbose=True, **kwargs):
@@ -1135,6 +1140,7 @@ class CubeProcessing(BowshockCube):
 
         self.modelname = modelname
         self.J = J
+        self.rottrans = f"{int(J)}-{int(J-1)}"
         self.XCO = XCO
         self.meanmolmass = meanmolmass
         self.Tex = Tex
@@ -1263,8 +1269,8 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print(f"\nComputing opacities...")
         self.cubes["tau"] = rt.tau_N(
-            nu=rt.freq_caract_CO[self.J],
-            J=float(self.J[0]),
+            nu=rt.freq_caract_CO[self.rottrans],
+            J=self.J,
             mu=0.112*u.D,
             Tex=self.Tex,
             dNdv=self.cubes["NCO"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s),
@@ -1286,7 +1292,7 @@ class CubeProcessing(BowshockCube):
         func_I = rt.Inu_tau_thin if opthin else rt.Inu_tau
         ckI = "Ithin" if opthin else "I"
         self.cubes[ckI] = (func_I(
-            nu=rt.freq_caract_CO[self.J],
+            nu=rt.freq_caract_CO[self.rottrans],
             Tex=self.Tex,
             Tbg=self.Tbg,
             tau=self.cubes["tau"],
@@ -1532,7 +1538,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             in the list (from left to right). The list can be left empty if no
             operations are desired.
             
-    
         Example:
         --------
         >>> cp = bs.CubeProcessing(...)
@@ -1642,7 +1647,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             self.savecube(ck)
 
     def plot_channel(self, ck, chan, vmax=None, vmin=None,
-        cmap="inferno", savefig=None):
+                    cmap="inferno", savefig=None, add_beam=False, return_fig_axs=False):
         """
         Plots a channel map of a cube
 
@@ -1662,7 +1667,18 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Label of the colormap, by default "inferno".
         savefig : str, optional String of the full path to save the figure. If
             None, no figure is saved. By default, None.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
+        return_fig_axs : bool, optional
+            If True, returns a tuple of the ax of the channel map and the
+            colorbar.  If False, does not return anything.
+
+        Returns:
+        --------
+        (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map
+            and the colorbar, only returns if return_fig_axs=True.
         """
+        add_beam = add_beam if "c" in ck else False
         fig, axs, cbax = pl.plot_channel(
             cube=self.cubes[ck],
             chan=chan,
@@ -1673,12 +1689,19 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             cmap=cmap,
             units=self._getunitlabel(ck),
             refpix=self.refpix,
-            return_fig_axs=True
+            add_beam=add_beam,
+            bmin=self.bmin,
+            bmaj=self.bmaj,
+            pabeam=self.pabeam,
+            return_fig_axs=True,
         )
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
+        if return_fig_axs:
+            return fig, axs, cbax
 
-    def plot_channels(self, ck, savefig=None, **kwargs):
+    def plot_channels(self, ck, savefig=None, add_beam=False, 
+                      return_fig_axs=False, **kwargs):
         """
         Plots several channel map of a spectral cube.
     
@@ -1721,18 +1744,35 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Pixel of reference, by default [0,0]
         savefig : str, optional String of the full path to save the figure. If
             None, no figure is saved. By default, None.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
+        return_fig_axs : bool, optional
+            If True, returns a tuple of the axes of the channel map and the
+            colorbar. If False, does not return anything.
+        
+        Returns:
+        --------
+        (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map
+            and the colorbar, only returns if return_fig_axs=True.
         """
-        fig, ax, cbax = pl.plot_channels(
+        add_beam = add_beam if "c" in ck else False
+        fig, axs, cbax = pl.plot_channels(
             cube=self.cubes[ck],
             arcsecpix=self.arcsecpix,
             velchans=self.velchans,
             units=self._getunitlabel(ck),
             refpix=self.refpix,
+            add_beam=add_beam,
+            bmin=self.bmin,
+            bmaj=self.bmaj,
+            pabeam=self.pabeam,
             return_fig_axs=True,
             **kwargs,
         )
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
+        if return_fig_axs:
+            return fig, axs, cbax
 
     def pvalongz(self, ck, halfwidth=0, save=False, filename=None):
         """
@@ -2166,8 +2206,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
     def plotsumint(
             self, ck, chan_range=None, ax=None, cbax=None,
-            savefits=False, return_im=False, **kwargs
-            ):
+            savefits=False, return_im=False, add_beam=False,
+              **kwargs):
         """
         Plots the sum of the pixels of the cubes along the velocity axis.
 
@@ -2175,8 +2215,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         sumint : numpy.ndarray
             Sum of the pixels of the cubes along the velocity axis.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
+        add_beam = add_beam if "c" in ck else False
         sumint = self.sumint(
             ck, chan_range=chan_range, save=savefits,
             )
@@ -2192,6 +2235,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             interpolation=None,
             ax=ax,
             cbax=cbax,
+            add_beam=add_beam,
+            bmin=self.bmin,
+            bmaj=self.bmaj,
+            pabeam=self.pabeam,
             cbarlabel="Integrated " + self._getunitlabel(ck).rstrip("]") + " km/s]",
             **kwargs,
             )
@@ -2200,8 +2247,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
     def plotmom0(
             self, ck, chan_range=None, ax=None, cbax=None,
-            savefits=False, return_im=False, **kwargs
-            ):
+            savefits=False, return_im=False, add_beam=False, 
+            **kwargs):
         """
         Plots the moment 0.
 
@@ -2209,8 +2256,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         mom0 : numpy.ndarray
             Moment 0 image.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
+        add_beam = add_beam if "c" in ck else False
         mom0 = self.mom0(
             ck, chan_range=chan_range, save=savefits,
             )
@@ -2226,6 +2276,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             interpolation=None,
             ax=ax,
             cbax=cbax,
+            add_beam=add_beam,
+            bmin=self.bmin,
+            bmaj=self.bmaj,
+            pabeam=self.pabeam,
             cbarlabel="Integrated " + self._getunitlabel(ck).rstrip("]") + " km/s]",
             **kwargs,
             )
@@ -2235,7 +2289,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
     def plotmom1(
             self, ck, chan_range=None, mom1clipping=0, 
             ax=None, cbax=None, savefits=False, 
-            return_im=False, **kwargs
+            return_im=False, add_beam=False, **kwargs
             ):
         """
         Plots the moment 1.
@@ -2244,10 +2298,13 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         mom1 : numpy.ndarray
             Moment 1 image.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         clipping = float(mom1clipping.split("x")[0]) * self.sigma_noises[ck] \
             if mom1clipping !=0 else 0
+        add_beam = add_beam if "c" in ck else False
         mom1 = self.mom1(
                 ck,
                 chan_range=chan_range,
@@ -2266,6 +2323,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             interpolation=None,
             ax=ax,
             cbax=cbax,
+            add_beam=add_beam,
+            bmin=self.bmin,
+            bmaj=self.bmaj,
+            pabeam=self.pabeam,
             cbarlabel="Mean velocity [km/s]",
             **kwargs,
             )
@@ -2274,7 +2335,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
     def plotmom2(
             self, ck, chan_range=None, mom2clipping=0, 
-            ax=None, cbax=None, savefits=False,
+            ax=None, cbax=None, add_beam=False, savefits=False,
             return_im=False, **kwargs
             ):
         """
@@ -2284,10 +2345,13 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         mom2 : numpy.ndarray
             Moment 2 image.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         clipping = float(mom2clipping.split("x")[0]) * self.sigma_noises[ck]\
             if mom2clipping !=0 else 0
+        add_beam = add_beam if "c" in ck else False
         mom2 = self.mom2(
                     ck,
                     chan_range=chan_range,
@@ -2306,6 +2370,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             interpolation=None,
             ax=ax,
             cbax=cbax,
+            add_beam=add_beam,
+            bmin=self.bmin,
+            bmaj=self.bmaj,
+            pabeam=self.pabeam,
             cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
             **kwargs,
             )
@@ -2314,8 +2382,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
     def plotmom8(
             self, ck, chan_range=None, ax=None, cbax=None,
-            savefits=False, return_im=False, **kwargs
-            ):
+            add_beam=False, savefits=False, return_im=False,
+             **kwargs):
         """
         Plots the moment 8.
 
@@ -2323,8 +2391,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         mom8 : numpy.ndarray
             Moment 8 image.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
+        add_beam = add_beam if "c" in ck else False
         mom8 = self.mom8(
                     ck,
                     chan_range=chan_range,
@@ -2341,6 +2412,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             extent=extent,
             ax=ax,
             cbax=cbax,
+            add_beam=add_beam,
+            bmin=self.bmin,
+            bmaj=self.bmaj,
+            pabeam=self.pabeam,
             cbarlabel="Peak " + self._getunitlabel(ck),
             **kwargs,
             )
@@ -2350,7 +2425,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
     def momentsandpv_and_params(
             self, ck, savefits=False, saveplot=False,
             mom1clipping=0, mom2clipping=0, verbose=True,
-            chan_range=None, halfwidth_pv=0,
+            chan_range=None, halfwidth_pv=0, add_beam=False,
             mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
             mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
             mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
@@ -2372,6 +2447,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Clipping to in order to compute the moment 1. Pixels with values
             smaller than the one given by clipping parameter will be masked with
             0 values.
+        add_beam : bolean, optional
+            If True, plots a ellipse of the beam size in the left bottom corner.
         mom2clipping : float
             Clipping to in order to compute the moment 2. Pixels with values
             smaller than the one given by clipping parameter will be masked with
@@ -2508,6 +2585,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             axs["text"].text(0, 0.99-0.06*n, line, fontsize=12-self.nmodels,
                               transform=axs["text"].transAxes)
 
+        add_beam = add_beam if "c" in ck else False
         ak = "mom0"
         self.plotmom0(
             ck=ck,
@@ -2516,6 +2594,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             cbax=cbaxs[ak],
             savefits=False,
             return_im=False,
+            add_beam=add_beam,
             **mom0values
             )
 
@@ -2528,6 +2607,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             cbax=cbaxs[ak],
             savefits=False,
             return_im=False,
+            add_beam=add_beam,
             **mom1values,
             )
 
@@ -2540,6 +2620,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             cbax=cbaxs[ak],
             savefits=False,
             return_im=False,
+            add_beam=add_beam,
             **mom2values,
             )
 
@@ -2562,6 +2643,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             cbax=cbaxs[ak],
             savefits=False,
             return_im=False,
+            add_beam=add_beam,
             **mom8values
             )
 

@@ -46,7 +46,7 @@ bsc1.makecube()
 bsc3 = copy.deepcopy(bsc1)
 bscp = bs.CubeProcessing(
     [bsc1, bsc3],
-    J="3-2",
+    J=3,
     XCO=8.5 * 10**(-5),
     meanmolmass=2.8,
     Tex=100 * u.K,
@@ -95,7 +95,4 @@ def test_convolution():
     bscp.calc_I()
     bscp.convolve("I")
     assert np.isclose(np.sum(bscp.cubes["I"]), np.sum(bscp.cubes["I_c"])), "Convolution failed: flux is not conserved"
-
-#     massconsistent = bsc._check_mass_consistency(return_isconsistent=True)
-#     assert massconsistent, "Mass consistency check failed"
 

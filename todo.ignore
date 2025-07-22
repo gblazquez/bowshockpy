@@ -24,16 +24,16 @@ x erease bowshock fitter? leave it?
 
 x Make an __init__.py that only imports the usefull objects
 
-- think of tests:
- - Test on coordinates?
+x think of tests:
+ - (not necessary) Test on coordinates?
  x test on mass?: try to test only with NarrowJet! or obsmod??
- - Test on convolution: masses/intensities are conserved
- - Test on total mass calculation from the integrated intensity of the cube in
+ x Test on convolution: masses/intensities are conserved
+ x Test on total mass calculation from the integrated intensity of the cube in
  the optically thin regime
 
 x calcuation of NH2
 
-- do a proper header.
+- do a proper header. Erease warning from casaviewer and ds9. Try carta
  
 x allow install from pipy
 
@@ -55,7 +55,7 @@ x Incorporate the docs (make it first)
 
 x Add contributing statement
 
-- Add beam convolution in figures
+x Add beam convolution in figures
 
 x Change iws -> j in params figures
 
@@ -65,11 +65,13 @@ x Include image of the channel maps?
 
 - Add warning (or error) if the number of points do not fully fill voxels space
 
+- Change the documentation to book template
+
 x change comass name: radtrans
 
 x (no for now) make the standalone comass a nother module
 
-x(no for now) bsmodels should only contain NarrowJet (and probably IWS). Make other modules for the rest. 
+x (no for now) bsmodels should only contain NarrowJet (and probably IWS). Make other modules for the rest. 
 
 x modular usage: Remember for the modular usage that you have available some of the important functons directly from bowshockpy as you have defined them n the __init__.py
 
@@ -81,11 +83,11 @@ x use write_log in utils? If not, erease it
   - What kind of user the software is targeted to?
   - Softwares that compares to bowshockpy?
 
-- Unify meanmass con muH2. Keep muH2
+x Unify meanmass con muH2. Keep muH2
 
-- J should be the upper level
+x J should be the upper level
 
-- (?) Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy [I don't know if this makes sense, you can always run it from the terminal with os.system or magical %]
+- (not necessary) Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy [I don't know if this makes sense, you can always run it from the terminal with os.system or magical %]
 
 
 import bowshockpy as bp

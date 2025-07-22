@@ -173,7 +173,8 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
     m: mass [SolarMass]                      s: add_source
     I: Intensity [Jy/beam]                   r: rotate
     Ithin: Intensity [Jy/beam]               n: add_noise
-    NCO: CO column density [cm-2]            c: convolve
+    Ntot: Total column density [cm-2]        c: convolve
+    NCO: CO column density [cm-2]
     tau: Opacity
 """
     )
@@ -201,6 +202,7 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
     for ck in bscp.listmompvs:
         bscp.plot_channels( ck,
             savefig=f"models/{ps['modelname']}/bowshock_cube_{ck}.pdf",
+            add_beam=True,
         )
  
     bscp.momentsandpv_and_params_all(
@@ -213,6 +215,7 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
          mom2values=p.mom2values,
          mom8values=p.mom8values,
          pvvalues=p.pvvalues,
+         add_beam=True,
          )
 
     # Save the file with all the parameters used to generate the bowshocks

@@ -19,6 +19,7 @@ These parameters define the desired outputs:
     Dictionary indicating the desired output spectral cubes and the operations performed over them. The keys of the dictionary are strings indicating the quantities of the desired cubes. These are the available quantities of the spectral cubes:
 
     - "mass": Total mass of molecular hydrogen in solar mass
+    - "Ntot_column_density": Total (H2 + heavier components) column density in cm-2.
     - "CO_column_density": Column density of the CO in cm-2.
     - "intensity": Intensity in Jy/beam.
     - "intensity_opthin": Intensity in Jy/beam, using the optically thin approximation.
@@ -81,7 +82,7 @@ These parameters common to all the bowshocks that are going to be generated:
 *muH2* (float)
     Mean molecular mass per H molecule
 *J* (str)
-    CO rotational transition (e.g. "3-2")
+    Upper level of the CO rotational transition (e.g. 3 for "3-2")
 *XCO* (float)
     CO abundance
 
