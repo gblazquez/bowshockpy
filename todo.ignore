@@ -89,6 +89,8 @@ x J should be the upper level
 
 - (not necessary) Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy [I don't know if this makes sense, you can always run it from the terminal with os.system or magical %]
 
+- I think there is a way to optimize the computation by changing doing a variable dphi in such a way that ds is constant through z.
+
 
 import bowshockpy as bp
 

@@ -978,6 +978,47 @@ class BowshockObsModelPlot():
             figname = f"models/{self.modelname}/bowshock_projected.jpg"
         self.fig_model.savefig(f"{figname}", bbox_inches="tight", **kwargs)
 
+def add_beam_to_ax(
+        ax, bmin, bmaj, pabeam, extent, 
+        add_beam_rectangle=True, beam_factor_rectangle=1.5,
+        beam_color_rectangle="k", beam_edgecolor_rectangle="w",
+        beam_fill_rectangle=False, beam_color="w", beam_fill=True
+        ):
+    # in radians
+    pa = pabeam * np.pi/180. + np.pi/2
+    # semi-major axis in pixels
+    a = bmaj  
+    # semi-minor axis in pixels
+    b = bmin 
+    xbpos = extent[0] - np.abs(extent[0]-extent[1])/20 - np.max([a,b])
+    ybpos = extent[2] + np.abs(extent[2]-extent[3])/20 + np.max([a,b])
+    geometry = EllipseGeometry(
+        x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
+    if add_beam_rectangle:
+        aper_rectangle = RectangularAperture(
+            (geometry.x0, geometry.y0),
+            geometry.sma * 2 * beam_factor_rectangle,
+            geometry.sma * 2 * beam_factor_rectangle)
+        aper_rectangle.plot(
+            ax=ax,
+            color=beam_color_rectangle,
+            ec=beam_edgecolor_rectangle,
+            fc=beam_color_rectangle,
+            fill=beam_fill_rectangle,
+            linewidth=0.5,
+            zorder=10000,
+        )
+    aper = EllipticalAperture(
+        (geometry.x0, geometry.y0), geometry.sma,
+         geometry.sma*(1 - geometry.eps),
+         geometry.pa)
+    aper.plot(
+        ax,
+        color=beam_color,
+        fill=beam_fill,
+        # linewidth=beam_linewidth,
+        zorder=10000,
+        )
 
 def plot_channel(cube, chan, arcsecpix, velchans,
     vmax=None, vmin=None, cmap="inferno", units="Mass [Msun]",
@@ -1083,40 +1124,7 @@ def plot_channel(cube, chan, arcsecpix, velchans,
         )
 
     if add_beam:
-        # in radians
-        pa = pabeam * np.pi/180. + np.pi/2
-        # semi-major axis in pixels
-        a = bmaj  
-        # semi-minor axis in pixels
-        b = bmin 
-        xbpos = extent[0] - np.max([a,b]) * 3
-        ybpos = extent[2] + np.max([a,b]) * 3
-        geometry = EllipseGeometry(
-            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
-        beam_factor_rectangle = 2.5
-        aper_rectangle = RectangularAperture(
-            (geometry.x0, geometry.y0),
-            geometry.sma * 2 * beam_factor_rectangle,
-            geometry.sma * 2 * beam_factor_rectangle)
-        aper_rectangle.plot(
-            ax=ax,
-            color="k",
-            ec="w",
-            fc="k",
-            fill=False,
-            zorder=10000,
-        )
-        aper = EllipticalAperture(
-            (geometry.x0, geometry.y0), geometry.sma,
-             geometry.sma*(1 - geometry.eps),
-             geometry.pa)
-        aper.plot(
-            ax,
-            color="w",
-            fill="w",
-            # linewidth=beam_linewidth,
-            zorder=10000,
-            )
+        add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
 
     cbar = plt.colorbar(im, label=units, cax=cbax)
     cbax.tick_params(
@@ -1282,40 +1290,7 @@ def plot_channels(cube, arcsecpix, velchans,
             axs[chan].set_xticklabels([])
 
     if add_beam:
-        # in radians
-        pa = pabeam * np.pi/180. + np.pi/2
-        # semi-major axis in pixels
-        a = bmaj  
-        # semi-minor axis in pixels
-        b = bmin 
-        xbpos = extent[0] - np.max([a,b]) * 3
-        ybpos = extent[2] + np.max([a,b]) * 3
-        geometry = EllipseGeometry(
-            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
-        beam_factor_rectangle = 2.5
-        aper_rectangle = RectangularAperture(
-            (geometry.x0, geometry.y0),
-            geometry.sma * 2 * beam_factor_rectangle,
-            geometry.sma * 2 * beam_factor_rectangle)
-        aper_rectangle.plot(
-            ax=axs[beam_ax],
-            color="k",
-            ec="w",
-            fc="k",
-            fill=False,
-            zorder=10000,
-        )
-        aper = EllipticalAperture(
-            (geometry.x0, geometry.y0), geometry.sma,
-             geometry.sma*(1 - geometry.eps),
-             geometry.pa)
-        aper.plot(
-            axs[beam_ax],
-            color="w",
-            fill="w",
-            # linewidth=beam_linewidth,
-            zorder=10000,
-            )
+        add_beam_to_ax(axs[beam_ax], bmin, bmaj, pabeam, extent,)
 
     cbar = plt.colorbar(
            cm.ScalarMappable(
@@ -1501,41 +1476,9 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
         color="w",
     )
     ax.set_aspect("equal")
+
     if add_beam:
-        # in radians
-        pa = pabeam * np.pi/180. + np.pi/2
-        # semi-major axis in pixels
-        a = bmaj  
-        # semi-minor axis in pixels
-        b = bmin 
-        xbpos = extent[0] - np.max([a,b]) * 3
-        ybpos = extent[2] + np.max([a,b]) * 3
-        geometry = EllipseGeometry(
-            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
-        beam_factor_rectangle = 2.5
-        aper_rectangle = RectangularAperture(
-            (geometry.x0, geometry.y0),
-            geometry.sma * 2 * beam_factor_rectangle,
-            geometry.sma * 2 * beam_factor_rectangle)
-        aper_rectangle.plot(
-            ax=ax,
-            color="k",
-            ec="w",
-            fc="k",
-            fill=False,
-            zorder=10000,
-        )
-        aper = EllipticalAperture(
-            (geometry.x0, geometry.y0), geometry.sma,
-             geometry.sma*(1 - geometry.eps),
-             geometry.pa)
-        aper.plot(
-            ax,
-            color="w",
-            fill="w",
-            # linewidth=beam_linewidth,
-            zorder=10000,
-            )
+        add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
 
     plt.colorbar(im, cax=cbax, orientation="horizontal")
     cbax.tick_params(
@@ -1627,41 +1570,9 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
         color="w",
     )
     ax.set_aspect("equal")
+
     if add_beam:
-        # in radians
-        pa = pabeam * np.pi/180. + np.pi/2
-        # semi-major axis in pixels
-        a = bmaj  
-        # semi-minor axis in pixels
-        b = bmin 
-        xbpos = extent[0] - np.max([a,b]) * 3
-        ybpos = extent[2] + np.max([a,b]) * 3
-        geometry = EllipseGeometry(
-            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
-        beam_factor_rectangle = 2.5
-        aper_rectangle = RectangularAperture(
-            (geometry.x0, geometry.y0),
-            geometry.sma * 2 * beam_factor_rectangle,
-            geometry.sma * 2 * beam_factor_rectangle)
-        aper_rectangle.plot(
-            ax=ax,
-            color="k",
-            ec="w",
-            fc="k",
-            fill=False,
-            zorder=10000,
-        )
-        aper = EllipticalAperture(
-            (geometry.x0, geometry.y0), geometry.sma,
-             geometry.sma*(1 - geometry.eps),
-             geometry.pa)
-        aper.plot(
-            ax,
-            color="w",
-            fill="w",
-            # linewidth=beam_linewidth,
-            zorder=10000,
-            )
+        add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
 
     plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
     cbax.tick_params(
@@ -1782,41 +1693,10 @@ def plotmom1(mom1, ax=None, cbax=None, extent=None,
         ax.set_ylabel("Dec. [arcsec]")
         ax.set_xlabel("R.A. [arcsec]")
     ax.set_aspect("equal")
+
     if add_beam:
-        # in radians
-        pa = pabeam * np.pi/180. + np.pi/2
-        # semi-major axis in pixels
-        a = bmaj  
-        # semi-minor axis in pixels
-        b = bmin 
-        xbpos = extent[0] - np.max([a,b]) * 3
-        ybpos = extent[2] + np.max([a,b]) * 3
-        geometry = EllipseGeometry(
-            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
-        beam_factor_rectangle = 2.5
-        aper_rectangle = RectangularAperture(
-            (geometry.x0, geometry.y0),
-            geometry.sma * 2 * beam_factor_rectangle,
-            geometry.sma * 2 * beam_factor_rectangle)
-        aper_rectangle.plot(
-            ax=ax,
-            color="k",
-            ec="w",
-            fc="k",
-            fill=False,
-            zorder=10000,
-        )
-        aper = EllipticalAperture(
-            (geometry.x0, geometry.y0), geometry.sma,
-             geometry.sma*(1 - geometry.eps),
-             geometry.pa)
-        aper.plot(
-            ax,
-            color="w",
-            fill="w",
-            # linewidth=beam_linewidth,
-            zorder=10000,
-            )
+        add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
+
     plt.colorbar(im, cax=cbax, orientation="horizontal",
                  extend=extend_cbar, label=cbarlabel)
     cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
@@ -1934,42 +1814,10 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
         ax.set_ylabel("Dec. [arcsec]")
         ax.set_xlabel("R.A. [arcsec]")
     ax.set_aspect("equal")
+
     if add_beam:
-        # in radians
-        pa = pabeam * np.pi/180. + np.pi/2
-        # semi-major axis in pixels
-        a = bmaj  
-        # semi-minor axis in pixels
-        b = bmin 
-        xbpos = extent[0] - np.max([a,b]) * 3
-        ybpos = extent[2] + np.max([a,b]) * 3
-        geometry = EllipseGeometry(
-            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
-        beam_factor_rectangle = 2.5
-        aper_rectangle = RectangularAperture(
-            (geometry.x0, geometry.y0),
-            geometry.sma * 2 * beam_factor_rectangle,
-            geometry.sma * 2 * beam_factor_rectangle)
-        aper_rectangle.plot(
-            ax=ax,
-            color="k",
-            ec="w",
-            fc="k",
-            fill=False,
-            zorder=10000,
-        )
-        aper = EllipticalAperture(
-            (geometry.x0, geometry.y0), geometry.sma,
-             geometry.sma*(1 - geometry.eps),
-             geometry.pa)
-        aper.plot(
-            ax,
-            color="w",
-            fill="w",
-            # linewidth=beam_linewidth,
-            zorder=10000,
-            )
- 
+        add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
+
     plt.colorbar(im, cax=cbax, orientation="horizontal",
                 extend=extend_cbar, label=cbarlabel)
     cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
@@ -2060,42 +1908,10 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
         color="w",
     )
     ax.set_aspect("equal")
+
     if add_beam:
-        # in radians
-        pa = pabeam * np.pi/180. + np.pi/2
-        # semi-major axis in pixels
-        a = bmaj  
-        # semi-minor axis in pixels
-        b = bmin 
-        xbpos = extent[0] - np.max([a,b]) * 3
-        ybpos = extent[2] + np.max([a,b]) * 3
-        geometry = EllipseGeometry(
-            x0=xbpos, y0=ybpos, sma=a*0.5, eps=(1-b/a), pa=np.pi-pa)
-        beam_factor_rectangle = 2.5
-        aper_rectangle = RectangularAperture(
-            (geometry.x0, geometry.y0),
-            geometry.sma * 2 * beam_factor_rectangle,
-            geometry.sma * 2 * beam_factor_rectangle)
-        aper_rectangle.plot(
-            ax=ax,
-            color="k",
-            ec="w",
-            fc="k",
-            fill=False,
-            zorder=10000,
-        )
-        aper = EllipticalAperture(
-            (geometry.x0, geometry.y0), geometry.sma,
-             geometry.sma*(1 - geometry.eps),
-             geometry.pa)
-        aper.plot(
-            ax,
-            color="w",
-            fill="w",
-            # linewidth=beam_linewidth,
-            zorder=10000,
-            )
- 
+        add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
+
     plt.colorbar(im, cax=cbax, orientation="horizontal", label=cbarlabel)
     cbax.tick_params(
         axis="x", top=True, bottom=False,

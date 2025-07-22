@@ -624,7 +624,7 @@ class BowshockCube(ObsModel):
     obsmodel : class instance
         Instance of ObsModel
     nphis : int
-        Number of azimuthal angle phi to calculate the bowshock solution
+        Number of azimuthal angles phi to calculate the bowshock solution
     vch0 : float
         Central velocity of the first channel map [km/s]
     vchf : float
@@ -755,6 +755,50 @@ at least one of three reasons:
     negative floats if the model is blueshifted).\n
 """)
 
+    def _MASS_CONSISTENCY_WARNING(self, massloss):
+        print(rf"""
+WARNING: The integrated mass of the cube is {massloss:.1e} % less than the input
+total mass of the bowshock. This can be due to several factors:
+    - Part of the model lie outside the grid of the spectral cube. If this is
+    not intended, try to solve it by making the maps larger, changing the
+    reference pixel to center the model in the maps, or increasing the velocity
+    coverage of the spectral cube.  
+    - The difference between the integrated mass of the cube and the input total
+    mass of the bowshock model is due to numerical errors. If you think that the
+    difference is too big, you can reduce it by increasing the number of points
+    of the model (inceasng nzs or/and nphis parameters).
+    - If the velocity dispersion vt is not 0, the masses corresponding to a
+    channel maps are spread along the cube in the velocity axis following a
+    Gaussian distribution. This distribution is truncated at vt*tolfactor_vt in
+    order to make the computation substatially faster, but it can result in an
+    underestimation of the integrated mass of the spectral cube. Try to make
+    tolfactor_vt larger.
+""")
+
+    def _SAMPLING_XY_WARNING(self,):
+        print("""
+WARNING: It is possible that the model is not well sampled in the plane of sky
+given the cube dimensions and the number of model points. You can ensure a
+better sampling by increasing the number of model points (nzs
+parameter) or decreasing the pixel size (nxs and nys parameters).
+""")
+
+    def _SAMPLING_V_WARNING(self,):
+        print("""
+WARNING: It is possible that the model is not well sampled in the velocity direction 
+given the cube dimensions and the number of model points. You can ensure a
+better sampling by increasing the number of model points in the azimuthal direction (nphis parameter) or decreasing the pixel size (nxs and nys parameters).
+""")
+
+    def _SAMPLING_PHI_WARNING(self,):
+        print("""
+WARNING: It is possible that the model is not well sampled in the plane of sky
+given the cube dimensions and the number of azimuthal points of the model
+(nphis). You can ensure a better sampling by increasing the number of model
+points in the azimuthal direction (nphis parameter) or decreasing the pixel
+size (nxs and nys parameters).
+""")
+
     def _calc_params_init(self):
         self.chanwidth = (self.vchf - self.vch0) / (self.nc-1)
         self.abschanwidth = np.abs(self.chanwidth)
@@ -799,28 +843,34 @@ at least one of three reasons:
             intmass_cube, self.mass+self._fromcube_mass)
         massloss = (self.mass+self._fromcube_mass-intmass_cube) / self.mass * 100
         if mass_consistent:
-            print(rf"Only {massloss:.1e} % of the total mass of the bowshock model is lost due to numerical errors")
-        else:
             print(rf"""
-WARNING: The integrated mass of the cube is {massloss:.1e} % less than the input
-total mass of the bowshock. This can be due to several factors:
-    - Part of the model lie outside the grid of the spectral cube. If this is
-    not intended, try to solve it by making the maps larger, changing the
-    reference pixel to center the model in the maps, or increasing the velocity
-    coverage of the spectral cube.  
-    - The difference between the integrated mass of the cube and the input total
-    mass of the bowshock model is due to numerical errors. If you think that the
-    difference is too big, you can reduce it by increasing the number of points
-    of the model (inceasng nzs or/and nphis parameters).
-    - If the velocity dispersion vt is not 0, the masses corresponding to a
-    channel maps are spread along the cube in the velocity axis following a
-    Gaussian distribution. This distribution is truncated at vt*tolfactor_vt in
-    order to make the computation substatially faster, but it can result in an
-    underestimation of the integrated mass of the spectral cube. Try to make
-    tolfactor_vt larger.
+Mass consistency test passed: The input total mass of the bowshock model
+coincides with the total mass of the cube. 
 """)
+# (only a small fraction of mass, {massloss:.1e} %, is lost due to numerical errors
+        else:
+            self._MASS_CONSISTENCY_WARNING(massloss)
         if return_isconsistent:
             return mass_consistent
+
+    def _check_sampling(self):
+        maxdz = np.max(self.km2arcsec(np.abs(self.dzs)))
+        maxdr = np.max(self.km2arcsec(np.abs(self.dr)))
+        maxdvs = np.max(np.abs(np.diff(self.vs)))
+        maxdphi = np.max(np.abs(self.dphi))
+        maxds = maxdphi * self.km2arcsec(np.max(self.rs))
+
+        zsamp = maxdz > self.arcsecpix or maxdz > self.arcsecpix
+        rsamp = maxdr > self.arcsecpix or maxdr > self.arcsecpix
+        vsamp = maxdvs > self.abschanwidth
+        phisamp = maxds > self.arcsecpix or maxds > self.arcsecpix
+
+        if zsamp or rsamp:
+            self._SAMPLING_XY_WARNING()
+        if vsamp:
+            self._SAMPLING_V_WARNING()
+        if phisamp:
+            self._SAMPLING_PHI_WARNING()
 
     def makecube(self, fromcube=None):
         """
@@ -917,6 +967,7 @@ total mass of the bowshock. This can be due to several factors:
                 ut.progressbar_bowshock(
                     iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
         self._check_mass_consistency()
+        self._check_sampling()
 
     def plot_channel(self, chan, vmax=None, vmin=None,
         cmap="inferno", savefig=None):
