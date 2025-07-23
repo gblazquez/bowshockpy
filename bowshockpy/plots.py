@@ -477,7 +477,8 @@ class BowshockObsModelPlot():
     """
 
     def __init__(
-            self, bsmobs, modelname="none",
+            self, bsmobs,
+            modelname="none",
             nzs=150,
             nphis=150,
             figsize=(12,6), 

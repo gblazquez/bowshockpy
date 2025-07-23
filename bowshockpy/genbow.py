@@ -39,17 +39,19 @@ Parameters read from {p.filename}
              if p.__getattribute__(f"rbf_obs_{i+1}") is not None
              else p.__getattribute__(f"rbf_obs_{i+1}"),
          'mass':     p.__getattribute__(f"mass_{i+1}"),
-         'pa':       p.__getattribute__(f"pa_{i+1}") * np.pi / 180,
         }]
 
         psobss += [{
-         'i': p.__getattribute__(f"i_{i+1}") * np.pi / 180,
+         'i_deg': p.__getattribute__(f"i_{i+1}"),
+         'pa_deg': p.__getattribute__(f"pa_{i+1}"),
          'vsys': p.vsys,
          'distpc': p.distpc,
          "nzs": p.nzs,
         }]
 
-    if len(p.outcubes) != 0:
+    make_output_cubes = len(p.outcubes) != 0
+
+    if make_output_cubes:
         pscube = {
             "nphis": p.nphis,
             "nc": p.nc,
@@ -97,7 +99,8 @@ Parameters read from {p.filename}
             )
         bsmobs = bs.ObsModel(
             model=bsm,
-            i=psobs["i"],
+            i_deg=psobs["i_deg"],
+            pa_deg=psobs["pa_deg"],
             vsys=psobs["vsys"],
             )
         if p.bs2Dplot:
@@ -117,48 +120,34 @@ Parameters read from {p.filename}
                 f"models/{ps['modelname']}/bowshock_projected_{i+1}.jpg",
                 dpi=300,
             )
-        if len(p.outcubes) != 0:
+        if make_output_cubes:
             print(f"""
 
 Generating bowshock {i+1}/{p.nbowshocks}
                   """)
-            if i == 0:
-                bscs += [
-                    bs.BowshockCube(
-                        obsmodel=bsmobs,
-                        nphis=pscube["nphis"],
-                        vch0=pscube["vch0"],
-                        vchf=pscube["vchf"],
-                        xpmax=pscube["xpmax"],
-                        nc=pscube["nc"],
-                        nxs=pscube["nxs"],
-                        nys=pscube["nys"],
-                        refpix=pscube["refpix"],
-                        CIC=pscube["CIC"],
-                        vt=pscube["vt"],
-                        tolfactor_vt=pscube["tolfactor_vt"],)
-                    ]
-                bscs[i].makecube()
-                print(f"""
+            bscs += [
+                bs.BowshockCube(
+                    obsmodel=bsmobs,
+                    nphis=pscube["nphis"],
+                    vch0=pscube["vch0"],
+                    vchf=pscube["vchf"],
+                    xpmax=pscube["xpmax"],
+                    nzs=pscube["nzs"],
+                    nc=pscube["nc"],
+                    nxs=pscube["nxs"],
+                    nys=pscube["nys"],
+                    refpix=pscube["refpix"],
+                    CIC=pscube["CIC"],
+                    vt=pscube["vt"],
+                    tolfactor_vt=pscube["tolfactor_vt"],
+                    verbose=pscube["verbose"]
+                    )
+                ]
+            bscs[i].makecube()
+            print(f"""
 Channel width: {bscs[i].abschanwidth:.3} km/s
 Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
      """)
-            else:
-                bscs += [
-                    bs.BowshockCube(
-                        obsmode=bsmobs,
-                        nphis=pscube["nphis"],
-                        nc=pscube["nc"],
-                        vch0=pscube["vch0"],
-                        vchf=pscube["vchf"],
-                        xpmax=pscube["xpmax"],
-                        nxs=pscube["nxs"],
-                        nys=pscube["nys"],
-                        refpix=pscube["refpix"],
-                        CIC=pscube["CIC"],
-                        vt=pscube["vt"],
-                        tolfactor_vt=pscube["tolfactor_vt"],)
-                    ]
 
     print(
 f"""
@@ -200,23 +189,24 @@ Abbreviations for quantities are:        Abbreviations for the operations are:
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
     for ck in bscp.listmompvs:
-        bscp.plot_channels( ck,
+        bscp.plot_channels(
+            ck,
             savefig=f"models/{ps['modelname']}/bowshock_cube_{ck}.pdf",
             add_beam=True,
         )
  
     bscp.momentsandpv_and_params_all(
-         savefits=p.savefits,
-         saveplot=p.saveplot,
-         mom1clipping=p.mom1clipping,
-         mom2clipping=p.mom2clipping,
-         mom0values=p.mom0values,
-         mom1values=p.mom1values,
-         mom2values=p.mom2values,
-         mom8values=p.mom8values,
-         pvvalues=p.pvvalues,
-         add_beam=True,
-         )
+        savefits=p.savefits,
+        saveplot=p.saveplot,
+        mom1clipping=p.mom1clipping,
+        mom2clipping=p.mom2clipping,
+        mom0values=p.mom0values,
+        mom1values=p.mom1values,
+        mom2values=p.mom2values,
+        mom8values=p.mom8values,
+        pvvalues=p.pvvalues,
+        add_beam=True,
+        )
 
     # Save the file with all the parameters used to generate the bowshocks
     os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")

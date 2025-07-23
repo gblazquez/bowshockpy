@@ -22,7 +22,7 @@ bsm = bs.NarrowJet(
     )
 bso = bs.ObsModel(
     bsm,
-    i=20.0*np.pi/180,
+    i_deg=20.0,
     vsys=0,
     )
 bsc1 = bs.BowshockCube(

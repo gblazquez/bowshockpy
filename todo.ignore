@@ -91,6 +91,9 @@ x J should be the upper level
 
 - I think there is a way to optimize the computation by changing doing a variable dphi in such a way that ds is constant through z.
 
+- pa should be in degrees
+
+- Make a sampling cube using np.histogram in three dimension
 
 import bowshockpy as bp
 

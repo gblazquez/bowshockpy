@@ -517,15 +517,20 @@ class ObsModel(NarrowJet):
     -----------
     model : class instance
         instance of NarrowJet model to get the attributes
-    i : float
+    i_deg : float
         Inclination angle between the bowshock axis and the line-of-sight
-        [radians] 
-    vsys : float
-        Systemic velocity of the source [km/s]
+        [degrees] 
+    pa_deg : float, optional
+        Position angle, default 0 [degrees]
+    vsys : float, optional
+        Systemic velocity of the source, default 0 [km/s]
     """
-    def __init__(self, model, i, vsys, nzs=200, **kwargs):
+    def __init__(self, model, i_deg, pa_deg=0, vsys=0, **kwargs):
         self.__dict__ = model.__dict__
-        self.i = i
+        self.i_deg = i_deg
+        self.i = i_deg * np.pi/180
+        self.pa_deg = pa_deg
+        self.pa = pa_deg * np.pi/180
         self.vsys = vsys
         # for param in model.__dict__:
         #     setattr(self, param, getattr(model, param))
@@ -631,8 +636,6 @@ class BowshockCube(ObsModel):
         Central velocity of the last channel map [km/s]
     xpmax : float
         Physical size of the channel maps along the x axis [arcsec]
-    pa : optional, float
-        Position angle [radians]
     nc : optional, int
         Number of spectral channel maps
     nxs : optional, int
@@ -693,7 +696,7 @@ class BowshockCube(ObsModel):
     """
 
     def __init__(
-            self, obsmodel, nphis, vch0, vchf, xpmax, pa=0, nzs=200, nc=50,
+            self, obsmodel, nphis, vch0, vchf, xpmax, nzs=200, nc=50,
             nxs=200, nys=200, refpix=[0,0], CIC=True, vt="2xchannel",
             tolfactor_vt=None, verbose=True, **kwargs):
         self.__dict__ = obsmodel.__dict__
@@ -701,7 +704,6 @@ class BowshockCube(ObsModel):
         self.vch0 = vch0
         self.vchf = vchf
         self.xpmax = xpmax
-        self.pa = pa
         self.nzs = nzs
         self.nc = nc
         self.nxs = nxs
@@ -731,6 +733,7 @@ class BowshockCube(ObsModel):
 
         self._fromcube_mass = 0
         self.cube = None
+        self.cube_sampling = None
 
     def _DIMENSION_ERROR(self, fromcube):
             sys.exit(f"""
@@ -767,10 +770,10 @@ total mass of the bowshock. This can be due to several factors:
     mass of the bowshock model is due to numerical errors. If you think that the
     difference is too big, you can reduce it by increasing the number of points
     of the model (inceasng nzs or/and nphis parameters).
-    - If the velocity dispersion vt is not 0, the masses corresponding to a
-    channel maps are spread along the cube in the velocity axis following a
-    Gaussian distribution. This distribution is truncated at vt*tolfactor_vt in
-    order to make the computation substatially faster, but it can result in an
+    - The masses corresponding to a channel maps are spread along the cube in
+    the velocity axis following a Gaussian distribution, being sigma equal to vt
+    parameter. This distribution is truncated at vt*tolfactor_vt in order to
+    make the computation substatially faster, but it can result in an
     underestimation of the integrated mass of the spectral cube. Try to make
     tolfactor_vt larger.
 """)
@@ -835,6 +838,15 @@ size (nxs and nys parameters).
             self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
             self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
             self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
+    
+    def _wxpyp_noCIC(self, chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass):
+        diffv = np.abs(vzp-vchan)
+        if self._cond_populatechan(diffv):
+            em = self._wvzp(diffv, dmass)
+            self.cube[chan, ypix, xpix] += em 
+
+    def _sampling(self, chan, xpix, ypix):
+        self.cube_sampling[chan, ypix, xpix] += 1
     
     def _check_mass_consistency(self, return_isconsistent=False):
         print("Checking total mass consistency...")
@@ -908,6 +920,8 @@ coincides with the total mass of the cube.
         else:
             self._DIMENSION_ERROR(fromcube)
 
+        self.cube_sampling = np.zeros((self.nc, self.nys, self.nxs))
+
         ci = np.cos(self.i)
         si = np.sin(self.i)
         cpa = np.cos(self.pa)
@@ -932,7 +946,7 @@ coincides with the total mass of the cube.
                 dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
 
             # for phi in self.phis:
-            for phi in self.phis+self.dphi/2*iz:
+            for phi in self.phis+self.dphi*np.random.rand():
                 _xp = self.rs[iz] * np.sin(phi)
                 _yp = self.rs[iz] * np.cos(phi) * ci + z * si
                 xp = _xp * cpa - _yp * spa
@@ -957,6 +971,7 @@ coincides with the total mass of the cube.
                         self._wxpyp(
                             chan, vchan, xpix, ypix,
                             dxpix, dypix, vlsr, dmass)
+                        self._sampling(chan, xpix, ypix)
                 else:
                     if outsidegrid_warning:
                         self._OUTSIDEGRID_WARNING()
