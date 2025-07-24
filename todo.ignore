@@ -33,7 +33,11 @@ x think of tests:
 
 x calcuation of NH2
 
-- do a proper header. Erease warning from casaviewer and ds9. Try carta
+x do a proper header. Erease warning from casaviewer and ds9. Try carta
+ - (for later): Simplify how hdrs are created (maybe doing an extra module
+ headers.py with three functions, one for the cube, for the moments and another
+ one for the pv). Also, offsets and pv diagrams are not displayed in CARTA
+ either ds9, only in casaviewer.
  
 x allow install from pipy
 
@@ -99,7 +103,7 @@ x pa and i should be in degrees
 
 x Make a sampling cube using np.histogram in three dimension
 
-- "Observers view front side" and "Observers view back side"
+- "Observers view front side" and "Observers view back side". Or simply front size and back side.
 
 import bowshockpy as bp
 

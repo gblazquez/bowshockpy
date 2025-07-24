@@ -16,8 +16,6 @@ import os
 
 from datetime import datetime
 
-from bowshockpy._header_default import hdr_str_default
-
 def print_example(nexample):
     """
     Prints one of the available examples of input file to run bowshockpy.
@@ -44,7 +42,7 @@ def list2str(a, precision=2):
 
 def progressbar_bowshock(
         iteration, total, timelapsed, intervaltime,
-        decimals = 1, length = 100, fill = '─', printend = "\r"
+        decimals=1, length=100, fill='─', printend="\r"
         ):
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)
@@ -53,12 +51,12 @@ def progressbar_bowshock(
     if iteration == total:
         print()
 
-def create_hdr(**kwargs):
-    hdr = fits.Header.fromstring(hdr_str_default)
-    if len(kwargs) != 0:
-         for kwarg in kwargs:
-             hdr[kwarg] = kwargs[kwarg]
-    return hdr
+# def create_hdr(**kwargs):
+#     hdr = fits.Header.fromstring(hdr_str_default)
+#     if len(kwargs) != 0:
+#          for kwarg in kwargs:
+#              hdr[kwarg] = kwargs[kwarg]
+#     return hdr
 
 def make_folder(foldername=None):
     if not os.path.exists(foldername):

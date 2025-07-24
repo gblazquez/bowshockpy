@@ -46,7 +46,6 @@ Parameters read from {p.filename}
          'pa_deg': p.__getattribute__(f"pa_{i+1}"),
          'vsys': p.vsys,
          'distpc': p.distpc,
-         "nzs": p.nzs,
         }]
 
     make_output_cubes = len(p.outcubes) != 0
@@ -60,6 +59,7 @@ Parameters read from {p.filename}
             "vchf": p.vchf,
             "nxs": p.nxs,
             "nys": p.nys,
+            "nzs": p.nzs,
             "refpix": p.refpix,
             "xpmax": p.xpmax,
             "parot": p.parot,
@@ -129,10 +129,10 @@ Generating bowshock {i+1}/{p.nbowshocks}
                 bs.BowshockCube(
                     obsmodel=bsmobs,
                     nphis=pscube["nphis"],
+                    nzs=pscube["nzs"],
                     vch0=pscube["vch0"],
                     vchf=pscube["vchf"],
                     xpmax=pscube["xpmax"],
-                    nzs=pscube["nzs"],
                     nc=pscube["nc"],
                     nxs=pscube["nxs"],
                     nys=pscube["nys"],
