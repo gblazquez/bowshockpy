@@ -63,7 +63,7 @@ x Include image of the channel maps?
 
 - Include IWS model? It has been applied several times
 
-- Add warning (or error) if the number of points do not fully fill voxels space
+- (I am not able to get this done...) Add warning (or error) if the number of points do not fully fill voxels space. [Although the sampling is apparently ok, there are moire patterns if the sampling is not high enough]
 
 - Change the documentation to book template
 
@@ -89,11 +89,17 @@ x J should be the upper level
 
 - (not necessary) Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy [I don't know if this makes sense, you can always run it from the terminal with os.system or magical %]
 
-- I think there is a way to optimize the computation by changing doing a variable dphi in such a way that ds is constant through z.
+x I think there is a way to optimize the computation by changing doing a variable dphi in such a way that ds is constant through z. (I implemented it but I cannot get the same accuracy in masses than with a constant phi.)
+- Also, by computing half of the model in phis.
+x By restricting the channels to populate before the iteraction in channels (apparently this does not speed up the software).
 
-- pa should be in degrees
+x Implement no CIC.
 
-- Make a sampling cube using np.histogram in three dimension
+x pa and i should be in degrees
+
+x Make a sampling cube using np.histogram in three dimension
+
+- "Observers view front side" and "Observers view back side"
 
 import bowshockpy as bp
 

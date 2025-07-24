@@ -137,7 +137,6 @@ class NarrowJet():
         self.rbf_arcsec = self.km2arcsec(self.rbf)
         self.zbf_arcsec = self.km2arcsec(self.zbf)
 
-
     def stoyr(self, value):
         """
         Converts seconds to years
@@ -826,24 +825,27 @@ size (nxs and nys parameters).
             return True
 
     def _wvzp(self, diffv, dmass):
+        """
+        Weight the masses across the velocity axis using a Gaussian
+        distribution
+        """
         normfactor = np.abs(self.chanwidth) / (np.sqrt(np.pi)*np.abs(self.vt))
         em = dmass * np.exp(-(diffv/self.vt)**2) * normfactor
         return em
 
-    def _wxpyp(self, chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass):
-        diffv = np.abs(vzp-vchan)
-        if self._cond_populatechan(diffv):
-            em = self._wvzp(diffv, dmass)
-            self.cube[chan, ypix, xpix] += em * (1-dxpix) * (1-dypix)
-            self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
-            self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
-            self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
+    # def _wxpyp(self, chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass):
+    def _doCIC(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
+        """Cloud In Cell method"""
+        em = self._wvzp(diffv, dmass)
+        self.cube[chan, ypix, xpix] += em * (1-dxpix) * (1-dypix)
+        self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
+        self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
+        self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
     
-    def _wxpyp_noCIC(self, chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass):
-        diffv = np.abs(vzp-vchan)
-        if self._cond_populatechan(diffv):
-            em = self._wvzp(diffv, dmass)
-            self.cube[chan, ypix, xpix] += em 
+    def _doNGP(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
+        """Nearest Grid Point method"""
+        em = self._wvzp(diffv, dmass)
+        self.cube[chan, ypix, xpix] += em 
 
     def _sampling(self, chan, xpix, ypix):
         self.cube_sampling[chan, ypix, xpix] += 1
@@ -851,9 +853,10 @@ size (nxs and nys parameters).
     def _check_mass_consistency(self, return_isconsistent=False):
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
+        intmass_model = self.mass+self._fromcube_mass
         mass_consistent = np.isclose(
-            intmass_cube, self.mass+self._fromcube_mass)
-        massloss = (self.mass+self._fromcube_mass-intmass_cube) / self.mass * 100
+            intmass_cube, intmass_model)
+        massloss = (intmass_model-intmass_cube) / self.mass * 100
         if mass_consistent:
             print(rf"""
 Mass consistency test passed: The input total mass of the bowshock model
@@ -929,6 +932,7 @@ coincides with the total mass of the cube.
 
         outsidegrid_warning = True
         ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
+        particle_in_cell = self._doCIC if self.CIC else self._doNGP
         for iz, z in enumerate(self.zs):
             if self.verbose:
                 t0 = datetime.now()
@@ -945,8 +949,8 @@ coincides with the total mass of the cube.
                 # Treat the rest of the bowshock
                 dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
 
-            # for phi in self.phis:
-            for phi in self.phis+self.dphi*np.random.rand():
+            for phi in self.phis:
+            #for phi in self.phis+self.dphi*np.random.rand():
                 _xp = self.rs[iz] * np.sin(phi)
                 _yp = self.rs[iz] * np.cos(phi) * ci + z * si
                 xp = _xp * cpa - _yp * spa
@@ -968,10 +972,12 @@ coincides with the total mass of the cube.
                     dxpix = xpixcoord - xpix
                     dypix = ypixcoord - ypix
                     for chan, vchan in enumerate(self.velchans):
-                        self._wxpyp(
-                            chan, vchan, xpix, ypix,
-                            dxpix, dypix, vlsr, dmass)
-                        self._sampling(chan, xpix, ypix)
+                        diffv = np.abs(vlsr-vchan)
+                        if self._cond_populatechan(diffv):
+                            particle_in_cell(
+                                chan, diffv, xpix, ypix, dxpix, dypix, dmass)
+                            if diffv < self.abschanwidth/2:
+                                self._sampling(chan, xpix, ypix)
                 else:
                     if outsidegrid_warning:
                         self._OUTSIDEGRID_WARNING()
@@ -984,6 +990,129 @@ coincides with the total mass of the cube.
                     iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
         self._check_mass_consistency()
         self._check_sampling()
+
+    def makecube_variablephi(self, fromcube=None):
+        """
+        Makes the spectral cube of the model. This make the cube with a variable
+        number of phi angle per z point. This is in principle quicker if one is
+        not interested in reaching a ~0.5% of accuracy in masses.
+
+        Parameters:
+        -----------
+        fromcube : optional, numpy.ndarray
+            Cube that will be populated with the model data. If None, and empty
+            cube will be considered. 
+       """
+        if self.verbose:
+            ts = []
+            print("\nComputing masses in the spectral cube...")
+
+        self.nrs = self.nzs
+        self.rs = np.linspace(self.rbf, 0, self.nrs)
+        self.dr = self.rs[0] - self.rs[1]
+        self.zs = self.zb_r(self.rs)
+        self.dzs = self.dz_func(self.zb_r(self.rs), self.dr)
+
+        self.phis = np.linspace(0, 2*np.pi, self.nphis+1)[:-1]
+        self.dphi = self.phis[1] - self.phis[0]
+
+        nphis0 = self.nphis
+        phis0 = np.linspace(0, 2*np.pi, nphis0+1)[:-1]
+        dphi0 = phis0[1] - phis0[0]
+        ds = self.rbf * dphi0
+
+        self.vs = np.array([self.vtot(zb) for zb in self.zs])
+        self.velchans = np.linspace(self.vch0, self.vchf, self.nc)
+        minvelchans = np.min(self.velchans)
+        maxvelchans = np.max(self.velchans)
+
+        if fromcube is None:
+            self.cube = np.zeros((self.nc, self.nys, self.nxs))
+        elif (fromcube is not None) and np.shape(fromcube)==((self.nc, self.nys, self.nxs)):
+            self.cube = np.copy(fromcube)
+            self._fromcube_mass = np.sum(fromcube)
+        else:
+            self._DIMENSION_ERROR(fromcube)
+
+        self.cube_sampling = np.zeros((self.nc, self.nys, self.nxs))
+
+        ci = np.cos(self.i)
+        si = np.sin(self.i)
+        cpa = np.cos(self.pa)
+        spa = np.sin(self.pa)
+
+        outsidegrid_warning = True
+        ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
+        particle_in_cell = self._doCIC if self.CIC else self._doNGP
+        for iz, z in enumerate(self.zs):
+            if self.verbose:
+                t0 = datetime.now()
+
+            if iz == 0:
+                # Treat outer boundary
+                phis = phis0
+                dphi = dphi0
+                nphis = nphis0
+                intmass = self.intmass_analytical(self.rbf)
+                intmass_halfdr = self.intmass_analytical(self.rbf-self.dr/2)
+                dmass =  (intmass - intmass_halfdr) / nphis
+            elif iz == len(self.zs)-1:
+                phis = phis0
+                dphi = dphi0
+                nphis = nphis0
+                # Treat head boundary
+                dmass = self.intmass_analytical(self.dr/2) / nphis
+            else:
+                dphi = ds / self.rs[iz]
+                phis = np.arange(0, 2*np.pi, dphi)
+                nphis = len(phis)
+                # Treat the rest of the bowshock
+                dmass = self.dmass_func(z, self.dzs[iz], dphi)
+
+            # for phi in self.phis:
+            for phi in phis+dphi*np.random.rand():
+                _xp = self.rs[iz] * np.sin(phi)
+                _yp = self.rs[iz] * np.cos(phi) * ci + z * si
+                xp = _xp * cpa - _yp * spa
+                yp = _xp * spa + _yp * cpa
+                vzp = -self.vzp(z, phi)
+                vlsr = vzp + self.vsys
+
+                xpixcoord = self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]
+                ypixcoord = self.km2arcsec(yp) / self.arcsecpix + self.refpix[1]
+                xpix = int(xpixcoord)
+                ypix = int(ypixcoord)
+                # Conditions model point inside cube
+                condition_inside_map = \
+                    (xpix+1<self.nxs) and (ypix+1<self.nys) \
+                    and (xpix>0) and (ypix>0)
+                condition_inside_velcoverage = \
+                    vlsr <= maxvelchans and vlsr >= minvelchans
+                if condition_inside_map and condition_inside_velcoverage:
+                    dxpix = xpixcoord - xpix
+                    dypix = ypixcoord - ypix
+                    for chan, vchan in enumerate(self.velchans):
+                        diffv = np.abs(vlsr-vchan)
+                        if self._cond_populatechan(diffv):
+                            particle_in_cell(
+                                chan, diffv, xpix, ypix,
+                                dxpix, dypix, dmass)
+                            if diffv < self.abschanwidth/2:
+                                self._sampling(chan, xpix, ypix)
+                else:
+                    if outsidegrid_warning:
+                        self._OUTSIDEGRID_WARNING()
+                        outsidegrid_warning = False
+            if self.verbose:
+                tf = datetime.now()
+                intervaltime = (tf-t0).total_seconds()
+                ts.append(intervaltime)
+                ut.progressbar_bowshock(
+                    iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
+        self._check_mass_consistency()
+        self._check_sampling()
+
+
 
     def plot_channel(self, chan, vmax=None, vmin=None,
         cmap="inferno", savefig=None):
