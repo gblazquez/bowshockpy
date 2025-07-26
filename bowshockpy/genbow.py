@@ -87,7 +87,7 @@ Parameters read from {p.filename}
 
     bscs = []
     for i, (ps,psobs) in enumerate(zip(pss,psobss)):
-        bsm = bs.NarrowJet(
+        bsm = bs.BowshockModel(
             L0=ps["L0"],
             zj=ps["zj"],
             vj=ps["vj"],

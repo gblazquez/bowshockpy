@@ -23,11 +23,11 @@ import bowshockpy.plots as pl
 from bowshockpy.version import __version__
 
 
-class NarrowJet():
+class BowshockModel():
     """
     Bowshock model for a negligible internal working surface radius.
     
-    Parameters:
+    Parameters
     -----------
     L0 : float
         Characteristic scale of the bowshock [km]
@@ -177,7 +177,7 @@ class NarrowJet():
         """
         Bowshock radius for a given z coordinate of the bowshock
         
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -188,7 +188,7 @@ class NarrowJet():
         """
         Computes the radial component of the velocity
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -199,7 +199,7 @@ class NarrowJet():
         """
         Computes the longitudinal component of the velocity
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -210,7 +210,7 @@ class NarrowJet():
         """
         Computes the total speed of the velocity
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -221,7 +221,7 @@ class NarrowJet():
         """
         Angle between the bowshock axis and the velocity
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -233,7 +233,7 @@ class NarrowJet():
         Angle between the bowshock axis and the local tangent to the shell
         surface at the z-coordinate of the bowshock zb
         
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -245,7 +245,7 @@ class NarrowJet():
         Angle between the bowshock axis and the local tangent to the shell
         surface at the bowshock radius rb
         
-        Parameters:
+        Parameters
         -----------
         rb : float
             r coordinate of the bowshock
@@ -256,7 +256,7 @@ class NarrowJet():
         """
         Polar angle of the position vector
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -274,7 +274,7 @@ class NarrowJet():
         """
         Computes numerically the bowshock final radius
 
-        Parameters:
+        Parameters
         -----------
         use_minimize : bool
             If True, scipy.optimize.minimize_scalar is used. If False, rbf is
@@ -297,7 +297,7 @@ class NarrowJet():
         """
         Bowshock z coordinate for a given radius of the bowshock
         
-        Parameters:
+        Parameters
         -----------
         rr : float
             radius of the bowshock
@@ -313,7 +313,7 @@ class NarrowJet():
         """
         Computes the surface density of the bowshock
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -327,7 +327,7 @@ class NarrowJet():
         """
         Differential of r given a differential of z
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -340,7 +340,7 @@ class NarrowJet():
         """
         Differential of r given a differential of z
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -354,7 +354,7 @@ class NarrowJet():
         Differential of surface given a differential in z and phi (azimuthal
         angle)
         
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -372,7 +372,7 @@ class NarrowJet():
         """
         Differential of mass given a differential in z and phi (azimuthal angle)
 
-        Parameters:
+        Parameters
         -----------
         zb : float
             z coordinate of the bowshock
@@ -387,7 +387,7 @@ class NarrowJet():
         """
         Computes the total mass of the bowshock shell
 
-        Parameters:
+        Parameters
         -----------
         rbf : float
             final radius of the bowshock
@@ -402,7 +402,7 @@ class NarrowJet():
         Computes numerically the total mass of the bowshock shell in a range of
         radius from r0 to rbf
         
-        Parameters:
+        Parameters
         -----------
         r0 : float
             initial radius of the bowshock
@@ -423,7 +423,7 @@ class NarrowJet():
         """
         Computes the ambient density given the integrated mass of the bowshock at rb
         
-        Parameters:
+        Parameters
         -----------
         rb : float
             radius of the bowshock
@@ -443,7 +443,7 @@ class NarrowJet():
         Computes numerically the ambient density taken into account the
         integrated mass in a range of radii from R0 to Rb        
         
-        Parameters:
+        Parameters
         -----------
         R0 : float
             initial radius of the bowshock
@@ -494,12 +494,12 @@ class NarrowJet():
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
         
-        Parameters:
+        Parameters
         -----------
         kwargs : optional
             Keyword arguments into `~bowshockpy.plot.BowshockModelPlot`
 
-        Returns:
+        Returns
         --------
         modelplot : `~bowshockpy.plot.BowshockModelPlot` class instance
             An instance of a class BowshockModelPlot, which contains information
@@ -509,14 +509,14 @@ class NarrowJet():
         return modelplot
 
 
-class ObsModel(NarrowJet):
+class ObsModel(BowshockModel):
     """
-    Computes the projected morphology and kinematics of a NarrowJet model
+    Computes the projected morphology and kinematics of a BowshockModel model
 
-    Parameters:
+    Parameters
     -----------
     model : class instance
-        instance of NarrowJet model to get the attributes
+        instance of BowshockModel model to get the attributes
     i_deg : float
         Inclination angle between the bowshock axis and the line-of-sight
         [degrees] 
@@ -604,12 +604,12 @@ class ObsModel(NarrowJet):
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
         
-        Parameters:
+        Parameters
         -----------
         kwargs : optional
             Keyword arguments into `~bowshockpy.plot.BowshockModelPlot`
 
-        Returns:
+        Returns
         --------
         modelplot : `~bowshockpy.plot.BowshockModelPlot` class instance
             An instance of a class BowshockModelPlot, which contains information
@@ -624,7 +624,7 @@ class BowshockCube(ObsModel):
     """
     Computes the spectral cube of the bowshock model
 
-    Parameters:
+    Parameters
     -----------
     obsmodel : class instance
         Instance of ObsModel
@@ -892,7 +892,7 @@ coincides with the total mass of the cube.
         """
         Makes the spectral cube of the model
 
-        Parameters:
+        Parameters
         -----------
         fromcube : optional, numpy.ndarray
             Cube that will be populated with the model data. If None, and empty
@@ -998,7 +998,7 @@ coincides with the total mass of the cube.
         number of phi angle per z point. This is in principle quicker if one is
         not interested in reaching a ~0.5% of accuracy in masses.
 
-        Parameters:
+        Parameters
         -----------
         fromcube : optional, numpy.ndarray
             Cube that will be populated with the model data. If None, and empty
@@ -1210,7 +1210,7 @@ class CubeProcessing(BowshockCube):
     """
     Process a BowshockCube instance
 
-    Parameters:
+    Parameters
     -----------
     bscube :  class instance
         Instance of BowshockCube
@@ -1509,7 +1509,7 @@ class CubeProcessing(BowshockCube):
         """
         Adds a source to the cube in the reference pixel
 
-        Parameters:
+        Parameters
         -----------
         ck : optional, str
             Key of the cube to add the source
@@ -1534,7 +1534,7 @@ class CubeProcessing(BowshockCube):
         """
         Rotates the cube an angle self.parot.
 
-        Parameters:
+        Parameters
         -----------
         ck : optional, str
             Key of the cube to rotate 
@@ -1584,7 +1584,7 @@ class CubeProcessing(BowshockCube):
         """
         Adds Gaussian noise to the cube.
 
-        Parameters:
+        Parameters
         -----------
         ck : optional, str
             Key of the cube to rotate 
@@ -1614,7 +1614,7 @@ class CubeProcessing(BowshockCube):
         Convolves the cube with the defined Gaussian kernel (self.bmaj,
         self.bmin, self.pabeam)
         
-        Parameters:
+        Parameters
         -----------
         ck : optional, str
             Key of the cube to convolve
@@ -1705,7 +1705,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Computes the quantities and the operations to the cubes.
 
-        Parameters:
+        Parameters
         -----------
         userdic : dict
             Dictionary indicating the desired output spectral cubes and the
@@ -1769,7 +1769,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Saves the cube in fits format
 
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to convolve
@@ -1867,7 +1867,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Saves the cubes specified by userdic
 
-        Parameters:
+        Parameters
         -----------
         userdic : dict
             Dictionary indicating the desired output spectral cubes and the
@@ -1923,7 +1923,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             If True, returns a tuple of the ax of the channel map and the
             colorbar.  If False, does not return anything.
 
-        Returns:
+        Returns
         --------
         (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map
             and the colorbar, only returns if return_fig_axs=True.
@@ -2000,7 +2000,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             If True, returns a tuple of the axes of the channel map and the
             colorbar. If False, does not return anything.
         
-        Returns:
+        Returns
         --------
         (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map
             and the colorbar, only returns if return_fig_axs=True.
@@ -2028,7 +2028,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Performs the position velocity diagram along the self.papv direction
 
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to perform the PV-diagram.
@@ -2042,7 +2042,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
 
-        Returns:
+        Returns
         --------
         pvimage : numpy.ndarray
             Position velocity diagram
@@ -2118,7 +2118,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         Computes the image of the summation of pixels of the cube along the
         velocity axis
         
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
@@ -2132,7 +2132,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
 
-        Returns:
+        Returns
         --------
         sumint : numpy.ndarray 
             Image of the summation of the pixels of the cube along the velocty
@@ -2229,7 +2229,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Computes the 0th order moment along the velocity axis
         
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
@@ -2243,7 +2243,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
 
-        Returns:
+        Returns
         --------
         mom0 : numpy.ndarray 
             Moment 0 image of the cube
@@ -2340,7 +2340,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Computes the 1th order moment along the velocity axis
         
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
@@ -2356,7 +2356,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
 
-        Returns:
+        Returns
         --------
         mom1 : numpy.ndarray 
             Moment 1 image of the cube
@@ -2459,7 +2459,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Computes the 2th order moment along the velocity axis
         
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
@@ -2475,7 +2475,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
 
-        Returns:
+        Returns
         --------
         mom2 : numpy.ndarray 
             Moment 2 image of the cube
@@ -2578,7 +2578,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Computes the maximum value of the cube along the velocity axis
         
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
@@ -2595,7 +2595,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
 
-        Returns:
+        Returns
         --------
         mom8 : numpy.ndarray 
             Maximum value of the pixels of the cubes along the velocity axis 
@@ -2701,7 +2701,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Plots the position velocity diagram.
 
-        Parameters:
+        Parameters
         -----------
         pvimage : numpy.ndarray
             PV-diagram.
@@ -2740,7 +2740,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Plots the sum of the pixels of the cubes along the velocity axis.
 
-        Parameters:
+        Parameters
         -----------
         sumint : numpy.ndarray
             Sum of the pixels of the cubes along the velocity axis.
@@ -2781,7 +2781,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Plots the moment 0.
 
-        Parameters:
+        Parameters
         -----------
         mom0 : numpy.ndarray
             Moment 0 image.
@@ -2823,7 +2823,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Plots the moment 1.
 
-        Parameters:
+        Parameters
         -----------
         mom1 : numpy.ndarray
             Moment 1 image.
@@ -2870,7 +2870,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Plots the moment 2.
 
-        Parameters:
+        Parameters
         -----------
         mom2 : numpy.ndarray
             Moment 2 image.
@@ -2916,7 +2916,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Plots the moment 8.
 
-        Parameters:
+        Parameters
         -----------
         mom8 : numpy.ndarray
             Moment 8 image.
@@ -2965,7 +2965,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         Computes the moments and position velocity diagram including also the
         main parameters of the model listed in the first ax
         
-        Parameters:
+        Parameters
         -----------
         ck : str
             Key of the cube to which the moments and the position velocity diagram will be computed.

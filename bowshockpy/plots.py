@@ -22,7 +22,7 @@ class BowshockModelPlot():
     
     Parameters:
     -----------
-    bsm : `~bowshockpy.models.NarrowJet` class instance
+    bsm : `~bowshockpy.models.BowshockModel` class instance
         Instance of the model to plot
     modelname : optional, str
         Name of the model to include in the plot
@@ -422,7 +422,7 @@ class BowshockObsModelPlot():
     
     Parameters:
     -----------
-    bsm : `~bowshockpy.models.NarrowJet` class instance
+    bsm : `~bowshockpy.models.BowshockModel` class instance
         Instance of the model to plot
     modelname : optional, str
         Name of the model to include in the plot
@@ -1022,13 +1022,9 @@ def add_beam_to_ax(
         )
 
 def plot_channel(cube, chan, arcsecpix, velchans,
-    vmax=None, vmin=None, cmap="inferno", units="Mass [Msun]",
-    refpix=[0,0], markorigin=True, add_beam=False,
-    bmin=None, bmaj=None, pabeam=None, return_fig_axs=False, 
-#    xbpos=None, ybpos=None, add_beam_rectangle=False, beam_factor_rectangle=2,
-#    beam_color_rectangle="k", beam_edgecolor_rectangle="w",
-#    beam_fill_rectangle=False, beam_color="w", beam_fill=True
-    ):
+        vmax=None, vmin=None, cmap="inferno", units="Mass [Msun]",
+        refpix=[0,0], markorigin=True, add_beam=False,
+        bmin=None, bmaj=None, pabeam=None, return_fig_axs=False,):
     """
     Plots a channel map of a spectral cube
 
@@ -1140,11 +1136,11 @@ def plot_channel(cube, chan, arcsecpix, velchans,
 
 
 def plot_channels(cube, arcsecpix, velchans, 
-    ncol=4, nrow=4, figsize=None, wspace=0.05, hspace=0.0, vmax=None,
-    vcenter=None, vmin=None, cmap="inferno", units="Mass [Msun]",
-    xmajor_locator=1, xminor_locator=0.2, ymajor_locator=1, yminor_locator=0.2,
-    refpix=[0,0], markorigin=True, add_beam=False,
-    bmin=None, bmaj=None, pabeam=None, return_fig_axs=False):
+        ncol=4, nrow=4, figsize=None, wspace=0.05, hspace=0.0, vmax=None,
+        vcenter=None, vmin=None, cmap="inferno", units="Mass [Msun]",
+        xmajor_locator=1, xminor_locator=0.2, ymajor_locator=1,
+        yminor_locator=0.2, refpix=[0,0], markorigin=True, add_beam=False,
+        bmin=None, bmaj=None, pabeam=None, return_fig_axs=False):
     """
     Plots several channel map of a spectral cube.
 
@@ -1312,9 +1308,9 @@ def plot_channels(cube, arcsecpix, velchans,
 
 
 def plotpv(pvimage, rangex, chan_vels, ax=None,
-            cbax=None, vmax=None, vcenter=None, vmin=None,
-            cmap="nipy_spectral", interpolation="bilinear",
-            cbarlabel="Intensity [Jy/beam]",):
+        cbax=None, vmax=None, vcenter=None, vmin=None,
+        cmap="nipy_spectral", interpolation="bilinear",
+        cbarlabel="Intensity [Jy/beam]",):
     """
     Plots the Position-Velocity diagram
     
@@ -1397,10 +1393,9 @@ def plotpv(pvimage, rangex, chan_vels, ax=None,
 
 
 def plotsumint(sumint, ax=None, cbax=None, extent=None,
-               vmax=None, vcenter=None, vmin=None,
-               cmap="inferno", interpolation="bilinear",
-               cbarlabel="Intensity",  add_beam=False, bmin=None, bmaj=None,
-               pabeam=None,):
+        vmax=None, vcenter=None, vmin=None, cmap="inferno",
+        interpolation="bilinear", cbarlabel="Intensity", add_beam=False,
+        bmin=None, bmaj=None, pabeam=None, markorigin=True):
     """
     Plots the sumation of all the pixels along the velocity axis
     
@@ -1427,6 +1422,8 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
         Interpolation to pass to matplotlib.pyplot.imshow
     cbarlabel : optional, str
         String with information on the quantity represented in the plot
+    markorigin : boolean, optional
+        If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
     bmin : optional, float
@@ -1476,6 +1473,8 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
         right=True,
         color="w",
     )
+    if markorigin:
+        ax.plot(0, 0, "w+")
     ax.set_aspect("equal")
 
     if add_beam:
@@ -1492,9 +1491,9 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
 
 
 def plotmom0(mom0, ax=None, cbax=None, extent=None,
-            vmax=None, vcenter=None, vmin=None, cmap="inferno",
-            interpolation="bilinear", cbarlabel="Moment 0 [Jy/beam km/s]",
-            add_beam=False, bmin=None, bmaj=None, pabeam=None, ):
+        vmax=None, vcenter=None, vmin=None, cmap="inferno",
+        interpolation="bilinear", cbarlabel="Moment 0 [Jy/beam km/s]",
+        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True):
     """
     Plots the moment 0 
     
@@ -1520,6 +1519,8 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
         Interpolation to pass to matplotlib.pyplot.imshow
     cbarlabel : optional, str
         String with information on the quantity represented in the plot
+    markorigin : boolean, optional
+        If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
     bmin : optional, float
@@ -1571,7 +1572,8 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
         color="w",
     )
     ax.set_aspect("equal")
-
+    if markorigin:
+        ax.plot(0, 0, "w+")
     if add_beam:
         add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
 
@@ -1584,11 +1586,11 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
     cbax.xaxis.set_label_position("top")
 
 
-def plotmom1(mom1, ax=None, cbax=None, extent=None,
-              vmin=None, vmax=None, vcenter=None, extend_cbar="max",
-              return_velcmap=False, bg="black", cmap_ref='jet_r',
-              interpolation="bilinear", cbarlabel="Moment 1 [km/s]",
-              add_beam=False, bmin=None, bmaj=None, pabeam=None):
+def plotmom1(
+        mom1, ax=None, cbax=None, extent=None, vmin=None, vmax=None,
+        vcenter=None, extend_cbar="max", return_velcmap=False, bg="black",
+        cmap_ref='jet_r', interpolation="bilinear", cbarlabel="Moment 1 [km/s]",
+        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True):
     """
     Plots the moment 1 
     
@@ -1618,6 +1620,8 @@ def plotmom1(mom1, ax=None, cbax=None, extent=None,
         Interpolation to pass to matplotlib.pyplot.imshow
     cbarlabel : optional, str
         String with information on the quantity represented in the plot
+    markorigin : boolean, optional
+        If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
     bmin : optional, float
@@ -1694,7 +1698,8 @@ def plotmom1(mom1, ax=None, cbax=None, extent=None,
         ax.set_ylabel("Dec. [arcsec]")
         ax.set_xlabel("R.A. [arcsec]")
     ax.set_aspect("equal")
-
+    if markorigin:
+        ax.plot(0, 0, "w+")
     if add_beam:
         add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
 
@@ -1711,10 +1716,10 @@ def plotmom1(mom1, ax=None, cbax=None, extent=None,
 
 
 def plotmom2(mom2, ax=None, cbax=None, extent=None,
-             vmin=None, vmax=None, vcenter=None, extend_cbar="max",
-             return_velcmap=False, bg="black", cmap_ref='jet_r',
-             cbarlabel="Moment 2 [km$^2$/s$^2$]", interpolation=None,
-             add_beam=False, bmin=None, bmaj=None, pabeam=None):
+        vmin=None, vmax=None, vcenter=None, extend_cbar="max",
+        return_velcmap=False, bg="black", cmap_ref='jet_r',
+        cbarlabel="Moment 2 [km$^2$/s$^2$]", interpolation=None,
+        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True):
     """
     Plots the moment 2 
     
@@ -1744,6 +1749,10 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
         Interpolation to pass to matplotlib.pyplot.imshow
     cbarlabel : optional, str
         String with information on the quantity represented in the plot
+    markorigin : boolean, optional
+        If True, a marker will be plot at [0,0]. Default True.
+    add_beam : bolean, optional
+        If True, plots a ellipse of the beam size in the left bottom corner.
     bmin : optional, float
         Beam minor axis [arcsec]
     bmaj : optional, float
@@ -1815,7 +1824,8 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
         ax.set_ylabel("Dec. [arcsec]")
         ax.set_xlabel("R.A. [arcsec]")
     ax.set_aspect("equal")
-
+    if markorigin:
+        ax.plot(0, 0, "w+")
     if add_beam:
         add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
 
@@ -1831,10 +1841,9 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
 
 
 def plotmom8(mom8, ax=None, cbax=None, extent=None,
-            vmax=None, vcenter=None, vmin=None, cmap="inferno",
-            interpolation="bilinear", cbarlabel="Moment 8",
-            add_beam=False, bmin=None, bmaj=None, pabeam=None
-            ):
+        vmax=None, vcenter=None, vmin=None, cmap="inferno",
+        interpolation="bilinear", cbarlabel="Moment 8", add_beam=False,
+        bmin=None, bmaj=None, pabeam=None, markorigin=True):
     """
     Plots the maximum value of the pixels along the velocity axis
     
@@ -1860,6 +1869,10 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
         Interpolation to pass to matplotlib.pyplot.imshow
     cbarlabel : optional, str
         String with information on the quantity represented in the plot
+    markorigin : boolean, optional
+        If True, a marker will be plot at [0,0]. Default True.
+    add_beam : bolean, optional
+        If True, plots a ellipse of the beam size in the left bottom corner.
     bmin : optional, float
         Beam minor axis [arcsec]
     bmaj : optional, float
@@ -1909,7 +1922,8 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
         color="w",
     )
     ax.set_aspect("equal")
-
+    if markorigin:
+        ax.plot(0, 0, "w+")
     if add_beam:
         add_beam_to_ax(ax, bmin, bmaj, pabeam, extent,)
 

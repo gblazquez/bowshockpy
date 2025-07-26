@@ -312,8 +312,9 @@ def Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv):
 
 def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, XCO):
     """
-    _summary_
-
+    Computes the total mass (molecular hydrogen plus heavier components) in the
+    assuming optically thin emission.
+    
     Parameters
     ----------
     nu : astropy.units.quantity

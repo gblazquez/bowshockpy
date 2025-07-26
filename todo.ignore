@@ -26,7 +26,7 @@ x Make an __init__.py that only imports the usefull objects
 
 x think of tests:
  - (not necessary) Test on coordinates?
- x test on mass?: try to test only with NarrowJet! or obsmod??
+ x test on mass?: try to test only with BowshockModel! or obsmod??
  x Test on convolution: masses/intensities are conserved
  x Test on total mass calculation from the integrated intensity of the cube in
  the optically thin regime
@@ -65,17 +65,23 @@ x Change iws -> j in params figures
 
 x Include image of the channel maps?
 
+- Try to do a map that is not squared. Everything ok?
+
 - Include IWS model? It has been applied several times
 
 - (I am not able to get this done...) Add warning (or error) if the number of points do not fully fill voxels space. [Although the sampling is apparently ok, there are moire patterns if the sampling is not high enough]
 
-- Change the documentation to book template
+- change mom8 for maxintens
+
+x Change the documentation to book template
+
+- I think BowshockModel should be renamed by BowshockNJ
 
 x change comass name: radtrans
 
 x (no for now) make the standalone comass a nother module
 
-x (no for now) bsmodels should only contain NarrowJet (and probably IWS). Make other modules for the rest. 
+x (no for now) bsmodels should only contain BowshockModel (and probably IWS). Make other modules for the rest. 
 
 x modular usage: Remember for the modular usage that you have available some of the important functons directly from bowshockpy as you have defined them n the __init__.py
 
@@ -94,7 +100,7 @@ x J should be the upper level
 - (not necessary) Make possible to define the configuration file in one cell (or a dictionary) and then run bowshockpy [I don't know if this makes sense, you can always run it from the terminal with os.system or magical %]
 
 x I think there is a way to optimize the computation by changing doing a variable dphi in such a way that ds is constant through z. (I implemented it but I cannot get the same accuracy in masses than with a constant phi.)
-- Also, by computing half of the model in phis.
+- (Not for now) Also, by computing half of the model in phis.
 x By restricting the channels to populate before the iteraction in channels (apparently this does not speed up the software).
 
 x Implement no CIC.
