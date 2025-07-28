@@ -157,7 +157,7 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model along the direction of the symmetry axis (z-axis).
-nzs = 200
+nzs = 1000
 
 # Number of azimuthal angles to calculate the bowshock solution at each model
 # point in the z-axis.
@@ -167,10 +167,10 @@ nphis = 500
 nc = 50
 
 # Central velocity of the first channel map [km/s].
-vch0 = -15
+vch0 = 2
 
 # Central velocity of the last channel map [km/s].
-vchf = 20
+vchf = 18
 
 # Number of pixels in the right ascension axis.
 nxs = 200
@@ -222,12 +222,12 @@ parot = 0
 
 # Standard deviation of the noise of the map, before convolution. Set to None if
 # maxcube2noise is used.
-sigma_beforeconv = 0.04
+sigma_beforeconv = 0.15
 
 # Standard deviation of the noise of the map, before convolution, relative to
 # the maximum pixel in the cube. The actual noise will be computed after
 # convolving. This parameter would not be used if sigma_beforeconve is not None.
-maxcube2noise = 0.07
+maxcube2noise = None
 
 
 """

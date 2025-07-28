@@ -138,7 +138,7 @@ vj_1 = 80
 va_1 = 0
 
 # Velocity at which the material is ejected sideways from the internal working surface [km/s]
-v0_1 = 0
+v0_1 = 10
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
 # bowshock model at the theoretical final radius (see eq. 11 from Tabone et
@@ -157,7 +157,7 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model along the direction of the symmetry axis (z-axis).
-nzs = 100
+nzs = 1000
 
 # Number of azimuthal angles to calculate the bowshock solution at each model
 # point in the z-axis.

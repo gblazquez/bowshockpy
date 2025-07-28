@@ -123,7 +123,7 @@ bowshock 1 [redshifted]
 # Inclination angle of the bowshock symmetry axis with respect to the line of
 # sight. If i>90, the bowshock is redshifted, if i<90, it will be blueshifted
 # [degrees].
-i_1 = 180-45
+i_1 = 135
 
 # Characteristic length scale [arcsec]
 L0_1 = 0.7
@@ -157,7 +157,7 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model along the direction of the symmetry axis (z-axis).
-nzs = 100
+nzs = 1000
 
 # Number of azimuthal angles to calculate the bowshock solution at each model
 # point in the z-axis.
@@ -219,7 +219,6 @@ coordcube = "sky"
 
 # Angle to rotate the image [degrees]
 parot = 0
-
 
 # Standard deviation of the noise of the map, before convolution. Set to None if
 # maxcube2noise is used.

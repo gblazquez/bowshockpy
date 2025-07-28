@@ -76,7 +76,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   bowshock 1 [redshifted]
   """
   
-  i_1 = 180-45
+  i_1 = 135
   
   L0_1 = 0.7
   
@@ -99,7 +99,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   SPECTRAL CUBE PARAMETERS
   """
   
-  nzs = 100
+  nzs = 1000
   
   nphis = 500
   
@@ -132,7 +132,6 @@ This example of input file generates one redshifted bowshock. As specified by th
   coordcube = "sky"
   
   parot = 0
-  
   
   sigma_beforeconv = 0.05
   
@@ -251,7 +250,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   va_1 = 0
   
-  v0_1 = 0
+  v0_1 = 10
   
   rbf_obs_1 = 1.1
   
@@ -264,7 +263,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   SPECTRAL CUBE PARAMETERS
   """
   
-  nzs = 100
+  nzs = 1000
   
   nphis = 500
   
@@ -429,15 +428,15 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   SPECTRAL CUBE PARAMETERS
   """
   
-  nzs = 200
+  nzs = 1000
   
   nphis = 500
   
   nc = 50
   
-  vch0 = -15
+  vch0 = 2
   
-  vchf = 20
+  vchf = 18
   
   nxs = 200
   
@@ -463,9 +462,9 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   parot = 0
   
-  sigma_beforeconv = 0.04
+  sigma_beforeconv = 0.15
   
-  maxcube2noise = 0.07
+  maxcube2noise = None
   
   
   """
@@ -615,7 +614,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   SPECTRAL CUBE PARAMETERS
   """
   
-  nzs = 100
+  nzs = 1000
   
   nphis = 500
   

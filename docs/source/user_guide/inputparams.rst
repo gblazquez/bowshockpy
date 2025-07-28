@@ -58,7 +58,6 @@ These parameters define the desired outputs:
 
     will save 4 spectral cubes in fits format. The first one are the intensities with gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the CO_column_density, which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third NCO_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
 
-
 *verbose* (bolean)
     Set True to verbose messages about the computation.
 
@@ -107,13 +106,15 @@ The next parameters are common to all the bowshocks that are going to be generat
 ``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, subtituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
 
 *i_n* (foat)
-    Inclination angle with respect to the line of sight. If i>90, the bowshock is redshifted, if i<90, it will be blueshifted [degrees].
- 
+    Inclination angle of the bowshock symmetry axis with respect to the line of
+    sight. If i>90, the bowshock is redshifted, if i<90, it will be blueshifted
+    [degrees].
+    
 *L0_n* (float)
     Characteristic length scale [arcsec].
 
 *zj_n* (float)
-    Distance between the working surface and the source [arcsec].
+    Distance between the internal working surface and the source [arcsec].
 
 *vj_n* (float)
     Jet velocity [km/s].
@@ -125,8 +126,10 @@ The next parameters are common to all the bowshocks that are going to be generat
     Velocity at which the material is ejected sideways from the internal working surface [km/s].
 
 *rbf_obs_n* (float)
-    Final radius of the bowshock [arcsec]. Set None if you want to end the bowshock model at the theoretical final radius (see eq. 11 from Tabone et al. 2018).
-
+    Final radius of the bowshock [arcsec]. Set None if you want to end the
+    bowshock model at the theoretical final radius (see eq. 11 from Tabone et
+    al. 2018).
+    
 *mass_n* (float)
     Total mass of the bowshock [solar masses].
 
@@ -250,7 +253,7 @@ This parameters control the properties of the moments and the position-velocity 
     of the maximum value along the velocity axis. If the dictionary value is
     None for vmax, vcenter, or vmin, then the maximum, central, or the minimum
     value of the moment image will be considered, respectively. Example:
-    mom2values = {"vmax": None, "vcenter": None, "vmin": None,}. 
+    mom8values = {"vmax": None, "vcenter": None, "vmin": None,}. 
 
 *pvvalues* (dict) 
     Set the maximum, central, and minimum value to show in the plot of the

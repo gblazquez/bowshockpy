@@ -212,6 +212,7 @@ class BowshockModelPlot():
             $L_0 = {{{self.mo.L0_arcsec:.2f}}}$ arcsec
             $z_\mathrm{{j}} = {{{self.mo.zj_arcsec:.2f}}}$ arcsec
             $r_\mathrm{{b,f}} = {{{self.mo.rbf_arcsec:.2f}}}$ arcsec
+            $m$ = ${{{self.mo.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
             $t_\mathrm{{j}} = {{{self.mo.tj_yr:.2f}}}$ yr
             $\rho_a = {{{self.mo.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
             $\dot{{m}}_0 = {{{self.mo.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
@@ -725,6 +726,7 @@ class BowshockObsModelPlot():
             $L_0 = {{{self.mo.L0_arcsec:.2f}}}$ arcsec
             $z_\mathrm{{j}} = {{{self.mo.zj_arcsec:.2f}}}$ arcsec
             $r_\mathrm{{b,f}} = {{{self.mo.rbf_arcsec:.2f}}}$ arcsec
+            $m$ = ${{{self.mo.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
             $t_\mathrm{{j}} = {{{self.mo.tj_yr:.2f}}}$ yr
             $\rho_a = {{{self.mo.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
             $\dot{{m}}_0 = {{{self.mo.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$

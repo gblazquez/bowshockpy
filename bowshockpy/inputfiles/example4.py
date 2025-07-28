@@ -192,7 +192,7 @@ SPECTRAL CUBE PARAMETERS
 """
 
 # Number of points to model along the direction of the symmetry axis (z-axis).
-nzs = 100
+nzs = 1000
 
 # Number of azimuthal angles to calculate the bowshock solution at each model
 # point in the z-axis.
