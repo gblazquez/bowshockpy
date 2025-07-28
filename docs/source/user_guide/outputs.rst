@@ -1,12 +1,16 @@
 Output files
-================
+============
 
-``bowshockpy`` generates the spectral cubes specified in *outcubes* :doc:`parameter <inputparams>`. When ``bowshockpy`` is run, it will create the path ``models/<modelname>`` if it does not exist, and the cubes will be saved in fits format within ``models/<modelname>/fits``. If specified in *outcubes*, ``bowshockpy`` will also compute the moments and position-velocity diagram from the spectral cube.
+When ``bowshockpy`` is run from the terminal :doc:`using an input file <../examples/examples_inputfile>`, it will create the path ``models/<modelname>`` if it does not exist already. Then, it will save there several files:
 
-Fits files
-----------
+- *<modelname>.py*: A copy of the input file used to generate the model.
+- *bowshock_model_<n>.pdf*: A plot of the morphology and kinematics of the bowshock *n*, being *n* the index of the bowshock; i.e., if three bowshocks are included in the model, there will be three plots, one for each bowshock: *bowshock_model_1.pdf*, *bowshock_model_2.pdf*, and *bowshock_model_3.pdf*.
+- *bowshock_projected_<n>.jpg*: A plot depicting the projected morphology and kinematics of the bowshock with index *n*.
+- *bowshock_cube_<cubename>.pdf*: A plot with the channel maps of the spectra cube named *cubename*. 
+- *momentsandpv_and_params_<cubename>.pdf*: If specified in **outcubes** parameter, ``bowshockpy`` will also compute the moments and position-velocity diagram from the spectral cubes.
+- Fits files: The spectral cubes will be saved in fits format within ``models/<modelname>/fits`` folder.
 
-The filenames of the fits are abbreviations of the quantities and the operations performed to it. These are the abbrevations for the quantities:
+The filename of each cube is an abbreviation indicating its quantity and the operations performed to it (<quantity>_<operations>.fits). The next tables shows the abbrevations used in the filename of the cubes for their quantities and the operations:
 
 .. list-table:: Quantities of the output fits files
    :widths: 10 6 5
@@ -18,23 +22,23 @@ The filenames of the fits are abbreviations of the quantities and the operations
    * - Mass
      - m
      - solar mass
-   * - Intensity
-     - I
-     - Jy/beam
-   * - Intensity optically thin approx.
-     - Ithin
-     - Jy/beam
+   * - Column density (H\ :sub:`2`\ + heavier components)
+     - Ntot
+     - cm-2
    * - CO column density
      - NCO
      - cm-2
    * - Opacities
      - tau
      - 
+   * - Intensity
+     - I
+     - Jy/beam
+   * - Intensity optically thin approx.
+     - Ithin
+     - Jy/beam
 
-
-The abbreviations for the operations are:
-
-.. list-table:: Operations performed to the fits files
+.. list-table:: Operations performed to the cubes files
    :widths: 10 4
    :header-rows: 1
 
@@ -49,16 +53,44 @@ The abbreviations for the operations are:
    * - convolve
      - c
 
-2D plots of the bowshock model
-------------------------------
+For example, the cube I_nc.fits, is a cube of the intensities (I) with Gaussian noise (n) and convolved (c).
+
+
+Plots of the morphology and kinematics of the bowshock
+------------------------------------------------------
+
+ (*bowshock_model_<n>.pdf*)
 
 .. figure:: 2D_1.png
 
     Bowshock model. This figure will be generate for each bowshock included in the cube
 
+
+Plots of the projected morphology and kinematics of the bowshock
+----------------------------------------------------------------
+
+*bowshock_projected_<n>.jpg*
+
+Plots of the channel maps
+-------------------------
+
+*bowshock_cube_<cubename>.pdf*
+
 Plot of the moments and position velocity diagrams
 --------------------------------------------------
+
+*momentsandpv_and_params_<cubename>.pdf*
 
 .. figure:: momentsandpv_and_params_I_nc.png
 
     Moments and position-velocity diagram of the synthetic cube.
+
+
+Fits files
+----------
+
+The cubes in fits files format will be saved in ``models/<modelname>/fits``. It can be open with ``casaviewer`` or ``ds9``.
+
+
+..
+  Include a screenshot of the casaviewer

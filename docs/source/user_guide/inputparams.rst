@@ -1,17 +1,27 @@
-Input parameters
-================
+Input file parameters
+=====================
 
-In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/example_module>`).
+..
+  In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/example_module>`).
+
+The quickest and easiest way to :doc:`use <usage>` ``bowshockpy`` is running it from the terminal, specifying with the ``--read`` flag an input file that contains all the parameters needed to perform the modeling of the bowshock(s): 
+
+.. code-block:: console
+
+  $ bowshockpy --read inputfile.py 
+
+In the following there is a description of each parameter that should be included in the input file. For a confortable usage, we encourage to download one of the :doc:`examples of input files <../examples/examples_inputfile>` and check this page as a reference, so the user can modify the parameters according to their scientific goals.
 
 
-Model output parameters
------------------------
+Specification of the desired outputs
+------------------------------------
 
 These parameters define the desired outputs:
 
 *modelname* (str)
-    Name of the folder where the outputs of the models are going to be stored. 
-
+    Folder name where the outputs of the modellling are going to be stored. If
+    it does not exist, it will be created automatically. 
+    
 *bs2Dplot* (boolean)
     Set to True to plot a 2D bowshock model.
 
@@ -50,7 +60,7 @@ These parameters define the desired outputs:
 
 
 *verbose* (bolean)
-    Set True to verbose messages about the computation
+    Set True to verbose messages about the computation.
 
 
 Observer parameters
@@ -59,80 +69,91 @@ Observer parameters
 These parameters define the observer properties:
 
 *distpc* (float)
-    Source distance to the observer [pc]
+    Source distance to the observer [pc].
+
 *vsys* (float)
-    Systemic velocity of the source [km/s]
+    Systemic velocity of the source [km/s].
+
 *ra_source_deg* (float)
-    Source right ascension [deg]
+    Source right ascension [deg].
+
 *dec_source_deg* (float)
-    Source declination [deg]
+    Source declination [deg].
 
 
 Bowshock parameters
 -------------------
 
-These parameters common to all the bowshocks that are going to be generated:
+The next parameters are common to all the bowshocks that are going to be generated:
 
 *nbowshocks* (int)
-    Number of bowshocks to model
-*Tex* (float)
-    Excitation temperature [K]
-*Tbg* (float)
-    Background temperature [K]
-*muH2* (float)
-    Mean molecular mass per H molecule
-*J* (str)
-    Upper level of the CO rotational transition (e.g. 3 for "3-2")
-*XCO* (float)
-    CO abundance
+    Number of bowshocks to model.
 
-``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by *nbowshocks* parameter. The following paramers should be defined for each bowshock, subtituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define vj_1, vj_2, vj_3, and vj_4, and similarly with the rest of parameters).
+*Tex* (float)
+    Excitation temperature [K].
+
+*Tbg* (float)
+    Background temperature [K].
+
+*muH2* (float)
+    Mean molecular mass per hydrogen molecule.
+
+*J* (str)
+    Upper level of the CO rotational transition (e.g. 3 for the "J=3->2" transition).
+
+*XCO* (float)
+    CO abundance relative to the molecular hydrogen.
+
+``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, subtituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
 
 *i_n* (foat)
     Inclination angle with respect to the line of sight. If i>90, the bowshock is redshifted, if i<90, it will be blueshifted [degrees].
  
 *L0_n* (float)
-    Characteristic length scale [arcsec]
+    Characteristic length scale [arcsec].
 
 *zj_n* (float)
-    Distance between the working surface and the source [arcsec]
+    Distance between the working surface and the source [arcsec].
 
 *vj_n* (float)
-    Jet velocity [km/s]
+    Jet velocity [km/s].
 
 *va_n* (float)
-    Ambient (or surrounding wind) velocity [km/s]
+    Ambient (or surrounding wind) velocity [km/s].
 
 *v0_n* (float) 
-    Velocity at which the material is ejected from the internal working surface [km/s]
+    Velocity at which the material is ejected sideways from the internal working surface [km/s].
 
-*rbf_obs_1* (float)
-    Final radius of the bowshock [arcsec]. Set None if you want to end the bowshock model at the theoretical final radius (see eq. 11 from Tabone et al. 2018)
+*rbf_obs_n* (float)
+    Final radius of the bowshock [arcsec]. Set None if you want to end the bowshock model at the theoretical final radius (see eq. 11 from Tabone et al. 2018).
 
 *mass_n* (float)
-    Total mass of the bowshock [solar masses]
+    Total mass of the bowshock [solar masses].
 
 *pa_n* (float)
-    Position angle [deg]
+    Position angle [deg].
 
 
 Spectral cube parameters
 -------------------------
 
+These parameters will define the properties of the spectral cube of the bowshock(s) model
+
 *nzs* (int)
-    Number of points to model
+    Number of points to model along the direction of the symmetry axis (z-axis).
 
 *nphis* (int)
-    Number of azimuthal angle phi to calculate the bowshock solution
-
+    Number of azimuthal angles to calculate the bowshock solution at each
+    model point in the z-axis.
+    
 *nc* (int)
-    Number of spectral channel maps
+    Number of spectral channel maps.
 
 *vch0* (float)
-    Central velocity of the first channel map [km/s]
+    Central velocity of the first channel map [km/s].
 
 *vchf* (float)
-    Central velocity of the last channel map [km/s]
+    Central velocity of the last channel map [km/s].
 
 *nxs* (int)
     Number of pixels in the right ascension axis.
@@ -141,59 +162,61 @@ Spectral cube parameters
     Number of pixels in the declination axis. 
 
 *xpmax* (float)
-    Physical size of the channel maps along the x axis [arcsec]
+    Physical size of the channel maps along the right ascension axis [arcsec].
 
 *papv* (float)
-    Position angle used to calculate the PV [degrees]
+    Position angle used to calculate the PV [degrees].
 
 *bmaj* (tupple)
-    Beam major axis [arcsec]
+    Beam major axis [arcsec].
 
 *bmin* (tupple)
-    Beam minor axis [arcsec]
+    Beam minor axis [arcsec].
 
 *pabeam* (float)
-    Beam position angle [degrees]
+    Beam position angle [degrees].
 
 *vt* (str or float)
-    Thermal+turbulent line-of-sight velocity dispersion [km/s] If thermal+turbulent line-of-sight velocity dispersion is smaller than the instrumental spectral resolution, vt should be the spectral resolution. It can be also set to a integer times the channel width (e.g., "2xchannel")
+    Thermal+turbulent line-of-sight velocity dispersion [km/s] If thermal+turbulent line-of-sight velocity dispersion is smaller than the instrumental spectral resolution, **vt** should be the spectral resolution. It can be also set to a integer times the channel width (e.g., "2xchannel").
 
 *tolfactor_vt* (float)
-    If the velocity dispersion vt is not 0, the masses corresponding to a channel
-    maps are spread along the whole cube in the velocity axis following a Gaussian
-    distribution. tolfactor_vt parameter truncates the Gaussian distribution at
-    vt*tolfactor_vt in order to make the computation substatially faster. A low
-    tolfactor_vt can result in a warning reporting an underestimation of the total
-    mass of the model.
+    The masses corresponding to a channel map are spread along the whole cube in
+    the velocity axis following a Gaussian distribution, being **vt** parameter the
+    standard deviation of the Gaussian. **tolfactor_vt** parameter truncates the
+    Gaussian distribution at **vt** * **tolfactor_vt** in order to make the computation
+    substatially faster. A low **tolfactor_vt** can result in a warning reporting an
+    underestimation of the total mass of the model.
 
 *CIC* (bolean)
     Set to True to perform 2D Cloud in Cell interpolation along the spatial
-    dimensions. If False, a nearest neighbour association will be perform.
+    dimensions. If False, a Nearest Grid Point method will be perform.
     
 *refpix* (list or None)
-    Pixel coordinates (zero-based) of the source, i.e., the origin from which the distances are measured. The first index is the R.A. axis, the second is the  Dec. axis [[int, int] or None] 
+    Pixel coordinates (zero-based) of the source, i.e., the origin from which the distances are measured. The first index is the right ascension axis, the second is the declination axis [[int, int] or None].
 
 *coordcube* ("sky" or "offset")
-    Set to "sky" if you would like to set the cube headers in sky coordinates, or "offset" if you prefer them in offsets relative to the origin (the source).
+    Set to "sky" in order to set the cube headers in sky coordinates, or "offset" if you prefer them in offsets relative to the origin (the source).
 
 *parot* (float)
     Angle to rotate the image [degrees]
 
 *sigma_beforeconv* (float)
-    Standard deviation of the noise of the map, before convolution. Set to None if maxcube2noise is used.
+    Standard deviation of the noise of the map, before convolution. Set to None if **maxcube2noise** is used.
 
 *maxcube2noise* (float)
-    Standard deviation of the noise of the map, before convolution, relative to the maximum pixel in the cube. The actual noise will be computed after convolving. This parameter would not be used if sigma_beforeconve is not None.
+    Standard deviation of the noise of the map, before convolution, relative to the maximum pixel in the cube. The actual noise will be computed after convolving. This parameter would not be used if **sigma_beforeconve** is not None.
 
 
 Moments and PV parameters
 -------------------------
 
+This parameters control the properties of the moments and the position-velocity diagrams. 
+
 *savefits* (bolean)
-    Set to True in order save the moments and the PV in fits file format.
+    Set to True in order save the moments and the PV in fits format.
 
 *saveplot* (bolean)
-    Do you want to save a figure of the moments and the PV? [True/False]
+    Set to True in order to save a figure of the moments and the PV [True/False].
 
 *mom1clipping* (str)
     Clipping for moment 1 as a function of the standard deviation of noise in the image (e.g., "5xsigma").
@@ -234,5 +257,5 @@ Moments and PV parameters
     moments and PV-diagram along the jet axis. If the dictionary value is None
     for vmax, vcenter, or vmin, then the maximum, central, or the minimum value
     of the position velocity diagram will be considered, respectively. Example:
-    pvvalues = {"vmax": None, "vcenter": None, "vmin": None,}
+    pvvalues = {"vmax": None, "vcenter": None, "vmin": None,}.
     

@@ -24,21 +24,21 @@ class BowshockModelPlot():
     -----------
     bsm : `~bowshockpy.models.BowshockModel` class instance
         Instance of the model to plot
-    modelname : optional, str
+    modelname : str, optional 
         Name of the model to include in the plot
-    nzs : optional, int
+    nzs : int, optional 
         Number of points used to compute the model solutions
-    figsize: optional, tuple
+    figsize: tuple, optional
         Tuple passed to `matplotib.pyplot.figure` to define the dimensions of
         the figure
-    narrows: optional, int
+    narrows: int, optional
         Number of arrows to show in order to indicate the velocity at each
         symmetrical half of the model.        
-    v_arrow_ref: optional, float
+    v_arrow_ref: float, optional
         Velocity in km/s to use as reference in the reference arrow
-    linespacing : optional, float
+    linespacing : float, optional
         Spacing between the text lines
-    textbox_widthratio : optional, float
+    textbox_widthratio : float, optional
         Width ratio of the text ax to pass to GridSpec
 
     Attributes:
@@ -403,7 +403,7 @@ class BowshockModelPlot():
 
         Parameters
         ----------
-        figname : optional, str
+        figname : str, optional
             Full path name of the figure. If None, the the full path name will
             be models/{self.modelname}/bowshock_model.pdf. If the folder tree does not exist, it will be created. 
         """
@@ -424,24 +424,24 @@ class BowshockObsModelPlot():
     -----------
     bsm : `~bowshockpy.models.BowshockModel` class instance
         Instance of the model to plot
-    modelname : optional, str
+    modelname : str, optional
         Name of the model to include in the plot
-    nzs : optional, int
+    nzs : int, optional
         Number of z coordinates used to compute the model solutions
-    nphis : optional, int
+    nphis : int, optional
         Number of phi coordinates used to compute the model solutions
-    figsize: optional, tuple
+    figsize: tuple, optional
         Tuple passed to `matplotib.pyplot.figure` to define the dimensions of
         the figure
-    linespacing : optional, float
+    linespacing : float, optional
         Spacing between the text lines
-    textbox_widthratio : optional, float
+    textbox_widthratio : float, optional
         Width ratio of the text ax to pass to GridSpec
-    cmap : optional, str
+    cmap : str, optional
         Colormap label
-    minpointsize : optional, float
+    minpointsize : float, optional
         Minsize of the points to plot
-    maxpointsize : optional, float
+    maxpointsize : float, optional
         Minsize of the points to plot
 
     Attributes:
@@ -970,7 +970,7 @@ class BowshockObsModelPlot():
 
         Parameters
         ----------
-        figname : optional, str
+        figname : str, optional
             Full path name of the figure. If None, the the full path name will
             be models/{self.modelname}/bowshock_projected.pdf. If the folder tree does not exist, it will be created. 
         """
@@ -1054,9 +1054,9 @@ def plot_channel(cube, chan, arcsecpix, velchans,
         If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -1190,9 +1190,9 @@ def plot_channels(cube, arcsecpix, velchans,
         If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -1323,21 +1323,21 @@ def plotpv(pvimage, rangex, chan_vels, ax=None,
         coordinates of the boundaries of the image in the spatial direction.
     chan_vels : list or numpy.ndarray 
         list or numpy.ndarray with the velocities corresponding to the channels
-    ax : optional, matplotlib.axes.Axes
+    ax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes` instance in which the position velodity diagram is drawn.
-    cbax : optional, matplotlib.axes.Axes
+    cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
-    vmax : optional, float
+    vmax : float, optional
         Maximum value of the colorbar
-    vcenter : optional, float
+    vcenter : float, optional
         Center value of the colorbar
-    vmin : optional, float
+    vmin : float, optional
         Minimum value of the colorbar
-    cmap : optional, str
+    cmap : str, optional
         Label of the colorbar
-    interpolation : optional, str
+    interpolation : str, optional
         Interpolation to pass to matplotlib.pyplot.imshow
-    cbarlabel : optional, str
+    cbarlabel : str, optional
         String with information on the quantity represented in the Position
         Velocity diagram
     """
@@ -1403,32 +1403,32 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
     ----------
     sumint : numpy.ndarray
         Image of the sumation of all the pixels along the velocty axis.
-    ax : optional, matplotlib.axes.Axes
+    ax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the position velodity diagram is
         drawn.
-    cbax : optional, matplotlib.axes.Axes
+    cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
-    vmax : optional, float
+    vmax : float, optional
         Maximum value of the colorbar
-    vcenter : optional, float
+    vcenter : float, optional
         Center value of the colorbar
-    vmin : optional, float
+    vmin : float, optional
         Minimum value of the colorbar
-    cmap : optional, str
+    cmap : str, optional
         Label of the colorbar
-    interpolation : optional, str
+    interpolation : str, optional
         Interpolation to pass to matplotlib.pyplot.imshow
-    cbarlabel : optional, str
+    cbarlabel : str, optional
         String with information on the quantity represented in the plot
     markorigin : boolean, optional
         If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -1501,31 +1501,31 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
     ----------
     mom0 : numpy.ndarray
         Image of the moment 0.
-    ax : optional, matplotlib.axes.Axes
+    ax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
-    cbax : optional, matplotlib.axes.Axes
+    cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
-    vmax : optional, float
+    vmax : float, optional
         Maximum value of the colorbar
-    vcenter : optional, float
+    vcenter : float, optional
         Center value of the colorbar
-    vmin : optional, float
+    vmin : float, optional
         Minimum value of the colorbar
-    cmap : optional, str
+    cmap : str, optional
         Label of the colorbar
-    interpolation : optional, str
+    interpolation : str, optional
         Interpolation to pass to matplotlib.pyplot.imshow
-    cbarlabel : optional, str
+    cbarlabel : str, optional
         String with information on the quantity represented in the plot
     markorigin : boolean, optional
         If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -1598,35 +1598,35 @@ def plotmom1(
     ----------
     mom1 : numpy.ndarray
         Image of the moment 1.
-    ax : optional, matplotlib.axes.Axes
+    ax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
-    cbax : optional, matplotlib.axes.Axes
+    cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
-    vmax : optional, float
+    vmax : float, optional
         Maximum value of the colorbar
-    vcenter : optional, float
+    vcenter : float, optional
         Center value of the colorbar
-    vmin : optional, float
+    vmin : float, optional
         Minimum value of the colorbar
     extend_cbar : str,
         Extremum to extend the colorbar: "max" or "min"
     bg : str
         Color of the background image.
-    cmap_ref : optional, str
+    cmap_ref : str, optional
         Label of the colorbar used for reference.
-    interpolation : optional, str
+    interpolation : str, optional
         Interpolation to pass to matplotlib.pyplot.imshow
-    cbarlabel : optional, str
+    cbarlabel : str, optional
         String with information on the quantity represented in the plot
     markorigin : boolean, optional
         If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -1727,35 +1727,35 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
     ----------
     mom2 : numpy.ndarray
         Image of the moment 2.
-    ax : optional, matplotlib.axes.Axes
+    ax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
-    cbax : optional, matplotlib.axes.Axes
+    cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
-    vmax : optional, float
+    vmax : float, optional
         Maximum value of the colorbar
-    vcenter : optional, float
+    vcenter : float, optional
         Center value of the colorbar
-    vmin : optional, float
+    vmin : float, optional
         Minimum value of the colorbar
     extend_cbar : str,
         Extremum to extend the colorbar: "max" or "min"
     bg : str
         Color of the background image.
-    cmap_ref : optional, str
+    cmap_ref : str, optional
         Label of the colorbar used for reference.
-    interpolation : optional, str
+    interpolation : str, optional
         Interpolation to pass to matplotlib.pyplot.imshow
-    cbarlabel : optional, str
+    cbarlabel : str, optional
         String with information on the quantity represented in the plot
     markorigin : boolean, optional
         If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -1851,31 +1851,31 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
     ----------
     mom8 : numpy.ndarray
         Image of the maximum pixel along the velocty axis.
-    ax : optional, matplotlib.axes.Axes
+    ax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the position velodity diagram is drawn.
-    cbax : optional, matplotlib.axes.Axes
+    cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
         Physical coordinates of the boundaries of the image.
-    vmax : optional, float
+    vmax : float, optional
         Maximum value of the colorbar
-    vcenter : optional, float
+    vcenter : float, optional
         Center value of the colorbar
-    vmin : optional, float
+    vmin : float, optional
         Minimum value of the colorbar
-    cmap : optional, str
+    cmap : str, optional
         Label of the colorbar
-    interpolation : optional, str
+    interpolation : str, optional
         Interpolation to pass to matplotlib.pyplot.imshow
-    cbarlabel : optional, str
+    cbarlabel : str, optional
         String with information on the quantity represented in the plot
     markorigin : boolean, optional
         If True, a marker will be plot at [0,0]. Default True.
     add_beam : bolean, optional
         If True, plots a ellipse of the beam size in the left bottom corner.
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]

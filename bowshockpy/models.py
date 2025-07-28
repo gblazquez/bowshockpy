@@ -44,7 +44,7 @@ class BowshockModel():
         Total mass of the bowshock shell [Solar masses]
     distpc : float
         Distance between the source and the observer [pc]
-    rbf_obs: optional, float
+    rbf_obs: float, optional
         Final radius of the bowshock [km]. If None, the theoretical final radius
         is calculated.
     
@@ -636,32 +636,32 @@ class BowshockCube(ObsModel):
         Central velocity of the last channel map [km/s]
     xpmax : float
         Physical size of the channel maps along the x axis [arcsec]
-    nc : optional, int
+    nc : int, optional
         Number of spectral channel maps
-    nxs : optional, int
+    nxs : int, optional
         Number of pixels in the right ascension axis.
-    nys : optional, int
+    nys : int, optional
         Number of pixels in the declination axis. 
-    refpix : optional, list | None
+    refpix : list | None, optional
         Pixel coordinates (zero-based) of the source, i.e., the origin from
         which the distances are measured. The first index is the R.A. axis, the
         second is the  Dec. axis [[int, int] or None] 
-    CIC : optional, bolean
+    CIC : bolean, optional
         Set to True to perform Cloud in Cell interpolation [1].
-    vt : optional, str | float
+    vt : str | float, optional
         Thermal+turbulent line-of-sight velocity dispersion [km/s] If
         thermal+turbulent line-of-sight velocity dispersion is smaller than the
         instrumental spectral resolution, vt should be the spectral resolution.
         It can be also set to a integer times the channel width (e.g.,
         "2xchannel")
-    tolfactor_vt : optional, float
+    tolfactor_vt : float, optional
         Neighbour channel maps around a given channel map with vch will stop
         being populated when their difference in velocity with respect to vch is
         higher than this factor times vt. The lower the factor, the quicker will
         be the code, but the total mass will be underestimated. If vt is not
         None, compare the total mass of the output cube with the mass parameter
         that the user has defined 
-    verbose : optional, bolean
+    verbose : bolean, optional
         Set True to verbose messages about the computation
 
     Attributes:
@@ -894,7 +894,7 @@ coincides with the total mass of the cube.
 
         Parameters
         -----------
-        fromcube : optional, numpy.ndarray
+        fromcube : numpy.ndarray, optional
             Cube that will be populated with the model data. If None, and empty
             cube will be considered. 
         """
@@ -1000,7 +1000,7 @@ coincides with the total mass of the cube.
 
         Parameters
         -----------
-        fromcube : optional, numpy.ndarray
+        fromcube : numpy.ndarray, optional
             Cube that will be populated with the model data. If None, and empty
             cube will be considered. 
        """
@@ -1214,28 +1214,28 @@ class CubeProcessing(BowshockCube):
     -----------
     bscube :  class instance
         Instance of BowshockCube
-    J : optional, int
+    J : int, optional
         Upper level of the CO rotational transition (e.g. 3 for transition
         "3-2")
-    XCO : optional, str
-        CO abundance
-    meanmolmass : optional, astropy.unit.Quantity
+    XCO : str, optional
+        CO abundance relative to the molecular hydrogen
+    meanmolmass : astropy.unit.Quantity, optional
         Mean mass per H molecule
-    Tex : optional, astropy.unit.Quantity
+    Tex : astropy.unit.Quantity, optional
         Excitation temperature
-    Tbg : optional, astropy.unit.Quantity
+    Tbg : astropy.unit.Quantity, optional
         Excitation temperature
-    coordcube : optional, str
+    coordcube : str, optional
         Set to "sky" if you would like to set the cube headers in sky
         coordinates, or "offset" if you prefer them in offsets relative to the
         origin (the source).
-    ra_source_deg : optional, float
+    ra_source_deg : float, optional
         Source right ascension [deg]
-    dec_source_deg : optional, float
+    dec_source_deg : float, optional
         Source declination [deg]
-    bmin : optional, float
+    bmin : float, optional
         Beam minor axis [arcsec]
-    bmaj : optional, float
+    bmaj : float, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -1511,9 +1511,9 @@ class CubeProcessing(BowshockCube):
 
         Parameters
         -----------
-        ck : optional, str
+        ck : str, optional
             Key of the cube to add the source
-        value : optional, float
+        value : float, optional
             Pixel value of the source. If None, the maximum of the cube will be
             considered 
         """
@@ -1536,9 +1536,9 @@ class CubeProcessing(BowshockCube):
 
         Parameters
         -----------
-        ck : optional, str
+        ck : str, optional
             Key of the cube to rotate 
-        forpv : optional, bool
+        forpv : bool, optional
             If True, the image is rotated to calculate the PV along the bowshock
             axis 
         """
@@ -1586,7 +1586,7 @@ class CubeProcessing(BowshockCube):
 
         Parameters
         -----------
-        ck : optional, str
+        ck : str, optional
             Key of the cube to rotate 
         """
         nck = self._newck(ck, "n")
@@ -1616,7 +1616,7 @@ class CubeProcessing(BowshockCube):
         
         Parameters
         -----------
-        ck : optional, str
+        ck : str, optional
             Key of the cube to convolve
         """
  
@@ -2032,7 +2032,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         ck : str
             Key of the cube to perform the PV-diagram.
-        halfwidth : optional, int
+        halfwidth : int, optional
             Number of pixels around xpv that will be taking into account to
             compute the PV-diagram.
         savefits : boolean
@@ -2122,7 +2122,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
-        chan_range : optional, list
+        chan_range : list, optional
             Two element list with the last and first channels used to compute
             the summation. If None, the whole cube will be considered.
         savefits : boolean
@@ -2233,7 +2233,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
-        chan_range : optional, list
+        chan_range : list, optional
             Two element list with the last and first channels used to compute
             the summation. If None, the whole cube will be considered.
         savefits : boolean
@@ -2344,12 +2344,12 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
-        chan_range : optional, list
+        chan_range : list, optional
             Two element list with the last and first channels used to compute
             the summation. If None, the whole cube will be considered.
-        clipping : float
+        clipping : float, optional
             Pixels with values smaller than the one given by clipping parameter will be masked with 0 values.
-        savefits : boolean
+        savefits : boolean, optional
             If True, save the PV-diagram in fits format.
         filename : str
             Full path name of the fits file. If None, it will be saved as
@@ -2463,14 +2463,14 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
-        chan_range : optional, list
+        chan_range : list, optional
             Two element list with the last and first channels used to compute
             the summation. If None, the whole cube will be considered.
-        clipping : float
+        clipping : float, optional
             Pixels with values smaller than the one given by clipping parameter will be masked with 0 values.
-        savefits : boolean
+        savefits : boolean, optional
             If True, save the PV-diagram in fits format.
-        filename : str
+        filename : str, optional
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
@@ -2582,15 +2582,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         ck : str
             Key of the cube to perfomr the PV-diagram.
-        chan_range : optional, list
+        chan_range : list, optional
             Two element list with the last and first channels used to compute
             the summation. If None, the whole cube will be considered.
-        clipping : float
+        clipping : float, optional
             Pixels with values smaller than the one given by clipping parameter
             will be masked with 0 values.
-        savefits : boolean
+        savefits : boolean, optional
             If True, save the PV-diagram in fits format.
-        filename : str
+        filename : str, optional
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.

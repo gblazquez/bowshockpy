@@ -156,7 +156,8 @@ The masses has been computed!
 The cubes are going to be processed in order to get the desired outputs
 specified in {p.filename}. The outputs will be saved in fits format. The
 filename of each cube indicate its quantity and the operations applied to the
-cube ("<quantity>_<operations>.fits"). Some abbreviations will be used:
+cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
+name of the fits files:
 
 Abbreviations for quantities are:        Abbreviations for the operations are:
     m: mass [SolarMass]                      s: add_source

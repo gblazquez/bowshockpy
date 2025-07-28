@@ -11,8 +11,8 @@
 
 
 project = 'bowshockpy'
-copyright = '2025, Guillermo Blazquez-Calero'
-author = 'Guillermo Blazquez-Calero'
+copyright = '2025, Guillermo Blazquez-Calero & contributors'
+author = 'Guillermo Blazquez-Calero & contributors'
 
 release =  "0.2.1"
 version =  "0.2.1"
@@ -54,7 +54,7 @@ html_title = "BowshockPy"
 # html_logo = "path/to/myimage.png"
 
 html_theme_options = {
-    "github_url": "https://github.com/gblazquez/bowshockpy",
+    # "github_url": "https://github.com/gblazquez/bowshockpy",
     "repository_url": "https://github.com/gblazquez/bowshockpy",
     "use_repository_button": True,
 #    "use_source_button": True,

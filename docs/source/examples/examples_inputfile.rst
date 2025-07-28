@@ -23,6 +23,10 @@ This example of input file generates one redshifted bowshock. As specified by th
 
 .. code-block:: python
   
+  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
+  
+  """
+  
   """
   MODEL OUTPUTS
   """
@@ -62,9 +66,10 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   muH2 = 2.8
   
-  J = "3-2"
+  J = 3
   
   XCO = 8.5 * 10**(-5)
+  
   
   
   """
@@ -104,7 +109,9 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   vchf = 65
   
-  nxs, nys = (200, 200)
+  nxs = 200
+  
+  nys = 200
   
   xpmax = 4
   
@@ -116,9 +123,9 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   vt = "2xchannel"
   
-  CIC = True
-  
   tolfactor_vt = 3
+  
+  CIC = True
   
   refpix = [80, 30]
   
@@ -126,10 +133,10 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   parot = 0
   
+  
   sigma_beforeconv = 0.05
   
   maxcube2noise = 0.07
-  
   
   
   """
@@ -181,6 +188,10 @@ This example of input file generates one blueshifted bowshock. As defined by out
 
 .. code-block:: python
   
+  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
+  
+  """
+  
   """
   MODEL OUTPUTS
   """
@@ -220,13 +231,14 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   muH2 = 2.8
   
-  J = "3-2"
+  J = 3
   
   XCO = 8.5 * 10**(-5)
   
   
+  
   """
-  bowshock 1 [blueshifted]
+  bowshock 1 [redshifted]
   """
   
   i_1 = 25
@@ -239,7 +251,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   va_1 = 0
   
-  v0_1 = 10
+  v0_1 = 0
   
   rbf_obs_1 = 1.1
   
@@ -262,7 +274,9 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   vchf = -80
   
-  nxs, nys = (200, 200)
+  nxs = 200
+  
+  nys = 200
   
   xpmax = 4
   
@@ -274,9 +288,9 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   vt = "2xchannel"
   
-  CIC = True
-  
   tolfactor_vt = 3
+  
+  CIC = True
   
   refpix = [125, 75]
   
@@ -284,10 +298,10 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   parot = 0
   
+  
   sigma_beforeconv = 0.03
   
   maxcube2noise = 0.07
-  
   
   
   """
@@ -339,6 +353,10 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
 
 .. code-block:: python
   
+  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
+  
+  """
+  
   """
   MODEL OUTPUTS
   """
@@ -361,7 +379,7 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   distpc = 400
   
-  vsys = + 0
+  vsys = + 5
   
   ra_source_deg, dec_source_deg = 84.095, -6.7675
   
@@ -378,9 +396,10 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   muH2 = 2.8
   
-  J = "3-2"
+  J = 3
   
   XCO = 8.5 * 10**(-5)
+  
   
   
   """
@@ -420,7 +439,9 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   vchf = 20
   
-  nxs, nys = (200, 200)
+  nxs = 200
+  
+  nys = 200
   
   xpmax = 4.5
   
@@ -432,9 +453,9 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   vt = "2xchannel"
   
-  CIC = True
-  
   tolfactor_vt = 3
+  
+  CIC = True
   
   refpix = [100, 0]
   
@@ -445,7 +466,6 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   sigma_beforeconv = 0.04
   
   maxcube2noise = 0.07
-  
   
   
   """
@@ -497,6 +517,10 @@ This example of input file generates two redshifted bowshocks in the same cube. 
 
 .. code-block:: python
   
+  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
+  
+  """
+  
   """
   MODEL OUTPUTS
   """
@@ -524,7 +548,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   
   """
-  
+  BOWSHOCKS PARAMETERS
   """
   
   nbowshocks = 2
@@ -535,16 +559,17 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   muH2 = 2.8
   
-  J = "3-2"
+  J = 3
   
   XCO = 8.5 * 10**(-5)
+  
   
   
   """
   bowshock 1 [redshifted]
   """
   
-  i_1 = 180-55
+  i_1 = 125
   
   L0_1 = 0.7
   
@@ -563,10 +588,10 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   pa_1 = -20
   
   """
-  bowshock 2 [redshifted]
+  bowshock 1 [redshifted]
   """
   
-  i_2 = 180-55
+  i_2 = 125
   
   L0_2 = 0.8
   
@@ -580,10 +605,9 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   rbf_obs_2 = 1
   
-  mass_2 = 0.00020 
+  mass_2 = 0.0002
   
   pa_2 = -20
-  
   
   
   
@@ -601,7 +625,9 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   vchf = 57
   
-  nxs, nys = (200, 200)
+  nxs = 200
+  
+  nys = 200
   
   xpmax = 5
   
@@ -613,9 +639,9 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   vt = "2xchannel"
   
-  CIC = True
-  
   tolfactor_vt = 3
+  
+  CIC = True
   
   refpix = [80, 30]
   
@@ -626,7 +652,6 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   sigma_beforeconv = 0.05
   
   maxcube2noise = 0.07
-  
   
   
   """
