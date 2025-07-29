@@ -48,8 +48,10 @@ class BowshockModel():
     
     Attributes:
     -----------
+    rbf : float
+        Final radius of the bowshock [km]
     zbf : float
-        z coordinate at rbf
+        z coordinate at the final radius rbf [km]
     tj : float
         Dynamical time defined as zj / vj [s].
     tj_yr : float
@@ -57,7 +59,7 @@ class BowshockModel():
     rhoa : float
         Ambient density [Msun km^3]
     rhoa_gcm3 : float
-        Ambient density [g cm-3]
+        Ambient density [g cm^-3]
     mp0 : float
         Mass rate at which the jet material is ejected sideways from the
         internal working surface [Msun / s]
@@ -65,10 +67,10 @@ class BowshockModel():
         Mass rate at which the jet material is ejected sideways from the
         internal working surface [Msun / yr]
     mpamb_f : float
-        Mass rate of ambient material being incorporated into the bowshock
+        Mass rate of ambient material is incorporated into the bowshock
         shell [Msun / s]
     mpamb_f_solmassyr : float
-        Mass rate of ambient material being incorporated into the
+        Mass rate of ambient material is incorporated into the
         bowshock shell [Msun / yr]
     zj_arcsec : float
         Distance from the source to the internal working surface [arcsec]
@@ -135,22 +137,52 @@ class BowshockModel():
         self.L0_arcsec = self.km2arcsec(self.L0)
         self.rbf_arcsec = self.km2arcsec(self.rbf)
         self.zbf_arcsec = self.km2arcsec(self.zbf)
-
+ 
     def stoyr(self, value):
         """
         Converts seconds to years
+
+        Parameters
+        ----------
+        value : float
+            Seconds to convert to years
+
+        Returns
+        -------
+        float
+            Years
         """
         return value * u.s.to(u.yr)
 
     def solMasskm2togcm2(self, value):
         """
         Converts solar masses/km**2 to g/cm**2
+
+        Parameters
+        ----------
+        value : float
+            Solar masses per km^2 to convert to g/cm^2
+
+        Returns
+        -------
+        float
+            g/cm2
         """
         return value * (u.solMass/u.km**2).to(u.g/u.cm**2)
 
     def solMasskm3togcm3(self, value):
         """
         Converts solar masses/km**3 to g/cm**3
+
+        Parameters
+        ----------
+        value : float
+            Solar masses per km^3 to convert to g/cm^3
+
+        Returns
+        -------
+        float
+            g/cm3
         """
         return value * (u.solMass/u.km**3).to(u.g/u.cm**3)
 
@@ -161,13 +193,23 @@ class BowshockModel():
         Parameters
         ----------
         value : float
-            distance in km
+            km to convert to arcsec
+
+        Returns
+        -------
+        float
+            g/cm3
         """
         return value * u.km.to(u.au) / self.distpc
 
     def gamma(self):
         """
         Computes the gamma parameter, defined as gamma = (vj - va) / v0
+
+        Returns
+        -------
+        float
+            gamma parameter
         """
         return (self.vj-self.va) / self.v0
 
@@ -176,31 +218,48 @@ class BowshockModel():
         Bowshock radius for a given z coordinate of the bowshock
         
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Bowshock radius at zb [km]
         """
         return (self.L0**2*(self.zj-zb))**(1/3)
 
     def vr(self, zb):
         """
-        Computes the radial component of the velocity
-
+        Computes the transversal component of the velocity (along the r-axis,
+        perpendicular to the symmetry axis of the bowshock)
+        
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
+        
+        Returns
+        -------
+        float
+            Transversal component of the velocity [km/s]
         """
         return self.v0*(1 + 3*self.rb(zb)**2/self.gamma()/self.L0**2)**(-1)
 
     def vz(self, zb):
         """
-        Computes the longitudinal component of the velocity
-
+        Computes the longitudinal component of the velocity (along z-axis, the
+        symmetry axis of the bowshock)
+        
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Longitudinal component of the velocity [km/s]
         """
         return self.va + (self.vj-self.va)*(1+3*self.rb(zb)**2/self.gamma()/self.L0**2)**(-1)
 
@@ -209,62 +268,100 @@ class BowshockModel():
         Computes the total speed of the velocity
 
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Speed of the bowshock at zb [km/s]
         """
         return np.sqrt(self.vr(zb)**2 + self.vz(zb)**2)
 
     def alpha(self, zb):
         """
-        Angle between the bowshock axis and the velocity
+        Computes the angle between the bowshock axis and the velocity
 
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Angle between the bowshock axis and the velocity [radians]
         """
         return np.arctan(self.vr(zb) / self.vz(zb))
 
     def alpha2(self, zb):
         """
-        Angle between the bowshock axis and the local tangent to the shell
-        surface at the z-coordinate of the bowshock zb
+        Computes the angle between the bowshock axis and the local tangent to
+        the shell surface at the z-coordinate of the bowshock zb
         
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Angle between the bowshock axis and the local tangent to the shell
+            surface at the z-coordinate of the bowshock zb [radians]
         """
         return np.arcsin((1+9*self.rb(zb)**4/self.L0**4)**(-0.5))
 
     def alpha2_rb(self, rb):
         """
-        Angle between the bowshock axis and the local tangent to the shell
-        surface at the bowshock radius rb
+        Computes the angle between the bowshock axis and the local tangent to
+        the shell surface at the z-coordinate of the bowshock zb
         
         Parameters
-        -----------
+        ----------
         rb : float
-            r coordinate of the bowshock
-        """ 
+            r coordinate of the bowshock [km]
+ 
+        Returns
+        -------
+        float
+            Angle between the bowshock axis and the local tangent to the shell
+            surface at the z-coordinate of the bowshock zb [radians]
+        """
         return np.arcsin((1+9*rb**4/self.L0**4)**(-0.5))
 
     def theta(self, zb):
         """
-        Polar angle of the position vector
+        Computes the polar angle of the position vector
 
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Polar angle of the position vector in radians
         """
         return np.arctan(self.rb(zb) / zb)
 
     def rbf_0(self, rr):
         """
-        This is the target function to minimize by rbf_calc() to find the final
-        radius 
+        This is the target function to minimize by rbf_calc() to find the
+        theoretical final radius 
+
+        Parameters
+        ----------
+        rr : float
+            r coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Value to minimize (it will be zero when rr is the final radius of
+            the bowshock)
         """
         return 1 / self.gamma() * (rr/self.L0)**3 + rr/self.L0 - self.v0*self.zj/self.L0/self.vj
 
@@ -273,13 +370,18 @@ class BowshockModel():
         Computes numerically the bowshock final radius
 
         Parameters
-        -----------
+        ----------
         use_minimize : bool
             If True, scipy.optimize.minimize_scalar is used. If False, rbf is
             computed by brute force
         ns : int
             number of iteractions to compute rbf by brute force if
             use_minimize=False
+
+        Returns:
+        --------
+        float
+            Solution for the final radius of the bowshock [km]
         """
         if use_minimize:
             bounds = (0, self.rb(0))
@@ -296,9 +398,14 @@ class BowshockModel():
         Bowshock z coordinate for a given radius of the bowshock
         
         Parameters
-        -----------
+        ----------
         rr : float
-            radius of the bowshock
+            radius of the bowshock [km]
+
+        Returns
+        -------
+        float
+            z coordinate of the bowshock [km]
         """
  
         return self.zj - rr**3 / self.L0**2
@@ -312,10 +419,15 @@ class BowshockModel():
         Computes the surface density of the bowshock
 
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
-       """
+            z coordinate of the bowshock [km]
+
+        Returns
+        -------
+        float
+            surface density at zb [solmass/km^2]
+        """
         cosa = np.cos(self.alpha2(zb))
         tana = np.tan(self.alpha2(zb))
         sd = 0.5 * self.rhoa * cosa * (self.gamma()*tana+1)**2 * self.rb(zb)
@@ -326,11 +438,16 @@ class BowshockModel():
         Differential of r given a differential of z
 
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         dz : float
-            increment in z
+            increment in z [km]
+
+        Returns
+        -------
+        float
+            differential of r [km]
         """
         return 1/3 * (self.L0 / self.rb(zb))**2 * dz
 
@@ -339,11 +456,16 @@ class BowshockModel():
         Differential of r given a differential of z
 
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         dr : float
-            increment in radius
+            increment in radius [km]
+
+        Returns
+        -------
+        float
+            differential of r [km]
         """
         return 3 * (self.rb(zb) / self.L0)**2 * dr
 
@@ -355,11 +477,16 @@ class BowshockModel():
         Parameters
         -----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         dz : float
-            increment in radius
+            increment in radius [km]
         dphi : float
-            increment in azimuthal angle 
+            increment in azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            differential of surface [Msun/km^2]
         """
         # sina = np.sin(self.alpha2(zb))
         sina = (1+9*self.rb(zb)**4/self.L0**4)**(-0.5)
@@ -371,13 +498,18 @@ class BowshockModel():
         Differential of mass given a differential in z and phi (azimuthal angle)
 
         Parameters
-        -----------
+        ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         dz : float
-            increment in radius
+            increment in radius [km]
         dphi : float
-            increment in azimuthal angle 
+            increment in azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            differential of mass [Msun]
         """
         return self.surfdens(zb) * self.dsurf_func(zb, dz, dphi)
 
@@ -386,9 +518,14 @@ class BowshockModel():
         Computes the total mass of the bowshock shell
 
         Parameters
-        -----------
+        ----------
         rbf : float
-            final radius of the bowshock
+            final radius of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Total mass of the shell [Msun]
        """
         uu = rbf / self.L0 * (3/self.gamma())**0.5
         analit_int = uu**5 / 5 + 2*uu**3/3 + uu
@@ -401,11 +538,16 @@ class BowshockModel():
         radius from r0 to rbf
         
         Parameters
-        -----------
+        ----------
         r0 : float
-            initial radius of the bowshock
+            initial radius of the bowshock [km]
         rbf : float
-            final radius of the bowshock
+            final radius of the bowshock [km]
+
+        Returns
+        -------
+        float
+            Total mass of the shell [Msun]
         """
         def integrand(rb):
             tana = np.tan(self.alpha2_rb(rb))
@@ -419,15 +561,21 @@ class BowshockModel():
 
     def rhoa_fromintmass_analytical(self, rb, massint):
         """
-        Computes the ambient density given the integrated mass of the bowshock at rb
+        Computes the ambient density given the integrated mass of the bowshock
+        at rb
         
         Parameters
-        -----------
+        ----------
         rb : float
-            radius of the bowshock
+            radius of the bowshock [km]
         massint : float
-            integrated mass of the bowshock shell up to rb
-       """
+            integrated mass of the bowshock shell up to rb [Msun]
+
+        Returns
+        -------
+        float
+            Density of the ambient [Msun/km^3]
+        """
  
         uu = rb / self.L0 * (3/self.gamma())**0.5
         analit_int = uu**5 / 5 + 2*uu**3/3 + uu
@@ -442,13 +590,18 @@ class BowshockModel():
         integrated mass in a range of radii from R0 to Rb        
         
         Parameters
-        -----------
+        ----------
         R0 : float
-            initial radius of the bowshock
+            initial radius of the bowshock [km]
         Rb : float
-            radius of the bowshock
+            radius of the bowshock [km]
         massint : float
-            integrated mass of the bowshock shell from R0 to Rb
+            integrated mass of the bowshock shell from R0 to Rb [Msun]
+
+        Returns
+        -------
+        float
+            Density of the ambient [Msun/km^3]
         """
         def integrand(rb):
             tana = np.tan(self.alpha2_rb(rb))
@@ -470,19 +623,30 @@ class BowshockModel():
         ----------
         rhoa : float
             Ambient density
+
+        Returns
+        -------
+        float
+            Mass rate at which the jet material is ejected sideways from the
+            internal working surface [Msun/s]
         """
         mp0 = rhoa * np.pi * self.L0**2 * (self.vj-self.va)**2 / 3 / self.v0
         return mp0
 
     def mpamb_f_calc(self, rhoa):
         """
-        Computes the mass rate of ambient material being incorporated into the
+        Computes the mass rate of ambient material incorporated into the
         bowshock shell
         
         Parameters
         ----------
         rhoa : float
             Ambient density
+
+        Returns
+        -------
+        float
+            Mass rate of the ambient incorporated into the bowshock [Msun/s]
         """
         mpamb_f = np.pi * rhoa * (self.vj - self.va) * self.rbf**2
         return mpamb_f
@@ -545,9 +709,14 @@ class ObsModel(BowshockModel):
         Parameters
         ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         phi : float
-            azimuthal angle
+            azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            Line-of-sight velocity [km/s]
         """
         a = self.alpha(zb)
         return self.vtot(zb) * (
@@ -562,9 +731,14 @@ class ObsModel(BowshockModel):
         Parameters
         ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         phi : float
-            azimuthal angle
+            azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            xp coordinate in the plane-of-sky [km]
         """
         return self.rb(zb)*np.cos(phi)*np.cos(self.i) + zb*np.sin(self.i)
 
@@ -576,9 +750,14 @@ class ObsModel(BowshockModel):
         Parameters
         ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         phi : float
-            azimuthal angle
+            azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            yp coordinate in the plane-of-sky [km]
         """
         return self.rb(zb) * np.sin(phi)
 
@@ -590,9 +769,14 @@ class ObsModel(BowshockModel):
         Parameters
         ----------
         zb : float
-            z coordinate of the bowshock
+            z coordinate of the bowshock [km]
         phi : float
-            azimuthal angle
+            azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            zp coordinate, along the line-of-sight direction [km]
         """
         return -self.rb(zb)*np.cos(phi)*np.sin(self.i) + zb*np.cos(self.i)
 
@@ -634,6 +818,8 @@ class BowshockCube(ObsModel):
         Central velocity of the last channel map [km/s]
     xpmax : float
         Physical size of the channel maps along the x axis [arcsec]
+    nzs : int, optional 
+        Number of points used to compute the model solutions
     nc : int, optional
         Number of spectral channel maps
     nxs : int, optional
@@ -661,6 +847,8 @@ class BowshockCube(ObsModel):
         that the user has defined 
     verbose : bolean, optional
         Set True to verbose messages about the computation
+    kwargs : optional
+        Keyword arguments into `~bowshockpy.plot.plot_channel`
 
     Attributes:
     -----------
@@ -1201,17 +1389,16 @@ coincides with the total mass of the cube.
             fig.savefig(savefig, bbox_inches="tight")
 
 
-        # TODO: Check that the model is well sampled (nzs, nphis, given nxs, nys, vc)
-
-
 class CubeProcessing(BowshockCube):
     """
     Process a BowshockCube instance
 
     Parameters
-    -----------
+    ----------
     bscube :  class instance
         Instance of BowshockCube
+    modelname : str, optional
+        Name of the folder in /models where the outputs will be saved
     J : int, optional
         Upper level of the CO rotational transition (e.g. 3 for transition
         "3-2")
@@ -1249,9 +1436,13 @@ class CubeProcessing(BowshockCube):
         to the maximum pixel in the cube. The actual noise will be computed
         after convolving. This parameter would not be used if sigma_beforeconve
         is not None.
-        
-    Attributes:
-    -----------
+    verbose : bolean, optional
+        Set True to verbose messages about the computation
+    kwargs : optional
+        Keyword arguments into `~bowshockpy.plot.plot_channel`
+
+    Attributes
+    ----------
     x_FWHM : float or None
         Full width half maximum of the gaussian beam for the x direction [pixel]
     y_FWHM : float or None

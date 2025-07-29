@@ -45,28 +45,20 @@ def progressbar_bowshock(
     if iteration == total:
         print()
 
-# def create_hdr(**kwargs):
-#     hdr = fits.Header.fromstring(hdr_str_default)
-#     if len(kwargs) != 0:
-#          for kwarg in kwargs:
-#              hdr[kwarg] = kwargs[kwarg]
-#     return hdr
-
 def make_folder(foldername=None):
     if not os.path.exists(foldername):
         os.makedirs(foldername)
 
 def mb_sa_gaussian_f(maja, mina):
     """
-    Computes the solid angle of a gaussian main beam and θmaj and θmin as the
-    half-power beam widths
+    Computes the solid angle of a Gaussian main beam
 
     Parameters:
     -----------
     maja : astropy.units.Quantity
-        Beam major axis in degrees or radians
+        Beam major axis (FWHM) in degrees or radians
     mina : astropy.units.Quantity
-        Beam minor axis  in degrees or radians
+        Beam minor axis (FWHM) in degrees or radians
 
     Returns:
     --------
