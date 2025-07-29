@@ -16,7 +16,7 @@
       :caption: Examples
       :maxdepth: 2
       
-      examples/example_module
+      examples/example_notebook
       examples/examples_inputfile
    
    .. toctree::
@@ -80,7 +80,7 @@ There are two different ways to :doc:`use<user_guide/usage>` the software:
    
      $ bowshockpy -r inputfile.py 
 
-2. Importing ``bowshockpy`` package in your Python code: We include an :doc:`example of a notebook<examples/example_module>` that shows how to use the main classes. Although the notebook contains an explanation of their basic functioning, see the :doc:`API Reference<api/index>` for a detailed documentation.
+2. Importing ``bowshockpy`` package in your Python code: We include an :doc:`example of a notebook<examples/example_notebook>` that shows how to use the main classes. Although the notebook contains an explanation of their basic functioning, see the :doc:`API Reference<api/index>` for a detailed documentation.
 
 A description of the outputs of ``bowshockpy`` can be found in the :doc:`output section<user_guide/outputs>`.
 
@@ -111,7 +111,7 @@ If you use ``bowshockpy`` in your research work, please cite it as
     title     = {{BowshockPy}: A Python package for the generation of synthetic spectral channel maps of a jet-driven
   bowshock model},
     year      = {2025},
-    version   = {0.2.1},
+    version   = {0.2.2},
     url       = {https://github.com/gblazquez/bowshockpy}
   }
 
@@ -137,7 +137,7 @@ Table of contents
    :caption: Examples
    :maxdepth: 2
    
-   examples/example_module
+   examples/example_notebook
    examples/examples_inputfile
 
 .. toctree::

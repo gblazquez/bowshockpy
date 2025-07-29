@@ -2,7 +2,7 @@ Input file parameters
 =====================
 
 ..
-  In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/example_module>`).
+  In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/example_notebook>`).
 
 The quickest and easiest way to :doc:`use <usage>` ``bowshockpy`` is running it from the terminal, specifying with the ``--read`` flag an input file that contains all the parameters needed to perform the modeling of the bowshock(s): 
 

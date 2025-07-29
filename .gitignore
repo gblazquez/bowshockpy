@@ -14,7 +14,7 @@ makedocs.sh
 models/*
 examples/models/*
 examples/*
-!examples/example_module.ipynb
+!examples/example_notebook.ipynb
 !examples/example4.py
 !examples/example3.py
 !examples/example2.py
