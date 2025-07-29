@@ -28,8 +28,8 @@ The API reference guide contains detailed descriptions of the functions and clas
    
    :doc:`bowshockpy.plots <plots>`
 
-bowshockpy.models
------------------
+``bowshockpy.models``
+---------------------
 
 .. automodule:: bowshockpy.models
    :noindex:
@@ -38,8 +38,8 @@ bowshockpy.models
    :member-order: bysource
 
 
-bowshockpy.utils
-----------------
+``bowshockpy.utils``
+--------------------
 
 .. automodule:: bowshockpy.utils
    :noindex:
@@ -47,8 +47,8 @@ bowshockpy.utils
    :show-inheritance:
    :member-order: bysource
 
-bowshockpy.radtrans
--------------------
+``bowshockpy.radtrans``
+-----------------------
 
 .. automodule:: bowshockpy.radtrans
    :noindex:
@@ -56,8 +56,8 @@ bowshockpy.radtrans
    :show-inheritance:
    :member-order: bysource
 
-bowshockpy.moments
-------------------
+``bowshockpy.moments``
+----------------------
 
 .. automodule:: bowshockpy.moments
    :noindex:
@@ -65,8 +65,8 @@ bowshockpy.moments
    :show-inheritance:
    :member-order: bysource
 
-bowshockpy.plots
-----------------
+``bowshockpy.plots``
+--------------------
 
 .. automodule:: bowshockpy.plots
    :noindex:

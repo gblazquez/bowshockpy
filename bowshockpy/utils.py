@@ -2,19 +2,13 @@ import numpy as np
 
 from itertools import groupby
 
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-from matplotlib.colors import TwoSlopeNorm
 from matplotlib import colormaps
 from matplotlib import colors
 
-from astropy.io import fits
 from astropy import units as u
 from astropy.convolution import Gaussian2DKernel, convolve
 
 import os
-
-from datetime import datetime
 
 def print_example(nexample):
     """

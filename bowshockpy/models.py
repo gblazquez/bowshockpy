@@ -9,8 +9,6 @@ from astropy.io import fits
 
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from matplotlib import cm
-from matplotlib import colors
 
 from datetime import datetime
 
