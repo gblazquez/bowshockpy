@@ -49,7 +49,7 @@ x Fix moments when the noise is 0 or very small. I think you can do a np.isclose
 
 x Make an option to add the same noise instead to relative to the maximum
 
-- make some examples with jupyter notebooks
+x make some examples with jupyter notebooks
 
 x Example 3 of input files. 
 
@@ -65,7 +65,7 @@ x Change iws -> j in params figures
 
 x Include image of the channel maps?
 
-- Try to do a map that is not squared. Everything ok?
+- Try to do a map that is not square (nxs!=nys). Everything ok?
 
 - Include IWS model? It has been applied several times
 
@@ -73,9 +73,13 @@ x Include image of the channel maps?
 
 - change mom8 for maxintens
 
+- make the API work in readthedocs
+
+- update the readme with the new documentation
+
 x Change the documentation to book template
 
-- I think BowshockModel should be renamed by BowshockNJ
+x I think BowshockModel should be renamed by BowshockNJ
 
 x change comass name: radtrans
 

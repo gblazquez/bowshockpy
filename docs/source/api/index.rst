@@ -6,36 +6,72 @@ API Reference
 
 The API reference guide contains detailed descriptions of the functions and classes of ``bowshockpy``
 
-models
---------
+..
+   .. toctree::
+      
+   
+      models.rst
+      radtrans.rst
+      moments.rst
+      utils.rst
+      plots.rst
+   
+   
+   
+   :doc:`bowshockpy.models <models>`
+   
+   :doc:`bowshockpy.radtrans <radtrans>`
+   
+   :doc:`bowshockpy.moments <moments>`
+   
+   :doc:`bowshockpy.utils <utils>`
+   
+   :doc:`bowshockpy.plots <plots>`
+
+bowshockpy.models
+-----------------
 
 .. automodule:: bowshockpy.models
    :noindex:
    :members:
    :show-inheritance:
+   :member-order: bysource
 
 
-utils
------
+bowshockpy.utils
+----------------
 
 .. automodule:: bowshockpy.utils
    :noindex:
    :members:
    :show-inheritance:
+   :member-order: bysource
 
-radtrans
---------
+bowshockpy.radtrans
+-------------------
 
 .. automodule:: bowshockpy.radtrans
    :noindex:
    :members:
    :show-inheritance:
+   :member-order: bysource
 
-moments
--------
+bowshockpy.moments
+------------------
 
 .. automodule:: bowshockpy.moments
    :noindex:
    :members:
    :show-inheritance:
+   :member-order: bysource
+
+bowshockpy.plots
+----------------
+
+.. automodule:: bowshockpy.plots
+   :noindex:
+   :members:
+   :show-inheritance:
+   :member-order: bysource
+
 
