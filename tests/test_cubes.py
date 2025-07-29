@@ -3,6 +3,7 @@ import numpy as np
 
 from astropy import units as u
 
+from bowshockpy import models as mo
 from bowshockpy import models as bs
 from bowshockpy import radtrans as rt
 
@@ -16,7 +17,7 @@ va = 0
 v0 = 22.9                                    
 mass = 0.000231                               
 rbf_obs = (0.75 * distpc * u.au).to(u.km).value
-bsm = bs.BowshockModel(
+bsm = mo.BowshockModel(
     L0=L0, zj=zj, vj=vj, va=va,
     v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
     )

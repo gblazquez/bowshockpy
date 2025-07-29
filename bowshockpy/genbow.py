@@ -5,7 +5,8 @@ import os
 import warnings
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
-from bowshockpy import models as bs
+from bowshockpy import models as mo
+from bowshockpy import cube as bs
 from bowshockpy import utils as ut
 from bowshockpy.version import __version__
 
@@ -85,7 +86,7 @@ Parameters read from {p.filename}
 
     bscs = []
     for i, (ps,psobs) in enumerate(zip(pss,psobss)):
-        bsm = bs.BowshockModel(
+        bsm = mo.BowshockModel(
             L0=ps["L0"],
             zj=ps["zj"],
             vj=ps["vj"],
