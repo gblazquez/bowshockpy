@@ -1,19 +1,31 @@
 
-html-theme.sidebar_secondary.remove: true
 
 =======================
 Examples of input file
 =======================
 
-Here, some examples of input files are presented. See :doc:`usage<../user_guide/usage>` section for an explanation of how to use this input file, and :doc:`input parameters<../user_guide/inputparams>` secton for a description of the parameters.
+The quickest way to use ``bowshockpy`` is to run it from the terminal and specify an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
 
-You can copy and paste these examples to your local machine, download them from the `examples <https://github.com/gblazquez/bowshockpy/tree/main/examples>`_ folder available in the GitHub repository, or print them directy to your working directory
+- `Example 1: A redshifted bowshock <Example 1: A redshifted bowshock>`_
+- `Example 2: A blueshifted bowshock <Example 2: A blueshifted bowshock>`_
+- `Example 3: A side-on bowshock <Example 3: A side-on bowshock>`_
+- `Example 4: Several bowshocks in one cube <Example 4: Several bowshocks in one cube>`_
+
+You can either copy and paste these examples to your local machine, download them from the `examples <https://github.com/gblazquez/bowshockpy/tree/main/examples>`_ folder available in the `GitHub repository <https://github.com/gblazquez/bowshockpy>`_, or print them directy to your working directory
 
 .. code-block:: console
 
-  (.venv) $ bowshockpy --print-example 1
+  $ bowshockpy --print-example 1
 
-This will print example 1 to your working directory. Then, you can modify the example file according to your needs. 
+This will copy example 1 (example1.py) to your working directory. Then, you can modify the example file according to your needs and run ``bowshockpy``
+
+
+.. code-block:: console
+
+  $ bowshockpy --read example1.py
+
+
+See :doc:`usage<../user_guide/usage>` section for more detailed explanation of how to run bowshockpy, and :doc:`input parameters<../user_guide/inputparams>` section for a description of the parameters.
 
 
 Example 1: A redshifted bowshock
@@ -22,10 +34,6 @@ Example 1: A redshifted bowshock
 This example of input file generates one redshifted bowshock. As specified by the parameter outcube, the output will be a cube of the intensities, with gaussian noise, and convolved (its filename is 'I_nc.fits'). The moment images and the PV diagram along the jet axis will also be computed. The opacity, masses, and CO column densities will also be saved.
 
 .. code-block:: python
-  
-  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
-  
-  """
   
   """
   MODEL OUTPUTS
@@ -186,10 +194,6 @@ Example 2: A blueshifted bowshock
 This example of input file generates one blueshifted bowshock. As defined by outcube parameter, the intensities will be computed with and without taking into account the optically thin approximation, gaussian noise will be added and the cubes will be convolved. Moments images and the PV diagram along the jet axis will be computed.
 
 .. code-block:: python
-  
-  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
-  
-  """
   
   """
   MODEL OUTPUTS
@@ -352,10 +356,6 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
 
 .. code-block:: python
   
-  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
-  
-  """
-  
   """
   MODEL OUTPUTS
   """
@@ -515,10 +515,6 @@ Example 4: Several bowshocks in one cube
 This example of input file generates two redshifted bowshocks in the same cube. Gaussian noise will be added to the intensity cube and then it will be convolved.  Also, the moments and the position velocity diagram will be computed. The cubes of the opcities and masses are going to be saved also.
 
 .. code-block:: python
-  
-  https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
-  
-  """
   
   """
   MODEL OUTPUTS

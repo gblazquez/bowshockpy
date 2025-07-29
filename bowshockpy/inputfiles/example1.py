@@ -1,9 +1,9 @@
 """
 Use this input file to define all the the parameters needed to run bowshockpy:
 
-(env.)$ bowshockpy --read <inputfile.py>
+$ bowshockpy --read <inputfile.py>
 
-For more information about the meaning of some of these parameters, see the
+For more information about the meaning of these parameters, see the
 documentation:
 
 https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
