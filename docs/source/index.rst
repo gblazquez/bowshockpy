@@ -1,29 +1,30 @@
-.. toctree::
-   :hidden:
-   :caption: User Guide
-   :maxdepth: 2
-
-   user_guide/installation
-   user_guide/dependencies
-   user_guide/usage
-   user_guide/inputparams
-   user_guide/outputs
-   user_guide/background
-
-.. toctree::
-   :hidden:
-   :caption: Examples
-   :maxdepth: 2
+..
+   .. toctree::
+      :hidden:
+      :caption: User Guide
+      :maxdepth: 2
    
-   examples/example_module
-   examples/examples_inputfile
+      user_guide/installation
+      user_guide/dependencies
+      user_guide/usage
+      user_guide/inputparams
+      user_guide/outputs
+      user_guide/background
+   
+   .. toctree::
+      :hidden:
+      :caption: Examples
+      :maxdepth: 2
+      
+      examples/example_module
+      examples/examples_inputfile
+   
+   .. toctree::
+      :hidden:
+      :caption: Code documentation
+      :maxdepth: 2
 
-.. toctree::
-   :hidden:
-   :caption: Code documentation
-   :maxdepth: 2
-
-   api/index
+    api/index
  
 ..
    .. toctree::
@@ -85,6 +86,7 @@ A description of the outputs of ``bowshockpy`` can be found in the :doc:`output 
 
 If you are interested in the physics behind ``bowshockpy`` an its workflow, see the :doc:`background section<user_guide/background>`.
 
+
 Contributing
 ------------
 
@@ -115,6 +117,35 @@ If you use ``bowshockpy`` in your research work, please cite it as
 
 Also, please cite its :doc:`dependencies<user_guide/dependencies>`.
 
+
+
+Table of contents
+-----------------
+
+.. toctree::
+   :caption: User Guide
+   :maxdepth: 2
+
+   user_guide/installation
+   user_guide/dependencies
+   user_guide/usage
+   user_guide/inputparams
+   user_guide/outputs
+   user_guide/background
+
+.. toctree::
+   :caption: Examples
+   :maxdepth: 2
+   
+   examples/example_module
+   examples/examples_inputfile
+
+.. toctree::
+   :caption: Code documentation
+   :maxdepth: 2
+
+   api/index
+ 
 
 
 
