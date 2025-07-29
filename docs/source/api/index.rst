@@ -37,6 +37,14 @@ The API reference guide contains detailed descriptions of the functions and clas
    :show-inheritance:
    :member-order: bysource
 
+``bowshockpy.cube``
+---------------------
+
+.. automodule:: bowshockpy.cube
+   :noindex:
+   :members:
+   :show-inheritance:
+   :member-order: bysource
 
 ``bowshockpy.utils``
 --------------------

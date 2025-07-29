@@ -27,9 +27,6 @@ aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
 aas-journal: Astrophysical Journal <- The name of the AAS journal.
 ---
 
-<!--
-Authors: Guillem Anglada, Mayra Osorio, Sylvie Cabrit (?), Benoit Tabone (?), Ruben Fedriani (?), Alejandro López-Vazquez (?), Itziar de Gregorio, Jose Francisco Gomez, Gary Fuller, Noah Otten, Josep Maria, Rodrigo, Florin (?), Pablo (?), Oier (?)
--->
 
 # Summary
 <!--
