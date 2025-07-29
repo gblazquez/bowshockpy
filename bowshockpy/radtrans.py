@@ -12,7 +12,7 @@ freq_caract_CO = {
 
 def exp_hnkt(nu, T):
     """
-    computes exp(h nu / k_B/T)
+    Computes exp(h nu / k_B/T)
 
     Parameters
     ----------
@@ -24,7 +24,8 @@ def exp_hnkt(nu, T):
 
     Returns
     -------
-    exp_hnukt : float
+    float
+        exp(h nu / k_B/T)
     """
     return np.exp(const.h*nu/(const.k_B*T))
 
@@ -64,7 +65,7 @@ def B0(nu, J):
 
     Returns
     -------
-    B0 : float
+    float
         Rigid rotor rotation constant.
     """
     return nu / (2 * J)
@@ -72,7 +73,7 @@ def B0(nu, J):
 
 def gJ(J):
     """
-    Degeneracy of the level J at which the measuremente was made. For a linear molecule as CO, g = 2J + 1
+    Degeneracy of the level J at which the measurement was made. For a linear molecule as CO, g = 2J + 1
 
     Parameters
     ----------
@@ -81,7 +82,8 @@ def gJ(J):
 
     Returns
     -------
-    gJ : int
+    int
+        Degeneracy of the level J
     """
     return 2 * J + 1
 
@@ -119,8 +121,8 @@ def Qpart(nu, J, Tex, tol=10**(-15)):
 
 def A_j_jm1(nu, J, mu):
     """
-     Calculates the spontaneous emission coeffitient for the J -> J-1 transition
-     of a molecule with a dipole moment mu.
+    Calculates the spontaneous emission coeffitient for the J -> J-1 transition
+    of a molecule with a dipole moment mu.
 
     Parameters
     ----------
@@ -133,7 +135,7 @@ def A_j_jm1(nu, J, mu):
 
     Returns
     -------
-    Ajmj1 : astropy.units.quantity
+    astropy.units.quantity
         Spontaneous emission coefficient in s**(-1)
     """
     aj_jm1 = 64 * np.pi**4 * nu.to(u.Hz).value**3 * J * (mu.to(u.D).value*10**(-18))**2 \
@@ -143,7 +145,7 @@ def A_j_jm1(nu, J, mu):
 
 def Ej(nu, J):
     """
-    Energy states of a rotator
+    Energy state of a rotator
 
     Parameters
     ----------
@@ -154,7 +156,8 @@ def Ej(nu, J):
  
     Returns
     -------
-    Ej : astropy.units.quantity
+    astropy.units.quantity
+        Energy state of a rotator
     """
     return const.h * nu * (J+1) / 2
 
@@ -175,7 +178,8 @@ def column_density_tot(m, meanmolmass, area):
 
     Returns
     -------
-    column_density : astropy.units.quantity
+    astropy.units.quantity
+        Total column density
     """
     return m / (meanmolmass * const.m_p * area) 
 
@@ -198,7 +202,7 @@ def column_density_CO(m, meanmolmass, area, XCO):
 
     Returns
     -------
-    column_density : astropy.units.quantity
+    astropy.units.quantity
         CO column density
     """
     return column_density_tot(m, meanmolmass, area) * XCO
@@ -223,7 +227,7 @@ def tau_N(nu, J, mu, Tex, dNdv):
 
     Returns
     -------
-    tau_N : float
+    float
         Opacity
     """
     expo = (J+1) * const.h * nu / 2 / const.k_B / Tex
@@ -249,7 +253,7 @@ def Inu_tau(nu, Tex, Tbg, tau):
 
     Returns
     -------
-    Inu : Background temperature
+    astropy.units.quantity
         Intensity (energy per unit of area, time, frequency and solid angle)
     """
     return (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)) * (1 - np.exp(-tau))
@@ -273,7 +277,7 @@ def Inu_tau_thin(nu, Tex, Tbg, tau):
 
     Returns
     -------
-    Inu : Background temperature
+    astropy.units.quantity
         Intensity (energy per unit of area, time, frequency and solid angle)
     """
     return (Bnu_f(nu,Tex)-Bnu_f(nu,Tbg)) * tau
@@ -302,7 +306,7 @@ def Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv):
         
     Returns
     -------
-    Ntot_opthin : astropy.units.quantity
+    astropy.units.quantity
         Column density (particles per unit or area)
     """
     Ntot_opthin =  8 * np.pi * nu**3 * Qpart(nu,J,Tex) * Inudv \
@@ -339,7 +343,7 @@ def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, XCO):
 
     Returns
     -------
-    totmass : astropy.units.quantity
+    astropy.units.quantity
         Total mass (H2 + heavier elements) in astropy.units.Msun
     """
     Ntot = Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv)
