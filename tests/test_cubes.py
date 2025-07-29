@@ -4,7 +4,7 @@ import numpy as np
 from astropy import units as u
 
 from bowshockpy import models as mo
-from bowshockpy import models as bs
+from bowshockpy import cube as bs
 from bowshockpy import radtrans as rt
 
 import copy

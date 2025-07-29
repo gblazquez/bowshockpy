@@ -1,7 +1,5 @@
 import numpy as np
 
-from scipy.optimize import minimize_scalar
-from scipy.integrate import quad
 from scipy.ndimage import rotate
 
 import astropy.units as u
