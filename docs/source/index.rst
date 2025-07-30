@@ -55,7 +55,7 @@
 BowshockPy
 ==========
 
-``bowshockpy`` is an open-source Python package for generating synthetic spectral cubes, PV diagrams, and moment images of an analytical momentum-conserving bowshock model driven by an protostellar jet. The software computes the intensities of low-J rotational transitions of the CO molecule, providing mock observations of the CO emission that radio telescopes as ALMA are able to detect at millimeter wavelengths.
+``bowshockpy`` is an open-source Python package for generating synthetic spectral cubes, position-velocity diagrams, and moment images of an analytical momentum-conserving bowshock model driven by a protostellar jet. The software computes the intensities of low-J rotational transitions of the CO molecule, providing mock observations of the CO emission that radio telescopes as ALMA are able to detect at millimeter wavelengths.
 
 ..
    .. note::
@@ -116,7 +116,6 @@ If you use ``bowshockpy`` in your research work, please cite it as
   }
 
 Also, please cite its :doc:`dependencies<user_guide/dependencies>`.
-
 
 
 Table of contents
