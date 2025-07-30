@@ -4,7 +4,7 @@ sphinx-design
 sphinx-book-theme
 nbsphinx
 ipykernel
-bowshockpy==0.2.2b
+bowshockpy==0.2.3
 numpy
 scipy
 astropy
