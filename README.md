@@ -65,7 +65,7 @@ This project is licensed under the MIT License. For details see the [LICENSE](LI
   title     = {{BowshockPy}: A Python package for the generation of synthetic spectral channel maps of a jet-driven
 bowshock model},
   year      = {2025},
-  version   = {0.2.2},
+  version   = {0.2.2b},
   url       = {https://github.com/gblazquez/bowshockpy}
 }
 ```
