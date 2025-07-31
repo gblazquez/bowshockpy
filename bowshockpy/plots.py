@@ -1720,7 +1720,7 @@ def plotmom1(
 def plotmom2(mom2, ax=None, cbax=None, extent=None,
         vmin=None, vmax=None, vcenter=None, extend_cbar="max",
         return_velcmap=False, bg="black", cmap_ref='jet_r',
-        cbarlabel="Moment 2 [km$^2$/s$^2$]", interpolation=None,
+        cbarlabel="Moment 2 [km/s]", interpolation=None,
         add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True):
     """
     Plots the moment 2 

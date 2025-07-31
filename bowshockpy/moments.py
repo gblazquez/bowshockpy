@@ -48,14 +48,34 @@ def mom0(cube, chan_vels, chan_range):
     return mom0_im
 
 def sumIixvi(cube, chan_vels, chan_range, exp=1):
+    """
+    Computes the summation \sum (I_i * v_i)**exp
+
+    Parameters
+    ----------
+    cube : numpy.array
+        Input 3 dimensional array
+    chan_vels : list or numpy.array
+        1-dimensional array of the velocity corresponding to the channels.
+    chan_range : list
+        Two element list with the last and first channels used to compute the moment.
+    exp : int, optional
+        Exponent, by default 1
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
     Iixvi = np.array([cube[i, :, :]*chan_vels[i]**exp
                       for i in np.arange(chan_range[0], chan_range[1])])
     return np.sum(Iixvi, axis=0)
 
 def mom1(cube, chan_vels, chan_range):
     """
-    Computes the moment of order 1 of a cube along the 0 axis.
-
+    Computes the moment of order 1 (intensity weighted mean velocity field) of a
+    cube along the 0 axis.
+    
     Parameters
     ----------
     cube : numpy.ndarray
@@ -63,7 +83,7 @@ def mom1(cube, chan_vels, chan_range):
     chan_vels: list or numpy.ndarray
         1-dimensional array of the velocity corresponding to the channels.
     chan_range : list
-        Two element list with the last and first channels used to compute
+        Two element list with the last and first channels used to compute the
         moment.
         
     Return:
@@ -74,6 +94,9 @@ def mom1(cube, chan_vels, chan_range):
     References:
     -----------
     https://www.aoc.nrao.edu/~kgolap/casa_trunk_docs/CasaRef/image.moments.html
+
+    But note that the equation for the moment 1 is wrong in this reference (units should be km/s, and not an adimensional value). The moment1 is  the intensity
+    intensity weighted mean velocity = \Sigma I_i v_i/\Sigma I_i
     """
     mom1_im = sumIixvi(cube, chan_vels, chan_range) / sumint(cube, chan_range)
     # or
@@ -83,8 +106,9 @@ def mom1(cube, chan_vels, chan_range):
 
 def mom2(cube, chan_vels, chan_range):
     """
-    Computes the moment of order 2 of a cube along the 0 axis
-
+    Computes the moment 2 (the intensity weighted dispersion) of a cube along
+    the 0 axis
+    
     Parameters
     ----------
     cube : numpy.ndarray
@@ -103,16 +127,13 @@ def mom2(cube, chan_vels, chan_range):
     References:
     -----------
     https://www.aoc.nrao.edu/~kgolap/casa_trunk_docs/CasaRef/image.moments.html
+
+    But note that the equation for the moment 2 is wrong in this reference (units should be km/s, no sqrt(km/s)). The moment2 is 
+    intensity weighted dispersion = [\Sigma I_i v^2_i/\Sigma I_i]**(1/2)
+
     """
     disp = np.sqrt(sumIixvi(cube, chan_vels, chan_range, exp=2)
                    /sumint(cube, chan_range) - mom1(cube, chan_vels, chan_range)**2)
-    # or
-    # vimmom12 = np.array([(chan_vels[i] - mom1(cube,chan_vels,chan_range))**2
-    #                      for i in np.arange(chan_range[0], chan_range[1])])
-    # Iixdisp2 = np.array([cube[i, :, :]*(chan_vels[i] - mom1(cube,chan_vels,chan_range))**2
-    #               for i in np.arange(chan_range[0], chan_range[1])])
-    # sum_Iixdisp2 = np.sum(Iixdisp2, axis=0)
-    # disp np.sqrt(sum_Iixdisp2 / mom0(cube,chan_vels,chan_range))
     return disp
 
 def mom8(cube, chan_range):

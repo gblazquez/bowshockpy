@@ -1826,7 +1826,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f'{self.modelname}'
-            hdr["BUNIT"] = self.bunits[self._q(ck)]
+            hdr["BUNIT"] = "Jy/beam.km/s"
             hdr["RADESYS"] = 'ICRS'
             hdr["LONPOLE"] = 1.800000000000E+02
             hdr["LATPOLE"] = 3.126777777778E+01
@@ -1945,7 +1945,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f'{self.modelname}'
-            hdr["BUNIT"] = self.bunits[self._q(ck)]
+            hdr["BUNIT"] = "km/s"
             hdr["RADESYS"] = 'ICRS'
             hdr["LONPOLE"] = 1.800000000000E+02
             hdr["LATPOLE"] = 3.126777777778E+01
@@ -2064,7 +2064,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f'{self.modelname}'
-            hdr["BUNIT"] = self.bunits[self._q(ck)]
+            hdr["BUNIT"] = "km/s"
             hdr["RADESYS"] = 'ICRS'
             hdr["LONPOLE"] = 1.800000000000E+02
             hdr["LATPOLE"] = 3.126777777778E+01
@@ -2441,7 +2441,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             bmin=self.bmin,
             bmaj=self.bmaj,
             pabeam=self.pabeam,
-            cbarlabel="Velocity dispersion [km$^2$/s$^2$]",
+            cbarlabel="Velocity dispersion [km/s]",
             **kwargs,
             )
         if return_im:
@@ -2522,7 +2522,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             smaller than the one given by clipping parameter will be masked with
             0 values.
         mom8clipping : float
-            Clipping to in order to compute the maximum value of the pixels along the velocity axis. Pixels with values smaller than the one given by clipping parameter will be masked with 0 values.
+            Clipping to in order to compute the maximum value of the pixels
+            along the velocity axis. Pixels with values smaller than the one
+            given by clipping parameter will be masked with 0 values.
         mom0values : dict or None
             Dictionary with the maximum, central, and minimum value to show in
             the plot of the moment 0. If the dictionary value is None for vmax,
