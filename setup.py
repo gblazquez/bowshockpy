@@ -18,6 +18,7 @@ setup(
         "matplotlib",
         "scipy",
         "astropy",
+        "photutils",
     ],
     entry_points={
         "console_scripts": [

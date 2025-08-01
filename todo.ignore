@@ -39,7 +39,7 @@ x do a proper header. Erease warning from casaviewer and ds9. Try carta
  one for the pv). Also, offsets and pv diagrams are not displayed in CARTA
  either ds9, only in casaviewer.
 
-- you are not doing well the moment 2, since the units should be km/s instead of km^2/s^2
+x you are not doing well the moment 2, since the units should be km/s instead of km^2/s^2
  
 x allow install from pipy
 
