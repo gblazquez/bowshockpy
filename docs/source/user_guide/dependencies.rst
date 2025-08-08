@@ -1,7 +1,7 @@
 Dependencies
 ============
 
-``bowshockpy`` has been tested with ``python == 3.10``, but it could work with previous and newer versions. The dependencies are
+``bowshockpy`` has been tested in Python versions 3.9-3.12, but it could work with other versions also. The dependencies are
 
 - ``numpy``
 - ``matplotlib``
