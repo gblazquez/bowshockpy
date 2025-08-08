@@ -14,17 +14,14 @@ https://bowshockpy.readthedocs.io/en/latest/user_guide/inputparams.html
 MODEL OUTPUTS
 """
 # Folder name where the outputs of the modellling are going to be stored. If
-# it does not exist, it will be created automatically. 
+# it does not exist, it will be created automatically.
 modelname = f"example1"
-
-# Set to True to plot a 2D bowshock model.
-bs2Dplot = True
 
 # Dictionary indicating the desired output spectral cubes and the operations
 # performed over them. The keys of the dictionary are strings indicating the
 # quantities of the desired cubes. These are the available quantities of the
 # spectral cubes:
-# 
+#
 #  - "mass": Total mass of molecular hydrogen in solar mass
 #  - "Ntot_column_density": Total (H2 + heavier components) column density in
 #  cm-2.
@@ -36,22 +33,22 @@ bs2Dplot = True
 #
 # The values of the dictionary are lists of strings indicating the operations to
 # be performed over the cube. These are the available operations:
-# 
+#
 #  - "add_source": Add a source at the reference pixel, just for spatial
 #  reference purposes.
 #  - "rotate": Rotate the whole spectral cube by an angle
 #  given by parot parameter.
-#  - "add_noise": Add gaussian noise, defined by maxcube2noise parameter.
-#  - "convolve": Convolve with a gaussian defined by the parameters bmaj, bmin,
+#  - "add_noise": Add Gaussian noise, defined by maxcube2noise parameter.
+#  - "convolve": Convolve with a Gaussian defined by the parameters bmaj, bmin,
 #  and pabeam.
 #  - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity
 #  and the PV diagram.
-#  
+#
 # The operations will be performed folowing the order of the strings in the list
 # (from left to right). The list can be left empty if no operations are desired.
-# 
+#
 # For example, the following dictionary for the outcubes parameter,
-# 
+#
 # outcubes = {
 #     "intensity": ["add_noise", "convolve", "moments_and_pv"],
 #     "opacity": [],
@@ -59,10 +56,10 @@ bs2Dplot = True
 #     "mass": [],
 # }
 # will save 4 spectral cubes in fits format. The first one are the intensities
-# with gaussian noise added, it will be convolved, and the moments and PV
+# with Gaussian noise added, it will be convolved, and the moments and PV
 # diagrams will be computed; the second cube will be the opacity; the third will
 # be the CO_column_density, which will be convolved; and the forth cube will be
-# the masses. 
+# the masses.
 outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
     "opacity": [],
@@ -83,7 +80,7 @@ distpc = 400
 # Systemic velocity of the source [km/s]
 vsys = + 5
 
-# Source coordinates [deg, deg] 
+# Source coordinates [deg, deg]
 ra_source_deg, dec_source_deg = 84.095, -6.7675
 
 
@@ -252,7 +249,7 @@ mom2clipping = "4xsigma"
 # the moment 0. If the dictionary value is None for vmax, vcenter, or vmin, then
 # the maximum, central, or the minimum value of the moment image will be
 # considered, respectively. Example: mom0values = {"vmax": None, "vcenter":
-# None, "vmin": 0,}. 
+# None, "vmin": 0,}.
 mom0values = {
     "vmax": None,
     "vcenter": None,
@@ -263,7 +260,7 @@ mom0values = {
 # the moment 1. If the dictionary value is None for vmax, vcenter, or vmin, then
 # the maximum, central, or the minimum value of the moment image will be
 # considered, respectively. Example: mom1values = {"vmax": 60, "vcenter": 20,
-# "vmin": 0,}. 
+# "vmin": 0,}.
 mom1values = {
     "vmax": None,
     "vcenter": None,
@@ -274,7 +271,7 @@ mom1values = {
 # the moment 2. If the dictionary value is None for vmax, vcenter, or vmin, then
 # the maximum, central, or the minimum value of the moment image will be
 # considered, respectively. Example: mom2values = {"vmax": None, "vcenter":
-# None, "vmin": None,}. 
+# None, "vmin": None,}.
 mom2values = {
     "vmax": None,
     "vcenter": None,
@@ -285,7 +282,7 @@ mom2values = {
 # of the maximum value along the velocity axis. If the dictionary value is
 # None for vmax, vcenter, or vmin, then the maximum, central, or the minimum
 # value of the moment image will be considered, respectively. Example:
-# mom8values = {"vmax": None, "vcenter": None, "vmin": None,}. 
+# mom8values = {"vmax": None, "vcenter": None, "vmin": None,}.
 mom8values = {
     "vmax": None,
     "vcenter": None,

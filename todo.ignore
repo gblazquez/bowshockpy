@@ -75,6 +75,8 @@ x Include image of the channel maps?
 
 - change mom8 for maxintens
 
+- include plot parameters for the channel maps
+
 x make the API work in readthedocs
 
 x update the readme with the new documentation

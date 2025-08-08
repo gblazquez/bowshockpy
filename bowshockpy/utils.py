@@ -10,7 +10,7 @@ from astropy.convolution import Gaussian2DKernel, convolve
 
 import os
 
-def print_example(nexample):
+def print_example(example):
     """
     Prints one of the available examples of input file to run bowshockpy.
 
@@ -24,8 +24,8 @@ def print_example(nexample):
             - Example 4: Several bowshocks in one cube
     """
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    with open(f"example{nexample}.py", "w") as wr:
-        with open(ROOT_DIR+f"/inputfiles/example{nexample}.py", "r") as re:
+    with open(f"{example}", "w") as wr:
+        with open(ROOT_DIR+f"/inputfiles/{example}", "r") as re:
             for line in re:
                 wr.write(line)
 

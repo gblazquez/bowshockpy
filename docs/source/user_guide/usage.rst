@@ -10,11 +10,11 @@ There are two ways to use ``bowshockpy``:
 From the command-line using an input file
 ------------------------------------------
 
-The easiest way to use ``bowshockpy`` is using an input file that contains all the parameters of the model to be generated. This documentation provide four :doc:`examples of input files<../examples/examples_inputfile>`. Also, you can generate these examples of input file running ``bowshockpy`` with ``--print-example`` flag and specifying the number of the example you are interested in. For example,
+The easiest way to use ``bowshockpy`` is using an input file that contains all the parameters of the model to be generated. This documentation provide four :doc:`examples of input files<../examples/examples_inputfile>`. Also, you can generate these examples of input file running ``bowshockpy`` with ``--print`` flag and specifying the example you are interested in. For example,
 
 .. code-block:: console
 
-  $ bowshockpy --print-example 1
+  $ bowshockpy --print example1.py
 
 will print example 1 to your working directory. Then, you can modify the parameters according to your scientific needs. See :doc:`parameters<inputparams>` for a description of the parameters.
 

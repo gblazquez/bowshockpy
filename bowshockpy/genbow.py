@@ -102,22 +102,21 @@ Parameters read from {p.filename}
             pa_deg=psobs["pa_deg"],
             vsys=psobs["vsys"],
             )
-        if p.bs2Dplot:
-            plt_model = bsm.get_modelplot(
-                modelname=ps["modelname"],
+        if i == 0:
+            ut.make_folder(f"models/{ps['modelname']}")
+        plt_model = bsm.get_modelplot(
+            modelname=ps["modelname"],
+        )
+        plt_model.plot()
+        plt_model.savefig(
+            f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
             )
-            plt_model.plot()
-            if i == 0:
-                ut.make_folder(f"models/{ps['modelname']}")
-            plt_model.savefig(
-                f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
-                )
-            plt_obsmodel = bsmobs.get_modelplot(modelname=ps["modelname"])
-            plt_obsmodel.plot()
-            plt_obsmodel.savefig(
-                f"models/{ps['modelname']}/bowshock_projected_{i+1}.jpg",
-                dpi=300,
-            )
+        plt_obsmodel = bsmobs.get_modelplot(modelname=ps["modelname"])
+        plt_obsmodel.plot()
+        plt_obsmodel.savefig(
+            f"models/{ps['modelname']}/bowshock_projected_{i+1}.jpg",
+            dpi=300,
+        )
         if make_output_cubes:
             print(f"""
 
@@ -149,7 +148,7 @@ Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
 
     print(
 f"""
-The masses has been computed!
+The masses have been computed!
 
 The cubes are going to be processed in order to get the desired outputs
 specified in {p.filename}. The outputs will be saved in fits format. The
@@ -157,11 +156,11 @@ filename of each cube indicate its quantity and the operations applied to the
 cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
 name of the fits files:
 
-Abbreviations for quantities are:        Abbreviations for the operations are:
-    m: mass [SolarMass]                      s: add_source
-    I: Intensity [Jy/beam]                   r: rotate
-    Ithin: Intensity [Jy/beam]               n: add_noise
-    Ntot: Total column density [cm-2]        c: convolve
+Abbreviations for quantities are:             Abbreviations for the operations are:
+    m: mass [SolarMass]                           s: add_source
+    I: Intensity [Jy/beam]                        r: rotate
+    Ithin: Intensity opt. thin aprox [Jy/beam]    n: add_noise
+    Ntot: Total column density [cm-2]             c: convolve
     NCO: CO column density [cm-2]
     tau: Opacity
 """
@@ -236,7 +235,7 @@ https://bowshockpy.readthedocs.io/en/latest/
         default="None"
         )
     parser.add_argument(
-        "-p", "--print-example",
+        "-p", "--print",
         dest="inputfile_example",
         type=str,
         help="""
@@ -251,13 +250,18 @@ https://bowshockpy.readthedocs.io/en/latest/
 
     args = parser.parse_args()
     filename = args.parameters_file
-    nexample = args.inputfile_example
+    _example = args.inputfile_example
+    example = _example if _example.endswith(".py") else f"{_example}.py"
     if filename != "None":
         parameters = runpy.run_path(filename)
         p = ut.VarsInParamFile(parameters)
         generate_bowshock(p)
-    if nexample != "None":
-        ut.print_example(nexample)
+    if example != "None":
+        try:
+            ut.print_example(example)
+            print(f"{example} has been created")
+        except:
+            print(f"{example} file is not available and could not be created")
 
 if __name__ == "__main__":
     main()

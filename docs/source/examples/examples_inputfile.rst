@@ -31,7 +31,7 @@ See :doc:`usage<../user_guide/usage>` section for more detailed explanation of h
 Example 1: A redshifted bowshock
 ---------------------------------------------
 
-This example of input file generates one redshifted bowshock. As specified by the parameter outcube, the output will be a cube of the intensities, with gaussian noise, and convolved (its filename is 'I_nc.fits'). The moment images and the PV diagram along the jet axis will also be computed. The opacity, masses, and CO column densities will also be saved.
+This example of input file generates one redshifted bowshock. As specified by the parameter outcube, the output will be a cube of the intensities, with Gaussian noise, and convolved (its filename is 'I_nc.fits'). The moment images and the PV diagram along the jet axis will also be computed. The opacity, masses, and CO column densities will also be saved.
 
 .. code-block:: python
   
@@ -39,8 +39,6 @@ This example of input file generates one redshifted bowshock. As specified by th
   MODEL OUTPUTS
   """
   modelname = f"example1"
-  
-  bs2Dplot = True
   
   outcubes = {
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
@@ -191,7 +189,7 @@ This example of input file generates one redshifted bowshock. As specified by th
 Example 2: A blueshifted bowshock
 ---------------------------------------------
 
-This example of input file generates one blueshifted bowshock. As defined by outcube parameter, the intensities will be computed with and without taking into account the optically thin approximation, gaussian noise will be added and the cubes will be convolved. Moments images and the PV diagram along the jet axis will be computed.
+This example of input file generates one blueshifted bowshock. As defined by outcube parameter, the intensities will be computed with and without taking into account the optically thin approximation, Gaussian noise will be added and the cubes will be convolved. Moments images and the PV diagram along the jet axis will be computed.
 
 .. code-block:: python
   
@@ -199,8 +197,6 @@ This example of input file generates one blueshifted bowshock. As defined by out
   MODEL OUTPUTS
   """
   modelname = f"example2"
-  
-  bs2Dplot = True
   
   outcubes = {
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
@@ -352,7 +348,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
 Example 3: A side-on bowshock
 ---------------------------------------------
 
-This example of input file generates a bowhsock that is side-on; that is, in nearly contain in the plane-of-sky and, consequently, has blue- and red-shifted parts. As specified in outcube parameter, the intensities will be convolved and gaussian noise will be added. Also, the moments and the position velocity diagram will be computed. The cubes of the opcities, CO_column densities and masses are going also to be saved.
+This example of input file generates a bowhsock that is side-on; that is, in nearly contain in the plane-of-sky and, consequently, has blue- and red-shifted parts. As specified in outcube parameter, the intensities will be convolved and Gaussian noise will be added. Also, the moments and the position velocity diagram will be computed. The cubes of the opcities, CO_column densities and masses are going also to be saved.
 
 .. code-block:: python
   
@@ -360,8 +356,6 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   MODEL OUTPUTS
   """
   modelname = f"example3"
-  
-  bs2Dplot = True
   
   outcubes = {
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
@@ -520,8 +514,6 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   MODEL OUTPUTS
   """
   modelname = f"example4"
-  
-  bs2Dplot = True
   
   outcubes = {
       "intensity": ["add_noise", "convolve", "moments_and_pv"],

@@ -687,14 +687,12 @@ class BowshockObsModelPlot():
             width_ratios=[1],
             hspace=0.05,
         )
-        
         gsss[3] = gss[1][0, 1].subgridspec(
             2, 1,
             height_ratios=[0.05, 1],
             width_ratios=[1],
             hspace=0.05,
         )
-        
         gsss[4] = gss[1][0, 2].subgridspec(
             2, 1,
             height_ratios=[0.05, 1],
@@ -1063,13 +1061,18 @@ def plot_channel(cube, chan, arcsecpix, velchans,
     pabeam : float
         Beam position angle [degrees]
     return_fig_axs : bool, optional
-        If True, returns a tuple of the ax of the channel map and the colorbar.
-        If False, does not return anything.
+        If True, returns the figure, axes of the channel map, and the axes the
+        colorbar.  If False, does not return anything.
         
     Returns:
     --------
-    (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map and the
-        colorbar, only returns if return_fig_axs=True.
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs=True.
     """
 
     fig = plt.figure(figsize=(4,3.75))
@@ -1134,7 +1137,7 @@ def plot_channel(cube, chan, arcsecpix, velchans,
     ax.set_xlabel("R.A. [arcsec]")
 
     if return_fig_axs:
-        return (fig, ax, cbax)
+        return fig, ax, cbax
 
 
 def plot_channels(cube, arcsecpix, velchans, 
@@ -1199,13 +1202,18 @@ def plot_channels(cube, arcsecpix, velchans,
     pabeam : float
         Beam position angle [degrees]
     return_fig_axs : bool, optional
-        If True, returns a tuple of the ax of the channel map and the colorbar.
-        If False, does not return anything.
+        If True, returns the figure, axes of the channel map, and the axes the
+        colorbar. If False, does not return anything.
         
     Returns:
     --------
-    (fig, ax, cbax) : tuple of matplotlib.axes.Axes Axes of the channel map and the
-        colorbar, only returns if return_axs=True.
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs=True.
     """
 
     size_factor = 2.5
@@ -1305,14 +1313,13 @@ def plot_channels(cube, arcsecpix, velchans,
         )
     cbax.set_ylabel(units)
     if return_fig_axs:
-        return (fig, axs, cbax)
-     
+        return fig, axs, cbax
 
 
 def plotpv(pvimage, rangex, chan_vels, ax=None,
         cbax=None, vmax=None, vcenter=None, vmin=None,
         cmap="nipy_spectral", interpolation="bilinear",
-        cbarlabel="Intensity [Jy/beam]",):
+        cbarlabel="Intensity [Jy/beam]", return_fig_axs=False):
     """
     Plots the Position-Velocity diagram
     
@@ -1342,9 +1349,22 @@ def plotpv(pvimage, rangex, chan_vels, ax=None,
     cbarlabel : str, optional
         String with information on the quantity represented in the Position
         Velocity diagram
+    return_fig_axs : bool, optional
+        If True, returns the figure, axes of the channel map, and the axes the
+        colorbar. If False, does not return anything.
+ 
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs=True.
     """
     if ax is None or cbax is None:
-        plt.figure(figsize=(5,5))
+        fig = plt.figure(figsize=(5,5))
         gs = GridSpec(
             2, 1,
             height_ratios=[0.05, 1],
@@ -1392,12 +1412,15 @@ def plotpv(pvimage, rangex, chan_vels, ax=None,
         )
     cbax.set_xlabel(cbarlabel)
     cbax.xaxis.set_label_position("top")
+    if return_fig_axs:
+        return fig, ax, cbax
 
 
 def plotsumint(sumint, ax=None, cbax=None, extent=None,
         vmax=None, vcenter=None, vmin=None, cmap="inferno",
         interpolation="bilinear", cbarlabel="Intensity", add_beam=False,
-        bmin=None, bmaj=None, pabeam=None, markorigin=True):
+        bmin=None, bmaj=None, pabeam=None, markorigin=True,
+        return_fig_axs=False):
     """
     Plots the sumation of all the pixels along the velocity axis
     
@@ -1434,10 +1457,23 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
+    return_fig_axs : bool, optional
+        If True, returns the figure, axes of the channel map, and the axes the
+        colorbar. If False, does not return anything.
+ 
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs=True.
     """
  
     if ax is None or cbax is None:
-        plt.figure(figsize=(5,5.5))
+        fig = plt.figure(figsize=(5,5.5))
         gs = GridSpec(
             2, 1,
             height_ratios=[0.05, 1],
@@ -1490,12 +1526,15 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
         )
     cbax.set_xlabel(rf"$\sum\mathrm{{{cbarlabel}}}_i$")
     cbax.xaxis.set_label_position("top")
+    if return_fig_axs:
+        return fig, ax, cbax
 
 
 def plotmom0(mom0, ax=None, cbax=None, extent=None,
         vmax=None, vcenter=None, vmin=None, cmap="inferno",
         interpolation="bilinear", cbarlabel="Moment 0 [Jy/beam km/s]",
-        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True):
+        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True,
+        return_fig_axs=False):
     """
     Plots the moment 0 
     
@@ -1531,10 +1570,23 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
+    return_fig_axs : bool, optional
+        If True, returns the figure, axes of the channel map, and the axes the
+        colorbar. If False, does not return anything.
+ 
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs=True.
     """
  
     if ax is None or cbax is None:
-        plt.figure(figsize=(5,5.5))
+        fig = plt.figure(figsize=(5,5.5))
         gs = GridSpec(
             2, 1,
             height_ratios=[0.05, 1],
@@ -1586,13 +1638,16 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
         direction="in",
         )
     cbax.xaxis.set_label_position("top")
+    if return_fig_axs:
+        return fig, ax, cbax
 
 
 def plotmom1(
         mom1, ax=None, cbax=None, extent=None, vmin=None, vmax=None,
-        vcenter=None, extend_cbar="max", return_velcmap=False, bg="black",
-        cmap_ref='jet_r', interpolation="bilinear", cbarlabel="Moment 1 [km/s]",
-        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True):
+        vcenter=None, extend_cbar="max", bg="black", cmap_ref='jet_r',
+        interpolation="bilinear", cbarlabel="Moment 1 [km/s]", add_beam=False,
+        bmin=None, bmaj=None, pabeam=None, markorigin=True,
+        return_fig_axs_velcmap=False,):
     """
     Plots the moment 1 
     
@@ -1632,15 +1687,26 @@ def plotmom1(
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
-
+    return_fig_axs_velcmap : bool, optional
+        If True, returns the figure, axes of the channel map, the axes the
+        colorbar, and the colormap created to plot the moment 1. If False, does
+        not return anything.
+        
     Returns:
     -------- 
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs_velcmap=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs_velcmap=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs_velcmap=True.
     velcmap : matplotlib.colors.ListedColormap
         Colormap created to plot the moment 1
     """
  
     if ax is None or cbax is None:
-        plt.figure(figsize=(5,5.5))
+        fig = plt.figure(figsize=(5,5.5))
         gs = GridSpec(
             2, 1,
             height_ratios=[0.05, 1],
@@ -1710,18 +1776,15 @@ def plotmom1(
     cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
                      labeltop=True, direction="in")
     cbax.xaxis.set_label_position("top")
-
-    if return_velcmap:
-        return velcmap
-    else:
-        pass
+    if return_fig_axs_velcmap:
+        return fig, ax, cbax, velcmap
 
 
 def plotmom2(mom2, ax=None, cbax=None, extent=None,
-        vmin=None, vmax=None, vcenter=None, extend_cbar="max",
-        return_velcmap=False, bg="black", cmap_ref='jet_r',
-        cbarlabel="Moment 2 [km/s]", interpolation=None,
-        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True):
+        vmin=None, vmax=None, vcenter=None, extend_cbar="max", bg="black",
+        cmap_ref='jet_r', cbarlabel="Moment 2 [km/s]", interpolation=None,
+        add_beam=False, bmin=None, bmaj=None, pabeam=None, markorigin=True,
+        return_fig_axs_velcmap=False):
     """
     Plots the moment 2 
     
@@ -1761,15 +1824,26 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
+    return_fig_axs_velcmap : bool, optional
+        If True, returns the figure, axes of the channel map, the axes the
+        colorbar, and the colormap created to plot the moment 2. If False, does
+        not return anything.
 
     Returns:
     -------- 
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs_velcmap=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs_velcmap=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs_velcmap=True.
     velcmap : matplotlib.colors.ListedColormap
         Colormap created to plot the moment 2
     """
  
     if ax is None or cbax is None:
-        plt.figure(figsize=(5,5.5))
+        fig = plt.figure(figsize=(5,5.5))
         gs = GridSpec(
             2, 1,
             height_ratios=[0.05, 1],
@@ -1836,16 +1910,15 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
     cbax.tick_params(axis="x", top=True, bottom=False, labelbottom=False,
                      labeltop=True, direction="in")
     cbax.xaxis.set_label_position("top")
-    if return_velcmap:
-        return velcmap
-    else:
-        pass
+    if return_fig_axs_velcmap:
+        return fig, ax, cbax, velcmap
 
 
 def plotmom8(mom8, ax=None, cbax=None, extent=None,
         vmax=None, vcenter=None, vmin=None, cmap="inferno",
         interpolation="bilinear", cbarlabel="Moment 8", add_beam=False,
-        bmin=None, bmaj=None, pabeam=None, markorigin=True):
+        bmin=None, bmaj=None, pabeam=None, markorigin=True,
+        return_fig_axs=False):
     """
     Plots the maximum value of the pixels along the velocity axis
     
@@ -1881,10 +1954,20 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
+
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        Figure instance, only return_fig_axs=True
+    ax : matplotlib.axes.Axes
+        Axes of the channel map, only return_fig_axs=True
+    cbax : tuple of matplotlib.axes.Axes
+        Axes of the channel map and the colorbar, only returns if
+        return_fig_axs=True.
     """
  
     if ax is None or cbax is None:
-        plt.figure(figsize=(5,5.5))
+        fig = plt.figure(figsize=(5,5.5))
         gs = GridSpec(
             2, 1,
             height_ratios=[0.05, 1],
@@ -1936,4 +2019,5 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
         direction="in",
         )
     cbax.xaxis.set_label_position("top")
-
+    if return_fig_axs:
+        return fig, ax, cbax

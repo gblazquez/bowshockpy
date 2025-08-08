@@ -22,9 +22,6 @@ These parameters define the desired outputs:
     Folder name where the outputs of the modellling are going to be stored. If
     it does not exist, it will be created automatically. 
     
-*bs2Dplot* (boolean)
-    Set to True to plot a 2D bowshock model.
-
 *outcubes* (dict)
     Dictionary indicating the desired output spectral cubes and the operations performed over them. The keys of the dictionary are strings indicating the quantities of the desired cubes. These are the available quantities of the spectral cubes:
 
