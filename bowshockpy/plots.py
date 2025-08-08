@@ -414,7 +414,6 @@ class BowshockModelPlot():
         self.fig_model.savefig(f"{figname}", bbox_inches="tight", **kwargs)
 
 
-
 class BowshockObsModelPlot():
     """
     Figure including the main parameters of the bowshock model, its projected
@@ -1139,7 +1138,6 @@ def plot_channel(cube, chan, arcsecpix, velchans,
     if return_fig_axs:
         return fig, ax, cbax
 
-
 def plot_channels(cube, arcsecpix, velchans, 
         ncol=4, nrow=4, figsize=None, wspace=0.05, hspace=0.0, vmax=None,
         vcenter=None, vmin=None, cmap="inferno", units="Mass [Msun]",
@@ -1375,7 +1373,7 @@ def plotpv(pvimage, rangex, chan_vels, ax=None,
         ax = plt.subplot(gs[1,0])
         cbax = plt.subplot(gs[0, 0])
     else:
-        pass
+        fig = None
     vmax = vmax if vmax is not None else np.max(pvimage[~np.isnan(pvimage)])
     vmin = vmin if vmin is not None else np.min(pvimage[~np.isnan(pvimage)])
     vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
@@ -1484,7 +1482,7 @@ def plotsumint(sumint, ax=None, cbax=None, extent=None,
         ax = plt.subplot(gs[1, 0])
         cbax = plt.subplot(gs[0, 0])
     else:
-        pass
+        fig = None
     vmax = vmax if vmax is not None else np.max(sumint[~np.isnan(sumint)])
     vmin = vmin if vmin is not None else np.min(sumint[~np.isnan(sumint)])
     vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
@@ -1597,7 +1595,7 @@ def plotmom0(mom0, ax=None, cbax=None, extent=None,
         ax = plt.subplot(gs[1, 0])
         cbax = plt.subplot(gs[0, 0])
     else:
-        pass
+        fig = None
 
     vmax = vmax if vmax is not None else np.max(mom0[~np.isnan(mom0)])
     vmin = vmin if vmin is not None else np.min(mom0[~np.isnan(mom0)])
@@ -1717,7 +1715,7 @@ def plotmom1(
         ax = plt.subplot(gs[1, 0])
         cbax = plt.subplot(gs[0, 0])
     else:
-        pass
+        fig = None
 
     if type(cmap_ref) is str:
         cmap = colormaps[cmap_ref]
@@ -1854,7 +1852,7 @@ def plotmom2(mom2, ax=None, cbax=None, extent=None,
         ax = plt.subplot(gs[1, 0])
         cbax = plt.subplot(gs[0, 0])
     else:
-        pass
+        fig = None
 
     if type(cmap_ref) is str:
         cmap = colormaps[cmap_ref]
@@ -1978,7 +1976,7 @@ def plotmom8(mom8, ax=None, cbax=None, extent=None,
         ax = plt.subplot(gs[1, 0])
         cbax = plt.subplot(gs[0, 0])
     else:
-        pass
+        fig = None
 
     vmax = vmax if vmax is not None else np.max(mom8[~np.isnan(mom8)])
     vmin = vmin if vmin is not None else np.min(mom8[~np.isnan(mom8)])

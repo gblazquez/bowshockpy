@@ -2316,7 +2316,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ax=ax,
             cbax=cbax,
             cbarlabel=self._getunitlabel(ckpv),
-            return_fig_axs=True
+            return_fig_axs=True,
             **kwargs,
             )
         if return_fig_axs_im:
@@ -2884,7 +2884,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ax=axs[ak],
             cbax=cbaxs[ak],
             savefits=savefits,
-            return_im=False,
+            return_fig_axs_im=False,
             add_beam=add_beam,
             **mom0values,
             )
@@ -2897,7 +2897,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ax=axs[ak],
             cbax=cbaxs[ak],
             savefits=savefits,
-            return_im=False,
+            return_fig_axs_im=False,
             add_beam=add_beam,
             **mom1values,
             )
@@ -2910,7 +2910,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ax=axs[ak],
             cbax=cbaxs[ak],
             savefits=savefits,
-            return_im=False,
+            return_fig_axs_im=False,
             add_beam=add_beam,
             **mom2values,
             )
@@ -2922,7 +2922,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ax=axs[ak],
             cbax=cbaxs[ak],
             savefits=savefits,
-            return_im=False,
+            return_fig_axs_im=False,
             **pvvalues,
             )
 
@@ -2933,7 +2933,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ax=axs[ak],
             cbax=cbaxs[ak],
             savefits=savefits,
-            return_im=False,
+            return_fig_axs_im=False,
             add_beam=add_beam,
             **mom8values,
             )

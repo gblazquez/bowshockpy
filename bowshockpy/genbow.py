@@ -105,13 +105,15 @@ Parameters read from {p.filename}
         if i == 0:
             ut.make_folder(f"models/{ps['modelname']}")
         plt_model = bsm.get_modelplot(
-            modelname=ps["modelname"],
+            modelname=ps["modelname"]+f" bowshock_{i+1}",
         )
         plt_model.plot()
         plt_model.savefig(
             f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
             )
-        plt_obsmodel = bsmobs.get_modelplot(modelname=ps["modelname"])
+        plt_obsmodel = bsmobs.get_modelplot(
+            modelname=ps["modelname"]+f" bowshock_{i+1}"
+            )
         plt_obsmodel.plot()
         plt_obsmodel.savefig(
             f"models/{ps['modelname']}/bowshock_projected_{i+1}.jpg",
@@ -248,19 +250,21 @@ https://bowshockpy.readthedocs.io/en/latest/
         default="None"
         )
 
+    examples_available = [
+        "example1.py", "example2.py", "example3.py", "example4.py"]
     args = parser.parse_args()
     filename = args.parameters_file
     _example = args.inputfile_example
-    example = _example if _example.endswith(".py") else f"{_example}.py"
     if filename != "None":
         parameters = runpy.run_path(filename)
         p = ut.VarsInParamFile(parameters)
         generate_bowshock(p)
-    if example != "None":
-        try:
+    if _example != "None":
+        example = _example if _example.endswith(".py") else f"{_example}.py"
+        if example in examples_available:
             ut.print_example(example)
             print(f"{example} has been created")
-        except:
+        else:
             print(f"{example} file is not available and could not be created")
 
 if __name__ == "__main__":
