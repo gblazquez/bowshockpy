@@ -114,7 +114,7 @@ Parameters read from {p.filename}
         plt_model.savefig(
             f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
             )
-        plt_obsmodel = bsmobs.get_modelplot(
+        plt_obsmodel = bsmobs.get_obsmodelplot(
             modelname=ps["modelname"]+f" bowshock_{i+1}"
             )
         plt_obsmodel.plot()

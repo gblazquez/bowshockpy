@@ -8,10 +8,10 @@ from astropy.io import fits
 from matplotlib.gridspec import GridSpec
 from scipy.ndimage import rotate
 
-import bowshockpy.moments as moments
 import bowshockpy.plots as pl
 import bowshockpy.radtrans as rt
 import bowshockpy.utils as ut
+from bowshockpy import moments
 from bowshockpy.models import BowshockModel
 from bowshockpy.version import __version__
 
@@ -126,7 +126,7 @@ class ObsModel(BowshockModel):
         return -self.rb(zb)*np.cos(phi)*np.sin(self.i) + zb*np.cos(self.i)
 
 
-    def get_modelplot(self, **kwargs):
+    def get_obsmodelplot(self, **kwargs):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
