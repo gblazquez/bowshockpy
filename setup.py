@@ -1,16 +1,21 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 
 def get_version():
-    version_file = 'bowshockpy/version.py'
-    with open(version_file, 'r', encoding='utf-8') as f:
-        exec(compile(f.read(), version_file, 'exec'))
-    return locals()['__version__']
+    """
+    Gets the version from version.py
+    """
+    version_file = "bowshockpy/version.py"
+    with open(version_file, "r", encoding="utf-8") as f:
+        exec(compile(f.read(), version_file, "exec"))
+    return locals()["__version__"]
+
 
 with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name='bowshockpy',
+    name="bowshockpy",
     version=get_version(),
     packages=find_packages(),
     install_requires=[

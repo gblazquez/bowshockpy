@@ -31,8 +31,8 @@ class BowshockModel():
     distpc : float
         Distance between the source and the observer [pc]
     rbf_obs: float, optional
-        Final radius of the bowshock [km]. If None, the theoretical final radius
-        is calculated.
+        Final radius of the bowshock [km]. If None, the theoretical final
+        radius is calculated.
     
     Attributes:
     -----------
@@ -652,8 +652,8 @@ class BowshockModel():
         Returns
         --------
         modelplot : `~bowshockpy.plot.BowshockModelPlot` class instance
-            An instance of a class BowshockModelPlot, which contains information
-            on the figure and the model data
+            An instance of a class BowshockModelPlot, which contains
+            information on the figure and the model data
         """
         modelplot = pl.BowshockModelPlot(self, **kwargs)
         return modelplot

@@ -1,21 +1,17 @@
-import numpy as np
-
-from scipy.ndimage import rotate
-
-import astropy.units as u
-from astropy.io import fits
-
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-
+import sys
 from datetime import datetime
 
-import sys
+import astropy.units as u
+import matplotlib.pyplot as plt
+import numpy as np
+from astropy.io import fits
+from matplotlib.gridspec import GridSpec
+from scipy.ndimage import rotate
 
-import bowshockpy.utils as ut
-import bowshockpy.radtrans as rt
 import bowshockpy.moments as moments
 import bowshockpy.plots as pl
+import bowshockpy.radtrans as rt
+import bowshockpy.utils as ut
 from bowshockpy.models import BowshockModel
 from bowshockpy.version import __version__
 
@@ -30,7 +26,7 @@ class ObsModel(BowshockModel):
         instance of BowshockModel model to get the attributes
     i_deg : float
         Inclination angle between the bowshock axis and the line-of-sight
-        [degrees] 
+        [degrees]
     pa_deg : float, optional
         Position angle, default 0 [degrees]
     vsys : float, optional
@@ -54,7 +50,7 @@ class ObsModel(BowshockModel):
         """
         Calculates the line-of-sight velocity for a point of the bowshock shell
         with (zb, phi)
-        
+
         Parameters
         ----------
         zb : float
@@ -76,7 +72,7 @@ class ObsModel(BowshockModel):
         """
         Calculates the xp coordinate for a point of the bowshock shell
         with (zb, phi)
-        
+
         Parameters
         ----------
         zb : float
@@ -95,7 +91,7 @@ class ObsModel(BowshockModel):
         """
         Calculates the yp coordinate for a point of the bowshock shell
         with (zb, phi)
-        
+
         Parameters
         ----------
         zb : float
@@ -114,7 +110,7 @@ class ObsModel(BowshockModel):
         """
         Calculates the xp coordinate for a point of the bowshock shell
         with (zb, phi)
-        
+
         Parameters
         ----------
         zb : float
@@ -134,7 +130,7 @@ class ObsModel(BowshockModel):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
-        
+
         Parameters
         -----------
         kwargs : optional
@@ -167,18 +163,18 @@ class BowshockCube(ObsModel):
         Central velocity of the last channel map [km/s]
     xpmax : float
         Physical size of the channel maps along the x axis [arcsec]
-    nzs : int, optional 
+    nzs : int, optional
         Number of points used to compute the model solutions
     nc : int, optional
         Number of spectral channel maps
     nxs : int, optional
         Number of pixels in the right ascension axis.
     nys : int, optional
-        Number of pixels in the declination axis. 
+        Number of pixels in the declination axis.
     refpix : list | None, optional
         Pixel coordinates (zero-based) of the source, i.e., the origin from
         which the distances are measured. The first index is the R.A. axis, the
-        second is the  Dec. axis [[int, int] or None] 
+        second is the  Dec. axis [[int, int] or None]
     CIC : bolean, optional
         Set to True to perform Cloud in Cell interpolation [1].
     vt : str | float, optional
@@ -193,7 +189,7 @@ class BowshockCube(ObsModel):
         higher than this factor times vt. The lower the factor, the quicker will
         be the code, but the total mass will be underestimated. If vt is not
         None, compare the total mass of the output cube with the mass parameter
-        that the user has defined 
+        that the user has defined
     verbose : bolean, optional
         Set True to verbose messages about the computation
     kwargs : optional
@@ -277,12 +273,12 @@ ERROR: The provided cube into which the model is to be build has dimensions
 self.nys, self.nxs)}. Please, provide a cube with the right dimensions or do not
 provide any cube.
 """)
-  
+
     def _OUTSIDEGRID_WARNING(self,):
         print("""
 WARNING: Part of the model lie outside the grid of the spectral cube! The model
 will be truncated or not appearing at all in your spectral cube. This is due to
-at least one of three reasons: 
+at least one of three reasons:
     - The image is too small. Try to make the image larger by increasing the
     number of pixels (parameters nxs and nys), or increase the physical size of
     the image (parameter xpmax).
@@ -300,7 +296,7 @@ total mass of the bowshock. This can be due to several factors:
     - Part of the model lie outside the grid of the spectral cube. If this is
     not intended, try to solve it by making the maps larger, changing the
     reference pixel to center the model in the maps, or increasing the velocity
-    coverage of the spectral cube.  
+    coverage of the spectral cube.
     - The difference between the integrated mass of the cube and the input total
     mass of the bowshock model is due to numerical errors. If you think that the
     difference is too big, you can reduce it by increasing the number of points
@@ -323,7 +319,7 @@ parameter) or decreasing the pixel size (nxs and nys parameters).
 
     def _SAMPLING_V_WARNING(self,):
         print("""
-WARNING: It is possible that the model is not well sampled in the velocity direction 
+WARNING: It is possible that the model is not well sampled in the velocity direction
 given the cube dimensions and the number of model points. You can ensure a
 better sampling by increasing the number of model points in the azimuthal direction (nphis parameter) or decreasing the pixel size (nxs and nys parameters).
 """)
@@ -377,15 +373,15 @@ size (nxs and nys parameters).
         self.cube[chan, ypix, xpix+1] += em * dxpix * (1-dypix)
         self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
         self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
-    
+
     def _doNGP(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
         """Nearest Grid Point method"""
         em = self._wvzp(diffv, dmass)
-        self.cube[chan, ypix, xpix] += em 
+        self.cube[chan, ypix, xpix] += em
 
     def _sampling(self, chan, xpix, ypix):
         self.cube_sampling[chan, ypix, xpix] += 1
-    
+
     def _check_mass_consistency(self, return_isconsistent=False):
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
@@ -396,7 +392,7 @@ size (nxs and nys parameters).
         if mass_consistent:
             print(rf"""
 Mass consistency test passed: The input total mass of the bowshock model
-coincides with the total mass of the cube. 
+coincides with the total mass of the cube.
 """)
 # (only a small fraction of mass, {massloss:.1e} %, is lost due to numerical errors
         else:
@@ -431,7 +427,7 @@ coincides with the total mass of the cube.
         -----------
         fromcube : numpy.ndarray, optional
             Cube that will be populated with the model data. If None, and empty
-            cube will be considered. 
+            cube will be considered.
         """
         if self.verbose:
             ts = []
@@ -537,7 +533,7 @@ coincides with the total mass of the cube.
         -----------
         fromcube : numpy.ndarray, optional
             Cube that will be populated with the model data. If None, and empty
-            cube will be considered. 
+            cube will be considered.
        """
         if self.verbose:
             ts = []
@@ -670,7 +666,7 @@ coincides with the total mass of the cube.
         return_fig_axs : bool, optional
             If True, returns the figure, axes of the channel map, and the axes
             the colorbar.  If False, does not return anything.
-        
+
         Returns:
         --------
         fig : matplotlib.figure.Figure
@@ -701,7 +697,7 @@ coincides with the total mass of the cube.
     def plot_channels(self, savefig=None, return_fig_axs=False, **kwargs):
         """
         Plots several channel map of a spectral cube.
-    
+
         Parameters
         ----------
         ncol : int, optional
@@ -817,13 +813,13 @@ class CubeProcessing(BowshockCube):
         Area of the beam [pixel^2]
     cubes : dict
         Dictionary of the processed cubes. Keys are abbreviations of the
-        quantity of the cube and the operations performed to it 
+        quantity of the cube and the operations performed to it
     refpixs : dict
         Dictionary of the reference pixel of the cubes.  Keys are abbreviations
-        of the quantity of the cube and the operations performed to it 
+        of the quantity of the cube and the operations performed to it
     hdrs : dict
         Dictionary of the headers `astropy.io.fits.header.Header` of each cube. The headers are generated when savecube method is used.
-    areapix_cm : float 
+    areapix_cm : float
         Area of a pixel in cm.
     beamarea_sr : `astropy.units.Quantity`
         Area of the beam in stereoradians.
@@ -959,7 +955,7 @@ class CubeProcessing(BowshockCube):
 
     def _calc_areapix_cm(self):
         self.areapix_cm = ((self.arcsecpix * self.distpc * u.au)**2).to(u.cm**2)
-    
+
     def _check_concat_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
             if not ut.allequal(
@@ -1056,7 +1052,7 @@ class CubeProcessing(BowshockCube):
     def calc_Ithin(self):
         """
         Computes the intensity [Jy/beam] of the model cube, taking into account
-        the optically thin approximation 
+        the optically thin approximation
         """
         self.calc_I(opthin=True)
 
@@ -1070,7 +1066,7 @@ class CubeProcessing(BowshockCube):
             Key of the cube to add the source
         value : float, optional
             Pixel value of the source. If None, the maximum of the cube will be
-            considered 
+            considered
         """
         nck = self._newck(ck, "s")
         if self.verbose:
@@ -1092,12 +1088,12 @@ class CubeProcessing(BowshockCube):
         Parameters
         -----------
         ck : str, optional
-            Key of the cube to rotate 
+            Key of the cube to rotate
         forpv : bool, optional
             If True, the image is rotated to calculate the PV along the bowshock
-            axis 
+            axis
         """
- 
+
         nck = self._newck(ck, "r") if not forpv else self._newck(ck, "R")
         if self.verbose:
             if forpv:
@@ -1142,7 +1138,7 @@ class CubeProcessing(BowshockCube):
         Parameters
         -----------
         ck : str, optional
-            Key of the cube to rotate 
+            Key of the cube to rotate
         """
         nck = self._newck(ck, "n")
         if self.verbose:
@@ -1168,13 +1164,13 @@ class CubeProcessing(BowshockCube):
         """
         Convolves the cube with the defined Gaussian kernel (self.bmaj,
         self.bmin, self.pabeam)
-        
+
         Parameters
         -----------
         ck : str, optional
             Key of the cube to convolve
         """
- 
+
         nck = self._newck(ck, "c")
         if self.verbose:
             print(f"\nConvolving {nck}... ")
@@ -1267,27 +1263,27 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             operations performed over them. The keys of the dictionary are
             strings indicating the quantities of the desired cubes. These are
             the available quantities of the spectral cubes:
-            
+
             - "mass": Total mass of molecular hydrogen in solar mass.
             - "CO_column_density": Column density of the CO in cm-2.
             - "intensity": Intensity in Jy/beam.
-            - "intensity_opthin": Intensity in Jy/beam, using the optically thin approximation.  
+            - "intensity_opthin": Intensity in Jy/beam, using the optically thin approximation.
             - "tau": Opacities.
-        
+
             The values of the dictionary are lists of strings indicating the
             operations to be performed over the cube. These are the available
             operations:
-            
+
             - "add_source": Add a source at the reference pixel, just for spatial reference purposes.
             - "rotate": Rotate the whole spectral cube by an angle given by parot parameter.
             - "add_noise": Add gaussian noise, defined by maxcube2noise parameter.
             - "convolve": Convolve with a gaussian defined by the parameters bmaj, bmin, and pabeam.
             - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity and the PV diagram.
-        
+
             The operations will be performed folowing the order of the strings
             in the list (from left to right). The list can be left empty if no
             operations are desired.
-            
+
         Example:
         --------
         >>> cp = bs.CubeProcessing(...)
@@ -1305,7 +1301,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         opacity; the third will be the CO_column_density, which will be
         convolved; and the forth cube will be the masses. The first spectral
         cube will be named I_nc.fits, the second tau.fits, the third NCO_c.fits,
-        and the fourth m.fits.  
+        and the fourth m.fits.
         """
         dostrs = self._useroutputcube2dostr(userdic)
         for ds in dostrs:
@@ -1319,7 +1315,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                     ck = q if i==0 else f"{q}_{ss[:i]}"
                     if self._newck(ck, s) not in self.cubes:
                         self.__getattribute__(self.dos[s])(ck=ck)
-    
+
     def savecube(self, ck):
         """
         Saves the cube in fits format
@@ -1426,7 +1422,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         userdic : dict
             Dictionary indicating the desired output spectral cubes and the
-            operations performed over them. 
+            operations performed over them.
 
         Example:
         --------
@@ -1445,7 +1441,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         opacity; the third will be the CO_column_density, which will be
         convolved; and the forth cube will be the masses. The first spectral
         cube will be named I_nc.fits, the second tau.fits, the third NCO_c.fits,
-        and the fourth m.fits.  
+        and the fourth m.fits.
         """
         cks = self._useroutputcube2dostr(userdic)
         for ck in cks:
@@ -1506,11 +1502,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         if return_fig_axs:
             return fig, axs, cbax
 
-    def plot_channels(self, ck, savefig=None, add_beam=False, 
+    def plot_channels(self, ck, savefig=None, add_beam=False,
                       return_fig_axs=False, **kwargs):
         """
         Plots several channel map of a spectral cube.
-    
+
         Parameters
         ----------
         ck : str
@@ -1555,7 +1551,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         return_fig_axs : bool, optional
             If True, returns the figure, axes of the channel map, and the axes the
             colorbar.  If False, does not return anything.
-            
+
         Returns:
         --------
         fig : matplotlib.figure.Figure
@@ -1662,13 +1658,13 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdrpv["OBSGEO-Z"] = -2.481029851874E+06
             hdrpv["DATE"] = f'{datetime.now().isoformat()}'
             hdrpv["ORIGIN"] = f'BOWSHOCKPY v{__version__}'
-           
+
             hdu = fits.PrimaryHDU(pvimage)
             hdul = fits.HDUList([hdu])
             hdu.header = hdrpv
             if filename is None:
                 ut.make_folder(foldername=f'models/{self.modelname}/fits')
-                filename = f'models/{self.modelname}/fits/{ck}_pv.fits' 
+                filename = f'models/{self.modelname}/fits/{ck}_pv.fits'
             hdul.writeto(filename, overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_pv.fits saved')
@@ -1678,7 +1674,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Computes the image of the summation of pixels of the cube along the
         velocity axis
-        
+
         Parameters
         -----------
         ck : str
@@ -1695,10 +1691,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Returns
         --------
-        sumint : numpy.ndarray 
+        sumint : numpy.ndarray
             Image of the summation of the pixels of the cube along the velocty
             axis
- 
+
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         sumintimage = moments.sumint(
@@ -1780,7 +1776,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdr
             if filename is None:
                 ut.make_folder(foldername=f'models/{self.modelname}/fits')
-                filename = f'models/{self.modelname}/fits/{ck}_sumint.fits' 
+                filename = f'models/{self.modelname}/fits/{ck}_sumint.fits'
             hdul.writeto(filename, overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_sumint.fits saved')
@@ -1789,7 +1785,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
     def mom0(self, ck, chan_range=None, savefits=False, filename=None):
         """
         Computes the 0th order moment along the velocity axis
-        
+
         Parameters
         -----------
         ck : str
@@ -1806,7 +1802,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Returns
         --------
-        mom0 : numpy.ndarray 
+        mom0 : numpy.ndarray
             Moment 0 image of the cube
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
@@ -1891,7 +1887,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdr
             if filename is None:
                 ut.make_folder(foldername=f'models/{self.modelname}/fits')
-                filename = f'models/{self.modelname}/fits/{ck}_mom0.fits' 
+                filename = f'models/{self.modelname}/fits/{ck}_mom0.fits'
             hdul.writeto(filename, overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom0.fits saved')
@@ -1900,7 +1896,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
     def mom1(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
         """
         Computes the 1th order moment along the velocity axis
-        
+
         Parameters
         -----------
         ck : str
@@ -1919,7 +1915,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Returns
         --------
-        mom1 : numpy.ndarray 
+        mom1 : numpy.ndarray
             Moment 1 image of the cube
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
@@ -2010,7 +2006,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdr
             if filename is None:
                 ut.make_folder(foldername=f'models/{self.modelname}/fits')
-                filename = f'models/{self.modelname}/fits/{ck}_mom1.fits' 
+                filename = f'models/{self.modelname}/fits/{ck}_mom1.fits'
             hdul.writeto(filename, overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom1.fits saved')
@@ -2019,7 +2015,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
     def mom2(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
         """
         Computes the 2th order moment along the velocity axis
-        
+
         Parameters
         -----------
         ck : str
@@ -2038,7 +2034,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Returns
         --------
-        mom2 : numpy.ndarray 
+        mom2 : numpy.ndarray
             Moment 2 image of the cube
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
@@ -2129,7 +2125,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdr
             if filename is None:
                 ut.make_folder(foldername=f'models/{self.modelname}/fits')
-                filename = f'models/{self.modelname}/fits/{ck}_mom1.fits' 
+                filename = f'models/{self.modelname}/fits/{ck}_mom1.fits'
             hdul.writeto(filename, overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom2.fits saved')
@@ -2138,7 +2134,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
     def mom8(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
         """
         Computes the maximum value of the cube along the velocity axis
-        
+
         Parameters
         -----------
         ck : str
@@ -2158,8 +2154,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Returns
         --------
-        mom8 : numpy.ndarray 
-            Maximum value of the pixels of the cubes along the velocity axis 
+        mom8 : numpy.ndarray
+            Maximum value of the pixels of the cubes along the velocity axis
 
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
@@ -2249,7 +2245,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdr
             if filename is None:
                 ut.make_folder(foldername=f'models/{self.modelname}/fits')
-                filename = f'models/{self.modelname}/fits/{ck}_mom1.fits' 
+                filename = f'models/{self.modelname}/fits/{ck}_mom1.fits'
             hdul.writeto(filename, overwrite=True)
             if self.verbose:
                 print(f'models/{self.modelname}/fits/{ck}_mom8.fits saved')
@@ -2283,7 +2279,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         return_fig_axs_im : bool, optional
             If True, returns the figure, axes of the channel map, the axes the
             colorbar, and the image. If False, does not return anything.
-            
+
         Returns:
         --------
         fig : matplotlib.figure.Figure
@@ -2393,13 +2389,13 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             **kwargs,
             )
         if return_fig_axs_im:
-            return fig, axs, cbax, sumint 
+            return fig, axs, cbax, sumint
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
 
     def plotmom0(
             self, ck, chan_range=None, ax=None, cbax=None, add_beam=False,
-            savefits=False, savefig=None, return_fig_axs_im=False, 
+            savefits=False, savefig=None, return_fig_axs_im=False,
             **kwargs):
         """
         Plots the moment 0 (integrated intensity).
@@ -2723,7 +2719,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         """
         Computes the moments and position velocity diagram including also the
         main parameters of the model listed in the first ax
-        
+
         Parameters
         -----------
         ck : str
@@ -2751,28 +2747,28 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             the plot of the moment 0. If the dictionary value is None for vmax,
             vcenter, or vmin, then the maximum, central, or the minimum value of
             the moment image will be considered, respectively. Example:
-            mom0values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+            mom0values = {"vmax": None, "vcenter": None, "vmin": 0,}.
         mom1values : dict or None
             Dictionary with the maximum, central, and minimum value to show in
             the plot of the moment 1. If the dictionary value is None for vmax,
             vcenter, or vmin, then the maximum, central, or the minimum value of
             the moment image will be considered, respectively. Example:
-            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}.
         mom2values : dict or None
             Dictionary with the maximum, central, and minimum value to show in
             the plot of the moment 2. If the dictionary value is None for vmax,
             vcenter, or vmin, then the maximum, central, or the minimum value of
             the moment image will be considered, respectively. Example:
-            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}. 
+            mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}.
         mom8values : dict or None
            Dictionary with the maximum, central, and minimum value to show in
            the plot of the maximum value along the velocity axis. If the
            dictionary value is None for vmax, vcenter, or vmin, then the
            maximum, central, or the minimum value of the moment image will be
            considered, respectively. Example: mom8values = {"vmax": None,
-           "vcenter": None, "vmin": None,}. 
+           "vcenter": None, "vmin": None,}.
         """
- 
+
         if verbose:
             print(
 """

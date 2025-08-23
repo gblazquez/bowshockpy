@@ -83,6 +83,9 @@ Parameters read from {p.filename}
             "dec_source_deg": p.dec_source_deg,
             "coordcube": p.coordcube
         }
+    else:
+        pscube = {}
+        mpars = {}
 
     bscs = []
     for i, (ps,psobs) in enumerate(zip(pss,psobss)):
@@ -159,17 +162,17 @@ cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
 name of the fits files:
 
 Abbreviations for quantities are:             Abbreviations for the operations are:
-    m: mass [SolarMass]                           s: add_source
-    I: Intensity [Jy/beam]                        r: rotate
-    Ithin: Intensity opt. thin aprox [Jy/beam]    n: add_noise
-    Ntot: Total column density [cm-2]             c: convolve
-    NCO: CO column density [cm-2]
-    tau: Opacity
+   m: mass [SolarMass]                           s: add_source
+   I: Intensity [Jy/beam]                        r: rotate
+   Ithin: Intensity opt. thin aprox [Jy/beam]    n: add_noise
+   Ntot: Total column density [cm-2]             c: convolve
+   NCO: CO column density [cm-2]
+   tau: Opacity
 """
     )
     bscp = bs.CubeProcessing(
         bscs,
-        modelname=ps["modelname"],
+        modelname=p.modelname,
         J=mpars["J"],
         XCO=mpars["XCO"],
         meanmolmass=mpars["meanmolmass"],
@@ -191,10 +194,10 @@ Abbreviations for quantities are:             Abbreviations for the operations a
     for ck in bscp.listmompvs:
         bscp.plot_channels(
             ck,
-            savefig=f"models/{ps['modelname']}/bowshock_cube_{ck}.pdf",
+            savefig=f"models/{p.modelname}/bowshock_cube_{ck}.pdf",
             add_beam=True,
         )
- 
+
     bscp.momentsandpv_and_params_all(
         savefits=p.savefits,
         saveplot=p.saveplot,
