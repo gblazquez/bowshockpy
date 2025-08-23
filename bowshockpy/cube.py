@@ -175,7 +175,7 @@ class BowshockCube(ObsModel):
         Pixel coordinates (zero-based) of the source, i.e., the origin from
         which the distances are measured. The first index is the R.A. axis, the
         second is the  Dec. axis [[int, int] or None]
-    CIC : bolean, optional
+    cic : bolean, optional
         Set to True to perform Cloud in Cell interpolation [1].
     vt : str | float, optional
         Thermal+turbulent line-of-sight velocity dispersion [km/s] If
@@ -228,7 +228,7 @@ class BowshockCube(ObsModel):
 
     def __init__(
             self, obsmodel, nphis, vch0, vchf, xpmax, nzs=200, nc=50,
-            nxs=200, nys=200, refpix=[0,0], CIC=True, vt="2xchannel",
+            nxs=200, nys=200, refpix=[0,0], cic=True, vt="2xchannel",
             tolfactor_vt=None, verbose=True, **kwargs):
         self.__dict__ = obsmodel.__dict__
         self.nphis = nphis
@@ -240,7 +240,7 @@ class BowshockCube(ObsModel):
         self.nxs = nxs
         self.nys = nys
         self.refpix = refpix
-        self.CIC = CIC
+        self.cic = cic
         self.vt = vt
         self.tolfactor_vt = tolfactor_vt
         self.verbose = verbose
@@ -366,7 +366,7 @@ size (nxs and nys parameters).
         return em
 
     # def _wxpyp(self, chan, vchan, xpix, ypix, dxpix, dypix, vzp, dmass):
-    def _doCIC(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
+    def _docic(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
         """Cloud In Cell method"""
         em = self._wvzp(diffv, dmass)
         self.cube[chan, ypix, xpix] += em * (1-dxpix) * (1-dypix)
@@ -464,7 +464,7 @@ coincides with the total mass of the cube.
 
         outsidegrid_warning = True
         ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
-        particle_in_cell = self._doCIC if self.CIC else self._doNGP
+        particle_in_cell = self._docic if self.cic else self._doNGP
         for iz, z in enumerate(self.zs):
             if self.verbose:
                 t0 = datetime.now()
@@ -575,7 +575,7 @@ coincides with the total mass of the cube.
 
         outsidegrid_warning = True
         ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
-        particle_in_cell = self._doCIC if self.CIC else self._doNGP
+        particle_in_cell = self._docic if self.cic else self._doNGP
         for iz, z in enumerate(self.zs):
             if self.verbose:
                 t0 = datetime.now()

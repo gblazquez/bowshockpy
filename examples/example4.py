@@ -238,7 +238,7 @@ tolfactor_vt = 3
 
 # Set to True to perform 2D Cloud in Cell interpolation along the spatial
 # dimensions. If False, a Nearest Grid Point method will be perform.
-CIC = True
+cic = True
 
 # Pixel coordinates (zero-based) of the source, i.e., the origin from which
 # the distances are measured. The first index is the right ascension axis,

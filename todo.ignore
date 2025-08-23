@@ -111,7 +111,7 @@ x I think there is a way to optimize the computation by changing doing a variabl
 - (Not for now) Also, by computing half of the model in phis.
 x By restricting the channels to populate before the iteraction in channels (apparently this does not speed up the software).
 
-x Implement no CIC.
+x Implement no cic.
 
 x pa and i should be in degrees
 

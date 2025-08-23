@@ -66,7 +66,7 @@ Parameters read from {p.filename}
             "bmaj": p.bmaj,
             "bmin": p.bmin,
             "pabeam": p.pabeam,
-            "CIC": p.CIC,
+            "cic": p.cic,
             "tolfactor_vt": p.tolfactor_vt,
             "sigma_beforeconv": p.sigma_beforeconv,
             "maxcube2noise": p.maxcube2noise,
@@ -139,7 +139,7 @@ Generating bowshock {i+1}/{p.nbowshocks}
                     nxs=pscube["nxs"],
                     nys=pscube["nys"],
                     refpix=pscube["refpix"],
-                    CIC=pscube["CIC"],
+                    cic=pscube["cic"],
                     vt=pscube["vt"],
                     tolfactor_vt=pscube["tolfactor_vt"],
                     verbose=pscube["verbose"]

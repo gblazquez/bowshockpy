@@ -131,7 +131,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   tolfactor_vt = 3
   
-  CIC = True
+  cic = True
   
   refpix = [80, 30]
   
@@ -289,7 +289,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   tolfactor_vt = 3
   
-  CIC = True
+  cic = True
   
   refpix = [125, 75]
   
@@ -448,7 +448,7 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   tolfactor_vt = 3
   
-  CIC = True
+  cic = True
   
   refpix = [100, 0]
   
@@ -628,7 +628,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   tolfactor_vt = 3
   
-  CIC = True
+  cic = True
   
   refpix = [80, 30]
   

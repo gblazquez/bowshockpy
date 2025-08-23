@@ -187,7 +187,7 @@ These parameters will define the properties of the spectral cube of the bowshock
     substatially faster. A low **tolfactor_vt** can result in a warning reporting an
     underestimation of the total mass of the model.
 
-*CIC* (bolean)
+*cic* (bolean)
     Set to True to perform 2D Cloud in Cell interpolation along the spatial
     dimensions. If False, a Nearest Grid Point method will be perform.
     
