@@ -63,13 +63,13 @@ bscp = bs.CubeProcessing(
 )
 
 def test_cube_mass_consistency():
-    massconsistent = bsc1._check_mass_consistency(return_isconsistent=True)
+    massconsistent = bsc1._check_mass_consistency()
     assert massconsistent, "Mass consistency check failed"
 
 def test_makecube_fromcube():
     ones = np.ones_like(bsc1.cube)
     bsc2.makecube(fromcube=ones)
-    massconsistent = bsc2._check_mass_consistency(return_isconsistent=True)
+    massconsistent = bsc2._check_mass_consistency()
     assert massconsistent, "Mass consistency test failed while creating cube from an intial cube"
 
 def test_concat_cubes():

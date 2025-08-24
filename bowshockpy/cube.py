@@ -250,31 +250,31 @@ class BowshockCube(ObsModel):
                 else self.default_kwargs[kwarg]
             setattr(self, kwarg, kwarg_attr)
 
-        self.nrs = None
+        self.nrs = 0
         self.rs = np.array([])
-        self.dr = None
+        self.dr = 0
         self.zs = np.array([])
         self.dzs = np.array([])
 
         self.phis = np.array([])
-        self.dphi = None
+        self.dphi = 0
 
         self.vs = np.array([])
         self.velchans = np.array([])
 
         self._fromcube_mass = 0
-        self.cube = None
-        self.cube_sampling = None
+        self.cube = np.array([])
+        self.cube_sampling = np.array([])
 
-    def _DIMENSION_ERROR(self, fromcube):
-            sys.exit(f"""
+    def _dimension_error(self, fromcube):
+        sys.exit(f"""
 ERROR: The provided cube into which the model is to be build has dimensions
 {np.shape(fromcube)} but the dimensions of the desired model cube is {(self.nc,
 self.nys, self.nxs)}. Please, provide a cube with the right dimensions or do not
 provide any cube.
 """)
 
-    def _OUTSIDEGRID_WARNING(self,):
+    def _outsidegrid_warning(self,):
         print("""
 WARNING: Part of the model lie outside the grid of the spectral cube! The model
 will be truncated or not appearing at all in your spectral cube. This is due to
@@ -289,27 +289,28 @@ at least one of three reasons:
     negative floats if the model is blueshifted).\n
 """)
 
-    def _MASS_CONSISTENCY_WARNING(self, massloss):
+    def _mass_consistency_warning(self, massloss):
         print(rf"""
-WARNING: The integrated mass of the cube is {massloss:.1e} % less than the input
+WARNING: The integrated mass of the cube is {massloss:.1e} % less than the
+input
 total mass of the bowshock. This can be due to several factors:
     - Part of the model lie outside the grid of the spectral cube. If this is
-    not intended, try to solve it by making the maps larger, changing the
-    reference pixel to center the model in the maps, or increasing the velocity
-    coverage of the spectral cube.
-    - The difference between the integrated mass of the cube and the input total
-    mass of the bowshock model is due to numerical errors. If you think that the
-    difference is too big, you can reduce it by increasing the number of points
-    of the model (inceasng nzs or/and nphis parameters).
+      not intended, try to solve it by making the maps larger, changing the
+      reference pixel to center the model in the maps, or increasing the
+      velocity coverage of the spectral cube.
+    - The difference between the integrated mass of the cube and the input
+      total mass of the bowshock model is due to numerical errors. If you think
+      that the difference is too big, you can reduce it by increasing the
+      number of points of the model (inceasng nzs or/and nphis parameters).
     - The masses corresponding to a channel maps are spread along the cube in
-    the velocity axis following a Gaussian distribution, being sigma equal to vt
-    parameter. This distribution is truncated at vt*tolfactor_vt in order to
-    make the computation substatially faster, but it can result in an
-    underestimation of the integrated mass of the spectral cube. Try to make
-    tolfactor_vt larger.
+      the velocity axis following a Gaussian distribution, being sigma equal to
+      vt parameter. This distribution is truncated at vt*tolfactor_vt in order
+      to make the computation substatially faster, but it can result in an
+      underestimation of the integrated mass of the spectral cube. Try to make
+      tolfactor_vt larger.
 """)
 
-    def _SAMPLING_XY_WARNING(self,):
+    def _sampling_xy_warning(self,):
         print("""
 WARNING: It is possible that the model is not well sampled in the plane of sky
 given the cube dimensions and the number of model points. You can ensure a
@@ -317,14 +318,16 @@ better sampling by increasing the number of model points (nzs
 parameter) or decreasing the pixel size (nxs and nys parameters).
 """)
 
-    def _SAMPLING_V_WARNING(self,):
+    def _sampling_v_warning(self,):
         print("""
-WARNING: It is possible that the model is not well sampled in the velocity direction
-given the cube dimensions and the number of model points. You can ensure a
-better sampling by increasing the number of model points in the azimuthal direction (nphis parameter) or decreasing the pixel size (nxs and nys parameters).
+WARNING: It is possible that the model is not well sampled in the velocity
+direction given the cube dimensions and the number of model points. You can
+ensure a better sampling by increasing the number of model points in the
+azimuthal direction (nphis parameter) or decreasing the pixel size (nxs and nys
+parameters).
 """)
 
-    def _SAMPLING_PHI_WARNING(self,):
+    def _sampling_phi_warning(self,):
         print("""
 WARNING: It is possible that the model is not well sampled in the plane of sky
 given the cube dimensions and the number of azimuthal points of the model
@@ -336,10 +339,10 @@ size (nxs and nys parameters).
     def _calc_params_init(self):
         self.chanwidth = (self.vchf - self.vch0) / (self.nc-1)
         self.abschanwidth = np.abs(self.chanwidth)
-        self.vt = self.vt if type(self.vt)!=str \
+        self.vt = self.vt if not isinstance(self.vt, str) \
               else float(self.vt.split("x")[0])*self.chanwidth
         self.arcsecpix = self.xpmax / float(self.nxs)
-        if self.refpix == None:
+        if self.refpix is None:
             if self.nxs%2 == 0:
                 xref = int(self.nxs / 2)
             else:
@@ -351,10 +354,11 @@ size (nxs and nys parameters).
             self.refpix = [xref, yref]
 
     def _cond_populatechan(self, diffv):
+        """Truncates the Gaussian distribution of the emission along the
+        velocity axis"""
         if self.tolfactor_vt is not None:
             return diffv < np.abs(self.vt)*self.tolfactor_vt
-        else:
-            return True
+        return True
 
     def _wvzp(self, diffv, dmass):
         """
@@ -374,15 +378,33 @@ size (nxs and nys parameters).
         self.cube[chan, ypix+1, xpix] += em * (1-dxpix) * dypix
         self.cube[chan, ypix+1, xpix+1] += em * dxpix * dypix
 
-    def _doNGP(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
+    def _dongp(self, chan, diffv, xpix, ypix, dmass):
         """Nearest Grid Point method"""
         em = self._wvzp(diffv, dmass)
         self.cube[chan, ypix, xpix] += em
 
     def _sampling(self, chan, xpix, ypix):
+        """Keeps track of the sampling of the spectral cube"""
         self.cube_sampling[chan, ypix, xpix] += 1
 
-    def _check_mass_consistency(self, return_isconsistent=False):
+    def _particle_in_cell(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
+        """Particle in cell scheme, weather CIC or NGP"""
+        if self.cic:
+            self._docic(chan, diffv, xpix, ypix, dxpix, dypix, dmass)
+        else:
+            self._dongp(chan, diffv, xpix, ypix, dmass)
+
+    def _populatechan(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
+        """Populates the channel"""
+        if self._cond_populatechan(diffv):
+            self._particle_in_cell(
+                chan, diffv, xpix, ypix, dxpix, dypix, dmass)
+            if diffv < self.abschanwidth/2:
+                self._sampling(chan, xpix, ypix)
+
+    def _check_mass_consistency(self):
+        """Checks that the input total mass of the bowshock coincides with the
+        total mass of the cube"""
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
         intmass_model = self.mass+self._fromcube_mass
@@ -390,15 +412,14 @@ size (nxs and nys parameters).
             intmass_cube, intmass_model)
         massloss = (intmass_model-intmass_cube) / self.mass * 100
         if mass_consistent:
-            print(rf"""
+            print(r"""
 Mass consistency test passed: The input total mass of the bowshock model
 coincides with the total mass of the cube.
 """)
 # (only a small fraction of mass, {massloss:.1e} %, is lost due to numerical errors
         else:
-            self._MASS_CONSISTENCY_WARNING(massloss)
-        if return_isconsistent:
-            return mass_consistent
+            self._mass_consistency_warning(massloss)
+        return mass_consistent
 
     def _check_sampling(self):
         maxdz = np.max(self.km2arcsec(np.abs(self.dzs)))
@@ -413,11 +434,11 @@ coincides with the total mass of the cube.
         phisamp = maxds > self.arcsecpix or maxds > self.arcsecpix
 
         if zsamp or rsamp:
-            self._SAMPLING_XY_WARNING()
+            self._sampling_xy_warning()
         if vsamp:
-            self._SAMPLING_V_WARNING()
+            self._sampling_v_warning()
         if phisamp:
-            self._SAMPLING_PHI_WARNING()
+            self._sampling_phi_warning()
 
     def makecube(self, fromcube=None):
         """
@@ -453,7 +474,7 @@ coincides with the total mass of the cube.
             self.cube = np.copy(fromcube)
             self._fromcube_mass = np.sum(fromcube)
         else:
-            self._DIMENSION_ERROR(fromcube)
+            self._dimension_error(fromcube)
 
         self.cube_sampling = np.zeros((self.nc, self.nys, self.nxs))
 
@@ -464,13 +485,12 @@ coincides with the total mass of the cube.
 
         outsidegrid_warning = True
         ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
-        particle_in_cell = self._docic if self.cic else self._doNGP
         for iz, z in enumerate(self.zs):
             if self.verbose:
                 t0 = datetime.now()
 
             if iz == 0:
-                # Treat outer boundary
+                # Treat boundary of the outer parts of the bowshock wings
                 intmass = self.intmass_analytical(self.rbf)
                 intmass_halfdr = self.intmass_analytical(self.rbf-self.dr/2)
                 dmass =  (intmass - intmass_halfdr) / self.nphis
@@ -499,20 +519,17 @@ coincides with the total mass of the cube.
                     (xpix+1<self.nxs) and (ypix+1<self.nys) \
                     and (xpix>0) and (ypix>0)
                 condition_inside_velcoverage = \
-                    vlsr <= maxvelchans and vlsr >= minvelchans
+                    minvelchans <= vlsr <= maxvelchans
                 if condition_inside_map and condition_inside_velcoverage:
                     dxpix = xpixcoord - xpix
                     dypix = ypixcoord - ypix
                     for chan, vchan in enumerate(self.velchans):
                         diffv = np.abs(vlsr-vchan)
-                        if self._cond_populatechan(diffv):
-                            particle_in_cell(
-                                chan, diffv, xpix, ypix, dxpix, dypix, dmass)
-                            if diffv < self.abschanwidth/2:
-                                self._sampling(chan, xpix, ypix)
+                        self._populatechan(
+                            chan, diffv, xpix, ypix, dxpix, dypix, dmass)
                 else:
                     if outsidegrid_warning:
-                        self._OUTSIDEGRID_WARNING()
+                        self._outsidegrid_warning()
                         outsidegrid_warning = False
             if self.verbose:
                 tf = datetime.now()
@@ -520,129 +537,129 @@ coincides with the total mass of the cube.
                 ts.append(intervaltime)
                 ut.progressbar_bowshock(
                     iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
-        self._check_mass_consistency()
+        _ = self._check_mass_consistency()
         self._check_sampling()
 
-    def makecube_variablephi(self, fromcube=None):
-        """
-        Makes the spectral cube of the model. This make the cube with a variable
-        number of phi angle per z point. This is in principle quicker if one is
-        not interested in reaching a ~0.5% of accuracy in masses.
+    # def makecube_variablephi(self, fromcube=None):
+    #     """
+    #     Makes the spectral cube of the model. This make the cube with a variable
+    #     number of phi angle per z point. This is in principle quicker if one is
+    #     not interested in reaching a ~0.5% of accuracy in masses.
 
-        Parameters
-        -----------
-        fromcube : numpy.ndarray, optional
-            Cube that will be populated with the model data. If None, and empty
-            cube will be considered.
-       """
-        if self.verbose:
-            ts = []
-            print("\nComputing masses in the spectral cube...")
+    #     Parameters
+    #     -----------
+    #     fromcube : numpy.ndarray, optional
+    #         Cube that will be populated with the model data. If None, and empty
+    #         cube will be considered.
+    #    """
+    #     if self.verbose:
+    #         ts = []
+    #         print("\nComputing masses in the spectral cube...")
 
-        self.nrs = self.nzs
-        self.rs = np.linspace(self.rbf, 0, self.nrs)
-        self.dr = self.rs[0] - self.rs[1]
-        self.zs = self.zb_r(self.rs)
-        self.dzs = self.dz_func(self.zb_r(self.rs), self.dr)
+    #     self.nrs = self.nzs
+    #     self.rs = np.linspace(self.rbf, 0, self.nrs)
+    #     self.dr = self.rs[0] - self.rs[1]
+    #     self.zs = self.zb_r(self.rs)
+    #     self.dzs = self.dz_func(self.zb_r(self.rs), self.dr)
 
-        self.phis = np.linspace(0, 2*np.pi, self.nphis+1)[:-1]
-        self.dphi = self.phis[1] - self.phis[0]
+    #     self.phis = np.linspace(0, 2*np.pi, self.nphis+1)[:-1]
+    #     self.dphi = self.phis[1] - self.phis[0]
 
-        nphis0 = self.nphis
-        phis0 = np.linspace(0, 2*np.pi, nphis0+1)[:-1]
-        dphi0 = phis0[1] - phis0[0]
-        ds = self.rbf * dphi0
+    #     nphis0 = self.nphis
+    #     phis0 = np.linspace(0, 2*np.pi, nphis0+1)[:-1]
+    #     dphi0 = phis0[1] - phis0[0]
+    #     ds = self.rbf * dphi0
 
-        self.vs = np.array([self.vtot(zb) for zb in self.zs])
-        self.velchans = np.linspace(self.vch0, self.vchf, self.nc)
-        minvelchans = np.min(self.velchans)
-        maxvelchans = np.max(self.velchans)
+    #     self.vs = np.array([self.vtot(zb) for zb in self.zs])
+    #     self.velchans = np.linspace(self.vch0, self.vchf, self.nc)
+    #     minvelchans = np.min(self.velchans)
+    #     maxvelchans = np.max(self.velchans)
 
-        if fromcube is None:
-            self.cube = np.zeros((self.nc, self.nys, self.nxs))
-        elif (fromcube is not None) and np.shape(fromcube)==((self.nc, self.nys, self.nxs)):
-            self.cube = np.copy(fromcube)
-            self._fromcube_mass = np.sum(fromcube)
-        else:
-            self._DIMENSION_ERROR(fromcube)
+    #     if fromcube is None:
+    #         self.cube = np.zeros((self.nc, self.nys, self.nxs))
+    #     elif (fromcube is not None) and np.shape(fromcube)==((self.nc, self.nys, self.nxs)):
+    #         self.cube = np.copy(fromcube)
+    #         self._fromcube_mass = np.sum(fromcube)
+    #     else:
+    #         self._dimension_error(fromcube)
 
-        self.cube_sampling = np.zeros((self.nc, self.nys, self.nxs))
+    #     self.cube_sampling = np.zeros((self.nc, self.nys, self.nxs))
 
-        ci = np.cos(self.i)
-        si = np.sin(self.i)
-        cpa = np.cos(self.pa)
-        spa = np.sin(self.pa)
+    #     ci = np.cos(self.i)
+    #     si = np.sin(self.i)
+    #     cpa = np.cos(self.pa)
+    #     spa = np.sin(self.pa)
 
-        outsidegrid_warning = True
-        ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
-        particle_in_cell = self._docic if self.cic else self._doNGP
-        for iz, z in enumerate(self.zs):
-            if self.verbose:
-                t0 = datetime.now()
+    #     outsidegrid_warning = True
+    #     ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
+    #     particle_in_cell = self._docic if self.cic else self._dongp
+    #     for iz, z in enumerate(self.zs):
+    #         if self.verbose:
+    #             t0 = datetime.now()
 
-            if iz == 0:
-                # Treat outer boundary
-                phis = phis0
-                dphi = dphi0
-                nphis = nphis0
-                intmass = self.intmass_analytical(self.rbf)
-                intmass_halfdr = self.intmass_analytical(self.rbf-self.dr/2)
-                dmass =  (intmass - intmass_halfdr) / nphis
-            elif iz == len(self.zs)-1:
-                phis = phis0
-                dphi = dphi0
-                nphis = nphis0
-                # Treat head boundary
-                dmass = self.intmass_analytical(self.dr/2) / nphis
-            else:
-                dphi = ds / self.rs[iz]
-                phis = np.arange(0, 2*np.pi, dphi)
-                nphis = len(phis)
-                # Treat the rest of the bowshock
-                dmass = self.dmass_func(z, self.dzs[iz], dphi)
+    #         if iz == 0:
+    #             # Treat outer boundary
+    #             phis = phis0
+    #             dphi = dphi0
+    #             nphis = nphis0
+    #             intmass = self.intmass_analytical(self.rbf)
+    #             intmass_halfdr = self.intmass_analytical(self.rbf-self.dr/2)
+    #             dmass =  (intmass - intmass_halfdr) / nphis
+    #         elif iz == len(self.zs)-1:
+    #             phis = phis0
+    #             dphi = dphi0
+    #             nphis = nphis0
+    #             # Treat head boundary
+    #             dmass = self.intmass_analytical(self.dr/2) / nphis
+    #         else:
+    #             dphi = ds / self.rs[iz]
+    #             phis = np.arange(0, 2*np.pi, dphi)
+    #             nphis = len(phis)
+    #             # Treat the rest of the bowshock
+    #             dmass = self.dmass_func(z, self.dzs[iz], dphi)
 
-            for phi in self.phis:
-            # for phi in phis+dphi*np.random.rand():
-                _xp = self.rs[iz] * np.sin(phi)
-                _yp = self.rs[iz] * np.cos(phi) * ci + z * si
-                xp = _xp * cpa - _yp * spa
-                yp = _xp * spa + _yp * cpa
-                vzp = -self.vzp(z, phi)
-                vlsr = vzp + self.vsys
+    #         for phi in self.phis:
+    #         # for phi in phis+dphi*np.random.rand():
+    #             _xp = self.rs[iz] * np.sin(phi)
+    #             _yp = self.rs[iz] * np.cos(phi) * ci + z * si
+    #             xp = _xp * cpa - _yp * spa
+    #             yp = _xp * spa + _yp * cpa
+    #             vzp = -self.vzp(z, phi)
+    #             vlsr = vzp + self.vsys
 
-                xpixcoord = self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]
-                ypixcoord = self.km2arcsec(yp) / self.arcsecpix + self.refpix[1]
-                xpix = int(xpixcoord)
-                ypix = int(ypixcoord)
-                # Conditions model point inside cube
-                condition_inside_map = \
-                    (xpix+1<self.nxs) and (ypix+1<self.nys) \
-                    and (xpix>0) and (ypix>0)
-                condition_inside_velcoverage = \
-                    vlsr <= maxvelchans and vlsr >= minvelchans
-                if condition_inside_map and condition_inside_velcoverage:
-                    dxpix = xpixcoord - xpix
-                    dypix = ypixcoord - ypix
-                    for chan, vchan in enumerate(self.velchans):
-                        diffv = np.abs(vlsr-vchan)
-                        if self._cond_populatechan(diffv):
-                            particle_in_cell(
-                                chan, diffv, xpix, ypix,
-                                dxpix, dypix, dmass)
-                            if diffv < self.abschanwidth/2:
-                                self._sampling(chan, xpix, ypix)
-                else:
-                    if outsidegrid_warning:
-                        self._OUTSIDEGRID_WARNING()
-                        outsidegrid_warning = False
-            if self.verbose:
-                tf = datetime.now()
-                intervaltime = (tf-t0).total_seconds()
-                ts.append(intervaltime)
-                ut.progressbar_bowshock(
-                    iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
-        self._check_mass_consistency()
-        self._check_sampling()
+    #             xpixcoord = self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]
+    #             ypixcoord = self.km2arcsec(yp) / self.arcsecpix + self.refpix[1]
+    #             xpix = int(xpixcoord)
+    #             ypix = int(ypixcoord)
+    #             # Conditions model point inside cube
+    #             condition_inside_map = \
+    #                 (xpix+1<self.nxs) and (ypix+1<self.nys) \
+    #                 and (xpix>0) and (ypix>0)
+    #             condition_inside_velcoverage = \
+    #                 vlsr <= maxvelchans and vlsr >= minvelchans
+    #             if condition_inside_map and condition_inside_velcoverage:
+    #                 dxpix = xpixcoord - xpix
+    #                 dypix = ypixcoord - ypix
+    #                 for chan, vchan in enumerate(self.velchans):
+    #                     diffv = np.abs(vlsr-vchan)
+    #                     if self._cond_populatechan(diffv):
+    #                         particle_in_cell(
+    #                             chan, diffv, xpix, ypix,
+    #                             dxpix, dypix, dmass)
+    #                         if diffv < self.abschanwidth/2:
+    #                             self._sampling(chan, xpix, ypix)
+    #             else:
+    #                 if outsidegrid_warning:
+    #                     self._outsidegrid_warning()
+    #                     outsidegrid_warning = False
+    #         if self.verbose:
+    #             tf = datetime.now()
+    #             intervaltime = (tf-t0).total_seconds()
+    #             ts.append(intervaltime)
+    #             ut.progressbar_bowshock(
+    #                 iz+1, self.nzs, np.sum(ts), intervaltime, length=50)
+    #     self._check_mass_consistency()
+    #     self._check_sampling()
 
     def plot_channel(self, chan, vmax=None, vmin=None,
         cmap="inferno", savefig=None, return_fig_axs=False):
@@ -856,17 +873,34 @@ class CubeProcessing(BowshockCube):
     ]
 
     def __init__(
-            self, modelcubes, modelname="none", J=3, XCO=8.5*10**(-5), meanmolmass=2.8, Tex=100*u.K, Tbg=2.7*u.K, coordcube="offset",
-            ra_source_deg=None, dec_source_deg=None, bmin=None, bmaj=None,
-            pabeam=None, papv=None, parot=None, sigma_beforeconv=None,
-            maxcube2noise=None, verbose=True, **kwargs):
+        self,
+        modelcubes,
+        modelname="none",
+        J=3,
+        XCO=8.5 * 10 ** (-5),
+        meanmolmass=2.8,
+        Tex=100 * u.K,
+        Tbg=2.7 * u.K,
+        coordcube="offset",
+        ra_source_deg=None,
+        dec_source_deg=None,
+        bmin=None,
+        bmaj=None,
+        pabeam=None,
+        papv=0,
+        parot=0,
+        sigma_beforeconv=None,
+        maxcube2noise=None,
+        verbose=True,
+        **kwargs,
+    ):
 
-        if type(modelcubes) != list:
-            self.nmodels = 1
-            modelcubes = [modelcubes]
-        if type(modelcubes) == list:
+        if isinstance(modelcubes, list):
             self.nmodels = len(modelcubes)
             self.concatenate_cubes(modelcubes)
+        else:
+            self.nmodels = 1
+            modelcubes = [modelcubes]
 
         for att in self.attribs_to_get_from_cubes:
             setattr(self, att, modelcubes[0].__getattribute__(att))
@@ -966,6 +1000,14 @@ class CubeProcessing(BowshockCube):
                     )
 
     def concatenate_cubes(self, modelcubes):
+        """
+        Combines (sums) a list of cubes
+
+        Parameters
+        ----------
+        modelcubes : list
+            List of cubes to combine
+        """
         self._check_concat_possibility(modelcubes)
         self.cube = np.sum(
             [modelcube.cube for modelcube in modelcubes], axis=0)
@@ -976,7 +1018,7 @@ class CubeProcessing(BowshockCube):
         densities of the model cube
         """
         if self.verbose:
-            print(f"\nComputing column densities...")
+            print("\nComputing column densities...")
         self.cubes["Ntot"] = rt.column_density_tot(
             m=self.cubes["m"] * u.solMass,
             meanmolmass=self.meanmolmass,
@@ -986,14 +1028,14 @@ class CubeProcessing(BowshockCube):
         self.noisychans["Ntot"] = self.noisychans["m"]
         self.sigma_noises["Ntot"] = self.sigma_noises["m"]
         if self.verbose:
-            print(f"column densities has been calculated\n")
+            print("column densities has been calculated\n")
 
     def calc_NCO(self,):
         """
         Computes the CO column densities of the model cube
         """
         if self.verbose:
-            print(f"\nComputing CO column densities...")
+            print("\nComputing CO column densities...")
         self.cubes["NCO"] = rt.column_density_CO(
             m=self.cubes["m"] * u.solMass,
             meanmolmass=self.meanmolmass,
@@ -1004,7 +1046,7 @@ class CubeProcessing(BowshockCube):
         self.noisychans["NCO"] = self.noisychans["m"]
         self.sigma_noises["NCO"] = self.sigma_noises["m"]
         if self.verbose:
-            print(f"CO column densities has been calculated\n")
+            print("CO column densities has been calculated\n")
 
     def calc_tau(self):
         """
@@ -1013,7 +1055,7 @@ class CubeProcessing(BowshockCube):
         if "NCO" not in self.cubes:
             self.calc_NCO()
         if self.verbose:
-            print(f"\nComputing opacities...")
+            print("\nComputing opacities...")
         self.cubes["tau"] = rt.tau_N(
             nu=rt.freq_caract_CO[self.rottrans],
             J=self.J,
@@ -1025,7 +1067,7 @@ class CubeProcessing(BowshockCube):
         self.noisychans["tau"] = self.noisychans["m"]
         self.sigma_noises["tau"] = self.sigma_noises["m"]
         if self.verbose:
-            print(f"Opacities has been calculated\n")
+            print("Opacities has been calculated\n")
 
     def calc_I(self, opthin=False):
         """
@@ -1034,7 +1076,7 @@ class CubeProcessing(BowshockCube):
         if "tau" not in self.cubes:
             self.calc_tau()
         if self.verbose:
-            print(f"\nComputing intensities...")
+            print("\nComputing intensities...")
         func_I = rt.Inu_tau_thin if opthin else rt.Inu_tau
         ckI = "Ithin" if opthin else "I"
         self.cubes[ckI] = (func_I(
@@ -1047,7 +1089,7 @@ class CubeProcessing(BowshockCube):
         self.noisychans[ckI] = self.noisychans["m"]
         self.sigma_noises[ckI] = self.sigma_noises["m"]
         if self.verbose:
-            print(f"Intensities has been calculated\n")
+            print("Intensities has been calculated\n")
 
     def calc_Ithin(self):
         """
