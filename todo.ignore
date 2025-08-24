@@ -207,3 +207,10 @@ model_cube_concat.plot_channels(
     savefig="models/prueba3.pdf",
     )
 
+
+------------------
+
+
+- change concatenate by combine
+
+- implement higher transitions CO

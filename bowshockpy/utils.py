@@ -1,14 +1,11 @@
-import numpy as np
-
+import os
 from itertools import groupby
 
-from matplotlib import colormaps
-from matplotlib import colors
-
+import numpy as np
 from astropy import units as u
 from astropy.convolution import Gaussian2DKernel, convolve
+from matplotlib import colormaps, colors
 
-import os
 
 def print_example(example):
     """
@@ -23,31 +20,84 @@ def print_example(example):
             - Example 3: A side-on bowshock
             - Example 4: Several bowshocks in one cube
     """
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.dirname(os.path.abspath(__file__))
     with open(f"{example}", "w") as wr:
-        with open(ROOT_DIR+f"/inputfiles/{example}", "r") as re:
+        with open(root_dir + f"/inputfiles/{example}", "r") as re:
             for line in re:
                 wr.write(line)
 
+
 def list2str(a, precision=2):
-    _list = [float(f'{i:.{precision}f}') for i in a]
-    _str = str(_list) if len(_list)>1 else str(_list[0])
+    """
+    Converts a list to a str
+
+    Parameters
+    ----------
+    a : list
+        List to convert as string
+    precision : int
+        Number of decimals to display
+    """
+    _list = [float(f"{i:.{precision}f}") for i in a]
+    _str = str(_list) if len(_list) > 1 else str(_list[0])
     return _str
 
+
 def progressbar_bowshock(
-        iteration, total, timelapsed, intervaltime,
-        decimals=1, length=100, fill='─', printend="\r"
-        ):
+    iteration,
+    total,
+    timelapsed,
+    intervaltime,
+    decimals=1,
+    length=100,
+    fill="─",
+    printend="\r",
+):
+    """
+    Bowshock-like progress bar
+
+    Parameters
+    ----------
+    iteration : int
+        Current iteraction
+    total : int
+        Total iteractions
+    timelapsed : float
+        Current time elapsed
+    intervaltime : float
+        Duration of an iteraction
+    decimals : int
+        Number of decimals to show
+    length : float
+        Length of the progress bar
+    fill : str
+        String to define the filled part of the progress bar
+    printend : str
+        End of the progress bar
+    """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + ')' + ' ' * (length - filledLength)
-    print(f'  0{bar}{percent}% | {timelapsed:.0f}/{intervaltime*total:.0f}s', end = printend)
+    filledlength = int(length * iteration // total)
+    _bar = fill * filledlength + ")" + " " * (length - filledlength)
+    print(
+        f"  0{_bar}{percent}% | {timelapsed:.0f}/{intervaltime*total:.0f}s",
+        end=printend,
+    )
     if iteration == total:
         print()
 
+
 def make_folder(foldername=None):
+    """
+    Makes a folder of the model
+
+    Parameters
+    ----------
+    foldername : str
+        Name of the folder of the model
+    """
     if not os.path.exists(foldername):
         os.makedirs(foldername)
+
 
 def mb_sa_gaussian_f(maja, mina):
     """
@@ -62,11 +112,12 @@ def mb_sa_gaussian_f(maja, mina):
 
     Returns:
     --------
-    omega_M : astropy.units.sr
+    omega_m : astropy.units.sr
         Beam solid angle in stereoradians
     """
-    omega_M = np.pi * maja * mina / (4 * np.log(2))
-    return omega_M.to(u.sr)
+    omega_m = np.pi * maja * mina / (4 * np.log(2))
+    return omega_m.to(u.sr)
+
 
 def gaussconvolve(data, x_FWHM, y_FWHM, pa, return_kernel=False):
     """
@@ -91,19 +142,18 @@ def gaussconvolve(data, x_FWHM, y_FWHM, pa, return_kernel=False):
         Convolved data
     kernel : numpy.ndarray
         Image of the Gaussian kernel. Is returned only if  return_kernel = True
-        """
+    """
     x_stddev = x_FWHM / (2 * np.sqrt(2 * np.log(2)))
     y_stddev = y_FWHM / (2 * np.sqrt(2 * np.log(2)))
     # Gausskernel 0 and 1 entries are the FWHM, the third the PA
     kernel = Gaussian2DKernel(
-        x_stddev=x_stddev,
-        y_stddev=y_stddev,
-        theta=pa*np.pi/180)
+        x_stddev=x_stddev, y_stddev=y_stddev, theta=pa * np.pi / 180
+    )
     data_conv = convolve(data, kernel)
     if return_kernel:
         return data_conv, kernel
-    else:
-        return data_conv
+    return data_conv
+
 
 def get_color(vel_range, vel, cmap, norm="linear", customnorm=None):
     """
@@ -125,31 +175,35 @@ def get_color(vel_range, vel, cmap, norm="linear", customnorm=None):
         Custom norm from `matplotlib.colors`
     """
     cmapp = colormaps.get_cmap(cmap)
-    if norm == "linear" and customnorm is None:
-        norm = colors.Normalize(vmin=vel_range[0], vmax=vel_range[-1])
-    elif norm == "log" and customnorm is None:
-        norm = colors.LogNorm(vmin=vel_range[0], vmax=vel_range[-1])
-    elif customnorm is not None:
-        norm = customnorm
+    if customnorm is not None:
+        _norm = customnorm
+    else:
+        if norm == "log" and customnorm is None:
+            _norm = colors.LogNorm(vmin=vel_range[0], vmax=vel_range[-1])
+        else:
+            _norm = colors.Normalize(vmin=vel_range[0], vmax=vel_range[-1])
 
-    rgba = cmapp(norm(vel))
+    rgba = cmapp(_norm(vel))
     color = colors.to_hex(rgba)
     return color
 
-class VarsInParamFile():
+
+class VarsInParamFile:
     """
     This class takes as attributes the keys and values of a dictionary
-    
+
     Parameters
     ----------
     params : dict
         Input dictionary
     """
+
     def __init__(self, params):
         self.filename = params["__file__"]
         for key in params:
             if key.startswith("__") is False:
                 setattr(self, key, params[key])
+
 
 def allequal(inputlist):
     """
@@ -165,9 +219,10 @@ def allequal(inputlist):
     boolean
         True if all elements are equal, False if they are not
     """
-    if type(inputlist[0]) == np.ndarray:
+    if isinstance(inputlist[0], np.ndarray):
         _list = [list(i) for i in inputlist]
     else:
-        _list = inputlist 
+        _list = inputlist
     g = groupby(_list)
     return next(g, True) and not next(g, False)
+

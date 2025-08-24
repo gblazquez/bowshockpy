@@ -1,19 +1,22 @@
+import os
+import warnings
+
 import astropy.units as u
 
-import os
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-import warnings
-warnings.filterwarnings('ignore', category=RuntimeWarning)
+import argparse
+import runpy
 
-from bowshockpy import models as mo
 from bowshockpy import cube as bs
+from bowshockpy import models as mo
 from bowshockpy import utils as ut
 from bowshockpy.version import __version__
 
 
 def generate_bowshock(p):
     print(
-    f"""
+        f"""
 
 --------------------------------------------
 BowshockPy v{__version__}
@@ -27,25 +30,37 @@ Parameters read from {p.filename}
     pss = []
     psobss = []
     for i in range(p.nbowshocks):
-        pss += [{
-         "modelname": p.modelname,
-         'L0':      (p.__getattribute__(f"L0_{i+1}") * p.distpc * u.au).to(u.km).value,
-         'zj':      (p.__getattribute__(f"zj_{i+1}") * p.distpc * u.au).to(u.km).value,
-         'vj':       p.__getattribute__(f"vj_{i+1}"),
-         'va':       p.__getattribute__(f"va_{i+1}"),
-         'v0':       p.__getattribute__(f"v0_{i+1}"),
-         'rbf_obs': (p.__getattribute__(f"rbf_obs_{i+1}") * p.distpc * u.au).to(u.km).value
-             if p.__getattribute__(f"rbf_obs_{i+1}") is not None
-             else p.__getattribute__(f"rbf_obs_{i+1}"),
-         'mass':     p.__getattribute__(f"mass_{i+1}"),
-        }]
+        pss += [
+            {
+                "modelname": p.modelname,
+                "L0": (p.__getattribute__(f"L0_{i+1}") * p.distpc * u.au)
+                .to(u.km)
+                .value,
+                "zj": (p.__getattribute__(f"zj_{i+1}") * p.distpc * u.au)
+                .to(u.km)
+                .value,
+                "vj": p.__getattribute__(f"vj_{i+1}"),
+                "va": p.__getattribute__(f"va_{i+1}"),
+                "v0": p.__getattribute__(f"v0_{i+1}"),
+                "rbf_obs": (
+                    (p.__getattribute__(f"rbf_obs_{i+1}") * p.distpc * u.au)
+                    .to(u.km)
+                    .value
+                    if p.__getattribute__(f"rbf_obs_{i+1}") is not None
+                    else p.__getattribute__(f"rbf_obs_{i+1}")
+                ),
+                "mass": p.__getattribute__(f"mass_{i+1}"),
+            }
+        ]
 
-        psobss += [{
-         'i_deg': p.__getattribute__(f"i_{i+1}"),
-         'pa_deg': p.__getattribute__(f"pa_{i+1}"),
-         'vsys': p.vsys,
-         'distpc': p.distpc,
-        }]
+        psobss += [
+            {
+                "i_deg": p.__getattribute__(f"i_{i+1}"),
+                "pa_deg": p.__getattribute__(f"pa_{i+1}"),
+                "vsys": p.vsys,
+                "distpc": p.distpc,
+            }
+        ]
 
     make_output_cubes = len(p.outcubes) != 0
 
@@ -77,18 +92,18 @@ Parameters read from {p.filename}
             "J": p.J,
             "XCO": p.XCO,
             "meanmolmass": p.muH2,
-            "Tex": p.Tex*u.K,
-            "Tbg": p.Tbg*u.K,
+            "Tex": p.Tex * u.K,
+            "Tbg": p.Tbg * u.K,
             "ra_source_deg": p.ra_source_deg,
             "dec_source_deg": p.dec_source_deg,
-            "coordcube": p.coordcube
+            "coordcube": p.coordcube,
         }
     else:
         pscube = {}
         mpars = {}
 
     bscs = []
-    for i, (ps,psobs) in enumerate(zip(pss,psobss)):
+    for i, (ps, psobs) in enumerate(zip(pss, psobss)):
         bsm = mo.BowshockModel(
             L0=ps["L0"],
             zj=ps["zj"],
@@ -97,36 +112,38 @@ Parameters read from {p.filename}
             v0=ps["v0"],
             mass=ps["mass"],
             distpc=psobs["distpc"],
-            rbf_obs=ps["rbf_obs"]
-            )
+            rbf_obs=ps["rbf_obs"],
+        )
         bsmobs = bs.ObsModel(
             model=bsm,
             i_deg=psobs["i_deg"],
             pa_deg=psobs["pa_deg"],
             vsys=psobs["vsys"],
-            )
+        )
         if i == 0:
             ut.make_folder(f"models/{ps['modelname']}")
         plt_model = bsm.get_modelplot(
-            modelname=ps["modelname"]+f" bowshock_{i+1}",
+            modelname=ps["modelname"] + f" bowshock_{i+1}",
         )
         plt_model.plot()
         plt_model.savefig(
             f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
-            )
+        )
         plt_obsmodel = bsmobs.get_obsmodelplot(
-            modelname=ps["modelname"]+f" bowshock_{i+1}"
-            )
+            modelname=ps["modelname"] + f" bowshock_{i+1}"
+        )
         plt_obsmodel.plot()
         plt_obsmodel.savefig(
             f"models/{ps['modelname']}/bowshock_projected_{i+1}.jpg",
             dpi=300,
         )
         if make_output_cubes:
-            print(f"""
+            print(
+                f"""
 
 Generating bowshock {i+1}/{p.nbowshocks}
-                  """)
+                  """
+            )
             bscs += [
                 bs.BowshockCube(
                     obsmodel=bsmobs,
@@ -142,17 +159,19 @@ Generating bowshock {i+1}/{p.nbowshocks}
                     cic=pscube["cic"],
                     vt=pscube["vt"],
                     tolfactor_vt=pscube["tolfactor_vt"],
-                    verbose=pscube["verbose"]
-                    )
-                ]
+                    verbose=pscube["verbose"],
+                )
+            ]
             bscs[i].makecube()
-            print(f"""
+            print(
+                f"""
 Channel width: {bscs[i].abschanwidth:.3} km/s
 Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
-     """)
+     """
+            )
 
     print(
-f"""
+        f"""
 The masses have been computed!
 
 The cubes are going to be processed in order to get the desired outputs
@@ -188,7 +207,7 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         parot=pscube["parot"],
         sigma_beforeconv=pscube["sigma_beforeconv"],
         maxcube2noise=pscube["maxcube2noise"],
-        )
+    )
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
     for ck in bscp.listmompvs:
@@ -209,14 +228,13 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         mom8values=p.mom8values,
         pvvalues=p.pvvalues,
         add_beam=True,
-        )
+    )
 
     # Save the file with all the parameters used to generate the bowshocks
     os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")
 
+
 def main():
-    import argparse
-    import runpy
 
     description = """
 Bowshockpy is a Python package that generates synthetic spectral cubes,
@@ -229,18 +247,18 @@ https://bowshockpy.readthedocs.io/en/latest/
 
     """
 
-    parser = argparse.ArgumentParser(
-        description=description
-    )
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
-        "-r", "--read",
+        "-r",
+        "--read",
         dest="parameters_file",
         type=str,
         help="Reads a configuration file to generate the bowshock model",
-        default="None"
-        )
+        default="None",
+    )
     parser.add_argument(
-        "-p", "--print",
+        "-p",
+        "--print",
         dest="inputfile_example",
         type=str,
         help="""
@@ -250,11 +268,10 @@ https://bowshockpy.readthedocs.io/en/latest/
         for a model including two redshifted bowshocks, write 3 for a
         blueshifted bowshock. See https://bowshockpy.readthedocs.io/en/latest/
         for a detailed documentation of the examples.  """,
-        default="None"
-        )
+        default="None",
+    )
 
-    examples_available = [
-        "example1.py", "example2.py", "example3.py", "example4.py"]
+    examples_available = ["example1.py", "example2.py", "example3.py", "example4.py"]
     args = parser.parse_args()
     filename = args.parameters_file
     _example = args.inputfile_example
@@ -269,6 +286,7 @@ https://bowshockpy.readthedocs.io/en/latest/
             print(f"{example} has been created")
         else:
             print(f"{example} file is not available and could not be created")
+
 
 if __name__ == "__main__":
     main()
