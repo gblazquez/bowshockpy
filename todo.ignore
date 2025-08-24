@@ -213,4 +213,8 @@ model_cube_concat.plot_channels(
 
 - change concatenate by combine
 
-- implement higher transitions CO
+x implement higher transitions CO
+
+- Allow to give as input the frequency of the transition instead of the
+  transition
+

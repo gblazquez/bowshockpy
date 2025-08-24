@@ -6,6 +6,11 @@ freq_caract_CO = {
     "1-0": 115.27120180 * u.GHz,
     "2-1": 230.53800000 * u.GHz,
     "3-2": 345.79598990 * u.GHz,
+    "4-3": 461.0407682 * u.GHz,
+    "5-4": 576.2679305 * u.GHz,
+    "6-5": 691.4730763 * u.GHz,
+    "7-6": 806.651806 * u.GHz,
+    "8-7": 921.7997 * u.GHz,
     "13CO_3-2": 330.58796530 * u.GHz,
 }
 
@@ -368,4 +373,3 @@ def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, XCO):
     Ntot = Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv)
     totmass = area * Ntot * meanmolmass * const.m_p / XCO
     return totmass.to(u.Msun)
-
