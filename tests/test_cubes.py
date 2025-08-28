@@ -104,6 +104,12 @@ def test_intensities():
     ), "Intensities calculated in the optically thin regime does not correspond to total mass of the cube"
 
 
+def test_intensity_index():
+    assert np.isclose(
+        bscp.cube[36, 26, 25], 2.8056152672732146e-07
+    ), "CubeProcessing failed to obtain the expected values of the intensities"
+
+
 def test_convolution():
     bscp.calc_I()
     bscp.convolve("I")

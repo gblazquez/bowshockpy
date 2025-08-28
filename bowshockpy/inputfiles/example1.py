@@ -134,7 +134,8 @@ vj_1 = 73
 # Ambient (or surrounding wind) velocity [km/s]
 va_1 = 0
 
-# Velocity at which the material is ejected sideways from the internal working surface [km/s]
+# Velocity at which the material is ejected sideways from the internal working
+# surface [km/s]
 v0_1 = 5
 
 # Final radius of the bowshock [arcsec]. Set None if you want to end the
