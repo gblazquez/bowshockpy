@@ -1,55 +1,4 @@
-..
-   .. toctree::
-      :hidden:
-      :caption: User Guide
-      :maxdepth: 2
-   
-      user_guide/installation
-      user_guide/dependencies
-      user_guide/usage
-      user_guide/inputparams
-      user_guide/outputs
-      user_guide/background
-   
-   .. toctree::
-      :hidden:
-      :caption: Examples
-      :maxdepth: 2
-      
-      examples/example_notebook
-      examples/examples_inputfile
-   
-   .. toctree::
-      :hidden:
-      :caption: Code documentation
-      :maxdepth: 2
 
-    api/index
- 
-..
-   .. toctree::
-      :hidden:
-      :caption: Background
-      :maxdepth: 1
-      user_guide/background
-
-..
-   .. toctree::
-      :hidden:
-      :caption: Caption
-      :maxdepth: 2
-   
-      user_guide/index
-      examples/index
-      api/index
-
-..
-  .. image:: images/logo.png
-      :width: 800
-      :alt: a description of the logo
-
-..
-   ``bowshockpy`` is a Python package that generates synthetic spectral cubes, PV diagrams, and moment images for a simple analytical jet-driven bowshock model, using the prescription for protostellar jets presented in `Ostriker et al. (2001) <https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract>`_ and `Tabone et al. (2018) <https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract>`_. 
 
 ==========
 BowshockPy
@@ -90,7 +39,7 @@ If you are interested in the physics behind ``bowshockpy`` an its workflow, see 
 Contributing
 ------------
 
-We welcome contributions and issue reports to this project. If you are intersted, please follow our `contributing guidelines <https://github.com/gblazquez/bowshockpy/blob/main/CONTRIBUTING.md>`_.
+We welcome contributions and issue reports to this project. If you are interested, please follow our `contributing guidelines <https://github.com/gblazquez/bowshockpy/blob/main/CONTRIBUTING.md>`_.
 
 
 License
@@ -147,38 +96,3 @@ Table of contents
  
 
 
-
-..
-   for a simple analytical jet-driven bowshock model, using the prescription for protostellar jets presented in `Ostriker et al. (2001) <https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract>`_ and `Tabone et al. (2018) <https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract>`_. 
-
-..
-   .. grid:: 1 2 2 2
-      :gutter: 2
-   
-      .. grid-item-card:: :octicon:`book;7em`
-         :link: user_guide/index.html
-         :class-card: frontpage-display-card
-         :text-align: center
-   
-         User Guide
-   
-      .. grid-item-card:: :octicon:`telescope;7em`
-         :link: examples/index.html
-         :class-card: frontpage-display-card
-         :text-align: center
-   
-         Examples
-   
-      .. grid-item-card:: :octicon:`list-unordered;7em`
-         :link: api/index.html
-         :class-card: frontpage-display-card
-         :text-align: center
-   
-         API Reference
-   
-      .. grid-item-card:: :octicon:`mark-github;7em`
-         :link: https://github.com/gblazquez/bowshockpy
-         :class-card: frontpage-display-card
-         :text-align: center
-   
-         GitHub

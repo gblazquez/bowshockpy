@@ -97,9 +97,9 @@ x test numerical vs anaytical
 
 x use write_log in utils? If not, erease it
 
-- make an statement in the paper:
-  - What kind of user the software is targeted to?
-  - Softwares that compares to bowshockpy?
+x make an statement in the paper:
+  x What kind of user the software is targeted to?
+  x Softwares that compares to bowshockpy?
 
 x Unify meanmass con muH2. Keep muH2
 
@@ -218,3 +218,10 @@ x implement higher transitions CO
 - Allow to give as input the frequency of the transition instead of the
   transition
 
+- Change bowshockpy with BowshockPy
+
+- Change XCO for abund
+
+- Dipole moment should be a parameter in the input file
+
+- Change the units of the channels -> masses-> masses/(pix*chan). And so on

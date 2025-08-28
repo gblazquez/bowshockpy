@@ -11,10 +11,10 @@ freq_caract_CO = {
     "6-5": 691.4730763 * u.GHz,
     "7-6": 806.651806 * u.GHz,
     "8-7": 921.7997 * u.GHz,
-    "13CO_3-2": 330.58796530 * u.GHz,
+    # "13CO_3-2": 330.58796530 * u.GHz,
 }
 
-
+# This is general
 def exp_hnkt(nu, T):
     """
     Computes exp(h nu / k_B/T)
@@ -34,7 +34,7 @@ def exp_hnkt(nu, T):
     """
     return np.exp(const.h * nu / (const.k_B * T))
 
-
+# This is general
 def Bnu_f(nu, T):
     """
     Computes the spectral radiance or specific intensity of a Planckian (energy
@@ -55,7 +55,7 @@ def Bnu_f(nu, T):
     Bnu = 2 * const.h * nu**3 / (const.c**2 * (exp_hnkt(nu, T) - 1))
     return Bnu.to(u.Jy) / u.sr
 
-
+# Only for rotational transitions and low J (no centrifugal term)
 def B0(nu, J):
     """
     Rigid rotor rotation constant, being nu the frequency for the transition
@@ -75,10 +75,11 @@ def B0(nu, J):
     """
     return nu / (2 * J)
 
-
+# Only for linear molecules
 def gJ(J):
     """
-    Degeneracy of the level J at which the measurement was made. For a linear molecule as CO, g = 2J + 1
+    Degeneracy of the level J at which the measurement was made. For a linear
+    molecule as CO, g = 2J + 1
 
     Parameters
     ----------
@@ -92,10 +93,11 @@ def gJ(J):
     """
     return 2 * J + 1
 
-
+# this is for rotational transitions
 def Qpart(nu, J, Tex, tol=10 ** (-15)):
     """
-    Computes the partition function, sum over all states (2J+1)exp(-hBJ(J+1)/kT)
+    Computes the partition function, sum over all states
+    (2J+1)exp(-hBJ(J+1)/kT)
 
     Parameters
     ----------
@@ -123,7 +125,7 @@ def Qpart(nu, J, Tex, tol=10 ** (-15)):
         j += 1
     return np.sum(Qs)
 
-
+# this depends on the molecule via mu
 def A_j_jm1(nu, J, mu):
     """
     Calculates the spontaneous emission coeffitient for the J -> J-1 transition
@@ -153,7 +155,8 @@ def A_j_jm1(nu, J, mu):
     )
     return aj_jm1 * u.s ** (-1)
 
-
+# I think this is true only for pure rotators (without taking into account the
+# centrifugal correction)
 def Ej(nu, J):
     """
     Energy state of a rotator
@@ -171,6 +174,18 @@ def Ej(nu, J):
         Energy state of a rotator
     """
     return const.h * nu * (J + 1) / 2
+
+
+# TODO: THE NEXT FUNCTIONS ARE NOT ONLY FOR CO, BUT ARE TRUE IN GENERAL Split
+# the module in 2: one that are exclusive for CO and other module that is
+# general. Do the split here. The next functions are used in cube.py. The
+# previous functions aren't.
+# In order for the next functions to work, the user has to provide:
+# Abund -> Parameter file
+# meanmolmass -> Parameter file
+# m -> Parameter file
+# J -> Parameter file
+# Frequency of the transitions -> Molecule file
 
 
 def column_density_tot(m, meanmolmass, area):
@@ -195,6 +210,9 @@ def column_density_tot(m, meanmolmass, area):
     return m / (meanmolmass * const.m_p * area)
 
 
+# TODO rename column_density_CO with column_density_mol. Since this is general
+# for any kind of molecule given the abundance. Of course, XCO should also be
+# renamed as abund
 def column_density_CO(m, meanmolmass, area, XCO):
     """
     Computes the CO column density given the mass
@@ -218,7 +236,7 @@ def column_density_CO(m, meanmolmass, area, XCO):
     """
     return column_density_tot(m, meanmolmass, area) * XCO
 
-
+# TODO: This is general for rotational transitions
 def tau_N(nu, J, mu, Tex, dNdv):
     """
     Computes the opacity as a function of the column density per channel width
@@ -246,7 +264,7 @@ def tau_N(nu, J, mu, Tex, dNdv):
     kk = const.c**3 * A_j_jm1(nu, J, mu) / 8 / np.pi / nu**3
     return kk * NJ * (exp_hnkt(nu, Tex) - 1)
 
-
+# This is general
 def Inu_tau(nu, Tex, Tbg, tau):
     """
     Computes the intensity through the radiative transfer equation.
@@ -270,6 +288,7 @@ def Inu_tau(nu, Tex, Tbg, tau):
     return (Bnu_f(nu, Tex) - Bnu_f(nu, Tbg)) * (1 - np.exp(-tau))
 
 
+# This is general for opt thin
 def Inu_tau_thin(nu, Tex, Tbg, tau):
     """
     Computes the intensity taking from the radiative transfer equation under the

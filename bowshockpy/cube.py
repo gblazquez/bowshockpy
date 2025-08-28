@@ -829,11 +829,11 @@ class CubeProcessing(BowshockCube):
         coordcube="offset",
         ra_source_deg=None,
         dec_source_deg=None,
-        bmin=0,
-        bmaj=0,
-        pabeam=0,
-        papv=0,
-        parot=0,
+        bmin=0.,
+        bmaj=0.,
+        pabeam=0.,
+        papv=0.,
+        parot=0.,
         sigma_beforeconv=None,
         maxcube2noise=None,
         verbose=True,
@@ -933,7 +933,9 @@ class CubeProcessing(BowshockCube):
         )
 
     def _calc_areapix_cm(self):
-        self.areapix_cm = ((self.arcsecpix * self.distpc * u.au) ** 2).to(u.cm**2)
+        self.areapix_cm = (
+            (self.arcsecpix * self.distpc * u.au) ** 2
+        ).to(u.cm**2)
 
     def _check_concat_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
@@ -1186,7 +1188,9 @@ class CubeProcessing(BowshockCube):
 
         if self.verbose:
             ts = []
-            ut.progressbar_bowshock(0, self.nc, length=50, timelapsed=0, intervaltime=0)
+            ut.progressbar_bowshock(
+                0, self.nc, length=50, timelapsed=0, intervaltime=0
+            )
         for chan in range(np.shape(self.cubes[ck])[0]):
             if self.verbose:
                 t0 = datetime.now()
