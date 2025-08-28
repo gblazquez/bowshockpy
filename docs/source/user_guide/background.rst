@@ -26,7 +26,7 @@ Below, we present a brief description of the workflow of ``bowshockpy``. The nam
 
 * In order to perform the mock observations, some parameters dependent of the observer reference frame are used, mainly: the inclination angle of the bowshock axis with respect to the line-of-sight (i), the observer distance to the source (distpc), the systemic velocity (vsys), and the position angle of the bowshock axis (PA). Together with some parameters defining the properties of the spectral cube, as the pixel size and channel width, ``bowshockpy`` computes, in projection, the mass of the bowshock shell at each pixel and velocity channel of the spectral cube. 
 
-* ``bowshockpy`` can also calculate the intensities of low-J rotational CO transtions. Assuming a CO abundance (XCO), ``bowshockpy`` calculates first the column densities at each pixel and channel of the spectral cube. Given the excitation temperature (Tex) and assuming Local Thermodinamic Equilibrium, the opacities are computed. Finally, ``bowshockpy`` performs the radiative transfer in order to compute the intensities. 
+* ``bowshockpy`` can also calculate the intensities of low-J rotational CO transtions. Assuming a CO abundance (abund), ``bowshockpy`` calculates first the column densities at each pixel and channel of the spectral cube. Given the excitation temperature (Tex) and assuming Local Thermodinamic Equilibrium, the opacities are computed. Finally, ``bowshockpy`` performs the radiative transfer in order to compute the intensities. 
 
    
 References

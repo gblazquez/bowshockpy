@@ -74,7 +74,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   J = 3
   
-  XCO = 8.5 * 10**(-5)
+  abund = 8.5 * 10**(-5)
   
   
   
@@ -232,7 +232,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   J = 3
   
-  XCO = 8.5 * 10**(-5)
+  abund = 8.5 * 10**(-5)
   
   
   
@@ -391,7 +391,7 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   J = 3
   
-  XCO = 8.5 * 10**(-5)
+  abund = 8.5 * 10**(-5)
   
   
   
@@ -548,7 +548,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   J = 3
   
-  XCO = 8.5 * 10**(-5)
+  abund = 8.5 * 10**(-5)
   
   
   

@@ -103,7 +103,7 @@ muH2 = 2.8
 J = 3
 
 # CO abundance relative to the molecular hydrogen.
-XCO = 8.5 * 10**(-5)
+abund = 8.5 * 10**(-5)
 
 
 # You can model several bowshocks in the same spectral cube. The number of

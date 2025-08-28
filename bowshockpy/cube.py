@@ -709,7 +709,7 @@ class CubeProcessing(BowshockCube):
     J : int, optional
         Upper level of the CO rotational transition (e.g. 3 for transition
         "3-2")
-    XCO : str, optional
+    abund : float, optional
         CO abundance relative to the molecular hydrogen
     meanmolmass : astropy.unit.Quantity, optional
         Mean mass per H molecule
@@ -822,7 +822,7 @@ class CubeProcessing(BowshockCube):
         modelcubes,
         modelname="none",
         J=3,
-        XCO=8.5 * 10 ** (-5),
+        abund=8.5 * 10 ** (-5),
         meanmolmass=2.8,
         Tex=100 * u.K,
         Tbg=2.7 * u.K,
@@ -866,7 +866,7 @@ class CubeProcessing(BowshockCube):
         self.modelname = modelname
         self.J = J
         self.rottrans = f"{int(J)}-{int(J-1)}"
-        self.XCO = XCO
+        self.abund = abund
         self.meanmolmass = meanmolmass
         self.Tex = Tex
         self.Tbg = Tbg
@@ -991,7 +991,7 @@ class CubeProcessing(BowshockCube):
                 m=self.cubes["m"] * u.solMass,
                 meanmolmass=self.meanmolmass,
                 area=self.areapix_cm,
-                XCO=self.XCO,
+                abund=self.abund,
             )
             .to(u.cm ** (-2))
             .value

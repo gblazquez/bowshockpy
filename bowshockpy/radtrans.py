@@ -211,9 +211,9 @@ def column_density_tot(m, meanmolmass, area):
 
 
 # TODO rename column_density_CO with column_density_mol. Since this is general
-# for any kind of molecule given the abundance. Of course, XCO should also be
+# for any kind of molecule given the abundance. Of course, abund should also be
 # renamed as abund
-def column_density_CO(m, meanmolmass, area, XCO):
+def column_density_CO(m, meanmolmass, area, abund):
     """
     Computes the CO column density given the mass
     and the projected area
@@ -226,7 +226,7 @@ def column_density_CO(m, meanmolmass, area, XCO):
         Mean molecular mass per hydrogen molecule
     area : astropy.units.quantity
         Projected area
-    XCO : float
+    abund : float
         CO abundance relative to molecular hydrogen
 
     Returns
@@ -234,7 +234,7 @@ def column_density_CO(m, meanmolmass, area, XCO):
     astropy.units.quantity
         CO column density
     """
-    return column_density_tot(m, meanmolmass, area) * XCO
+    return column_density_tot(m, meanmolmass, area) * abund
 
 # TODO: This is general for rotational transitions
 def tau_N(nu, J, mu, Tex, dNdv):
@@ -357,7 +357,7 @@ def Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv):
     return Ntot_opthin
 
 
-def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, XCO):
+def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, abund):
     """
     Computes the total mass (molecular hydrogen plus heavier components) in the
     assuming optically thin emission.
@@ -381,7 +381,7 @@ def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, XCO):
         Projected area of a pixel
     meanmolmass : float
         Mean molecular mass per hydrogen molecule
-    XCO : float
+    abund : float
         CO abundance relative to molecular hydrogen
 
     Returns
@@ -390,5 +390,5 @@ def totmass_opthin(nu, J, mu, Tex, Tbg, Inudv, area, meanmolmass, XCO):
         Total mass (H2 + heavier elements) in astropy.units.Msun
     """
     Ntot = Ntot_opthin_Inudv(nu, J, mu, Tex, Tbg, Inudv)
-    totmass = area * Ntot * meanmolmass * const.m_p / XCO
+    totmass = area * Ntot * meanmolmass * const.m_p / abund
     return totmass.to(u.Msun)

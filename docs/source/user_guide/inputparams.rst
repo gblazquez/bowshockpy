@@ -97,7 +97,7 @@ The next parameters are common to all the bowshocks that are going to be generat
 *J* (str)
     Upper level of the CO rotational transition (e.g. 3 for the "J=3->2" transition).
 
-*XCO* (float)
+*abund* (float)
     CO abundance relative to the molecular hydrogen.
 
 ``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, subtituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).

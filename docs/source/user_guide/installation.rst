@@ -3,7 +3,7 @@ How to install
 
 You can install ``bowshockpy`` using ``pip``, either from PyPI or from the source repository. The :doc:`dependencies<dependencies>` will be automatically installed.
 
-We recommend to use a Python environment in order to install ``bowshockpy`` and its dependencies. The Python environment can be created using ``venv``. For example, in order to create a Python environment called "env", run in your terminal
+We recommend to use a clean Python environment in order to install ``bowshockpy`` and its dependencies. The Python environment can be created using ``venv``. For example, in order to create a Python environment called "env", run in your terminal
 
 .. code-block:: console
 

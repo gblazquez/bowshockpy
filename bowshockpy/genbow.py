@@ -90,7 +90,7 @@ Parameters read from {p.filename}
         mpars = {
             "muH2": p.muH2,
             "J": p.J,
-            "XCO": p.XCO,
+            "abund": p.abund,
             "meanmolmass": p.muH2,
             "Tex": p.Tex * u.K,
             "Tbg": p.Tbg * u.K,
@@ -193,7 +193,7 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         bscs,
         modelname=p.modelname,
         J=mpars["J"],
-        XCO=mpars["XCO"],
+        abund=mpars["abund"],
         meanmolmass=mpars["meanmolmass"],
         Tex=mpars["Tex"],
         Tbg=mpars["Tbg"],

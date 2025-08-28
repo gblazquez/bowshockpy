@@ -12,10 +12,10 @@ m = 10 ** (-8) * u.Msun
 meanmolmass = 2.8
 area = 100 * u.au**2
 dv = 1 * u.km / u.s
-XCO = 10 ** (-4)
+abund = 10 ** (-4)
 mu = 0.112 * u.Debye
 Tex = 100 * u.K
-Nco = rt.column_density_CO(m=m, meanmolmass=meanmolmass, area=area, XCO=XCO)
+Nco = rt.column_density_CO(m=m, meanmolmass=meanmolmass, area=area, abund=abund)
 dNcodv = (Nco / dv).to(u.cm ** (-2) / u.km * u.s)
 Aeinstein_CO10 = 7.45447951542228e-08
 

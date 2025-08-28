@@ -45,7 +45,7 @@ bsc3 = copy.deepcopy(bsc1)
 bscp = bs.CubeProcessing(
     [bsc1, bsc3],
     J=3,
-    XCO=8.5 * 10 ** (-5),
+    abund=8.5 * 10 ** (-5),
     meanmolmass=2.8,
     Tex=100 * u.K,
     Tbg=2.7 * u.K,
@@ -94,7 +94,7 @@ def test_intensities():
             Inudv=Inudv,
             area=bscp.areapix_cm,
             meanmolmass=bscp.meanmolmass,
-            XCO=bscp.XCO,
+            abund=bscp.abund,
         )
         .to(u.Msun)
         .value
