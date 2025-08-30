@@ -5,6 +5,7 @@ from astropy import constants as const
 from astropy import units as u
 
 from bowshockpy import radtrans as rt
+from bowshockpy import rotlinearmol as rlm
 
 J = 3
 nu = 345 * u.GHz
@@ -15,11 +16,16 @@ dv = 1 * u.km / u.s
 abund = 10 ** (-4)
 mu = 0.112 * u.Debye
 Tex = 100 * u.K
-Nco = rt.column_density_CO(m=m, meanmolmass=meanmolmass, area=area, abund=abund)
+Ntot = rt.column_density_tot(m=m, meanmolmass=meanmolmass, area=area)
+Nco = rt.column_density_mol(Ntot, abund=abund)
 dNcodv = (Nco / dv).to(u.cm ** (-2) / u.km * u.s)
 Aeinstein_CO10 = 7.45447951542228e-08
 
-tau = rt.tau_N(nu=nu, J=J, mu=mu, Tex=Tex, dNdv=dNcodv).to("")
+freq_caract_CO = {
+    "1-0": 115.27120180 * u.GHz,
+}
+
+tau = rlm.tau_linearmol(dNmoldv=dNcodv, J=J, nu=nu, Tex=Tex, mu=mu).to("")
 
 eq1 = (
     (
@@ -28,10 +34,10 @@ eq1 = (
         * (mu.to(u.Debye) * 10 ** (-18)) ** 2
         / const.h.cgs
         * J
-        / (2 * J + 1)
-        * rt.gJ(J=J)
-        / rt.Qpart(nu, J, Tex)
-        * np.exp(-rt.Ej(nu=nu, J=J) / const.k_B / Tex)
+        / (2*J + 1)
+        * rlm.gJ(J=J)
+        / rt.Qpart(Tex, gi=rlm.gJ, Ei=rlm.EJ, Ei_args=(rlm.B0J(J, nu)))
+        * np.exp(-rlm.EJ(J=J,B0=rlm.B0J(J,nu)) / const.k_B / Tex)
         * (rt.exp_hnkt(nu=nu, T=Tex) - 1)
     )
     .to((u.D) ** 2 / u.erg / u.cm**3)
@@ -39,9 +45,10 @@ eq1 = (
 )
 
 def test_Aeinstein():
+    Aeinstein = rt.A_ul(nu=freq_caract_CO["1-0"], mu_ul=rlm.muJ_Jm1(J=1, mu=mu)).value
     assert np.isclose(
-        rt.A_j_jm1(nu=rt.freq_caract_CO["1-0"], J=1, mu=mu).value, Aeinstein_CO10
-    ), "Einstein coefficient A is not well computed"
+        Aeinstein, Aeinstein_CO10
+    ), f"Einstein coefficient A is not well computed {Aeinstein}."
 
 
 def test_opacity():

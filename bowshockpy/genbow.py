@@ -14,6 +14,8 @@ from bowshockpy import utils as ut
 from bowshockpy.version import __version__
 
 
+# TODO:
+# Two more inputs: Inu_custom_call and tau_custom_call
 def generate_bowshock(p):
     print(
         f"""
@@ -207,6 +209,9 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         parot=pscube["parot"],
         sigma_beforeconv=pscube["sigma_beforeconv"],
         maxcube2noise=pscube["maxcube2noise"],
+        # TODO: Two more variables
+        # Inu_custom_call=,
+        # tau_custom_call=,
     )
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
@@ -256,6 +261,16 @@ https://bowshockpy.readthedocs.io/en/latest/
         help="Reads a configuration file to generate the bowshock model",
         default="None",
     )
+    # TODO:
+    # parser.add_argument(
+    #     "-c",
+    #     "--custom_radiative_transfer",
+    #     dest="custom_radiative_transfer",
+    #     type=str,
+    #     help="Reads a custom python script that computes the radiative tranfer",
+    #     default="None",
+    # )
+
     parser.add_argument(
         "-p",
         "--print",
@@ -278,6 +293,11 @@ https://bowshockpy.readthedocs.io/en/latest/
     if filename != "None":
         parameters = runpy.run_path(filename)
         p = ut.VarsInParamFile(parameters)
+        # TODO:
+        # Maybe the can be implemented in the same input file. This would solve
+        # the problem of defining several times the same parameters
+        # Inu_custom_call = p["Inu_custom_call"]
+        # tau_custom_call = p["tau_custom_call"]
         generate_bowshock(p)
     if _example != "None":
         example = _example if _example.endswith(".py") else f"{_example}.py"

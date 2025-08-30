@@ -10,10 +10,14 @@ from scipy.ndimage import rotate
 
 import bowshockpy.plots as pl
 import bowshockpy.radtrans as rt
+import bowshockpy.rotlinearmol as rlm
 import bowshockpy.utils as ut
 from bowshockpy import moments
 from bowshockpy.models import BowshockModel
 from bowshockpy.version import __version__
+
+# TODO
+# from bowshockpy.rottrans_linearmol import Inu_rottrans_linearmol, tau_rottrans_linearmol
 
 
 class ObsModel(BowshockModel):
@@ -240,7 +244,7 @@ class BowshockCube(ObsModel):
         refpix=[0, 0],
         cic=True,
         vt="2xchannel",
-        tolfactor_vt=None,
+      tolfactor_vt=None,
         verbose=True,
         **kwargs,
     ):
@@ -781,7 +785,6 @@ class CubeProcessing(BowshockCube):
     btypes = {
         "m": "mass",
         "I": "Intensity",
-        "Ithin": "Intensity",
         "Ntot": "Total column density",
         "NCO": "CO column density",
         "tau": "Opacity",
@@ -789,9 +792,8 @@ class CubeProcessing(BowshockCube):
     bunits = {
         "m": "solMass",
         "I": "Jy/beam",
-        "Ithin": "Jy/beam",
         "Ntot": "cm-2",
-        "NCO": "cm-2",
+        "Nmol": "cm-2",
         "tau": "-",
     }
     dos = {
@@ -822,10 +824,12 @@ class CubeProcessing(BowshockCube):
         modelcubes,
         modelname="none",
         J=3,
+        nu=345.79598990 * u.GHz,
         abund=8.5 * 10 ** (-5),
         meanmolmass=2.8,
         Tex=100 * u.K,
         Tbg=2.7 * u.K,
+        mu=0.112 * u.D,
         coordcube="offset",
         ra_source_deg=None,
         dec_source_deg=None,
@@ -837,6 +841,8 @@ class CubeProcessing(BowshockCube):
         sigma_beforeconv=None,
         maxcube2noise=None,
         verbose=True,
+        Inu_custom_call = None,
+        tau_custom_call = None,
         **kwargs,
     ):
 
@@ -865,11 +871,13 @@ class CubeProcessing(BowshockCube):
 
         self.modelname = modelname
         self.J = J
+        self.nu = nu
         self.rottrans = f"{int(J)}-{int(J-1)}"
         self.abund = abund
         self.meanmolmass = meanmolmass
         self.Tex = Tex
         self.Tbg = Tbg
+        self.mu = mu
         self.coordcube = coordcube
         self.ra_source_deg = ra_source_deg
         self.dec_source_deg = dec_source_deg
@@ -881,6 +889,8 @@ class CubeProcessing(BowshockCube):
         self.sigma_beforeconv = sigma_beforeconv
         self.maxcube2noise = maxcube2noise
         self.verbose = verbose
+        self.Inu_custom_call = Inu_custom_call
+        self.tau_custom_call = tau_custom_call
         if bmin is not None and bmaj is not None:
             self.x_FWHM = self.bmin / self.arcsecpix
             self.y_FWHM = self.bmaj / self.arcsecpix
@@ -954,6 +964,27 @@ class CubeProcessing(BowshockCube):
         self._check_concat_possibility(modelcubes)
         self.cube = np.sum([modelcube.cube for modelcube in modelcubes], axis=0)
 
+    def tau_f(self, dNmoldv):
+        if self.tau_custom_call is not None:
+            return self.tau_custom_call(dNmoldv=dNmoldv)
+        return rlm.tau_linearmol(
+           dNmoldv=dNmoldv,
+           J=self.J,
+           nu=self.nu,
+           Tex=self.Tex,
+           mu=self.mu,
+        )
+
+    def I_f(self, tau):
+        if self.Inu_custom_call is not None:
+            return self.Inu_custom_call(tau)
+        return rt.Inu_func(
+            tau=tau,
+            nu=self.nu,
+            Tex=self.Tex,
+            Tbg=self.Tbg,
+        )
+
     def calc_Ntot(
         self,
     ):
@@ -963,73 +994,62 @@ class CubeProcessing(BowshockCube):
         """
         if self.verbose:
             print("\nComputing column densities...")
-        self.cubes["Ntot"] = (
+
+        self.cubes["Ntot"] = \
             rt.column_density_tot(
                 m=self.cubes["m"] * u.solMass,
                 meanmolmass=self.meanmolmass,
                 area=self.areapix_cm,
-            )
-            .to(u.cm ** (-2))
-            .value
-        )
+            ).to(u.cm**(-2)).value
+
         self.refpixs["Ntot"] = self.refpixs["m"]
         self.noisychans["Ntot"] = self.noisychans["m"]
         self.sigma_noises["Ntot"] = self.sigma_noises["m"]
         if self.verbose:
             print("column densities has been calculated\n")
 
-    def calc_NCO(
-        self,
-    ):
+    def calc_Nmol(self):
         """
-        Computes the CO column densities of the model cube
+        Computes the emitting molecule column densities of the model cube
         """
+        if "Ntot" not in self.cubes:
+            self.calc_Ntot()
         if self.verbose:
-            print("\nComputing CO column densities...")
-        self.cubes["NCO"] = (
-            rt.column_density_CO(
-                m=self.cubes["m"] * u.solMass,
-                meanmolmass=self.meanmolmass,
-                area=self.areapix_cm,
+            print("\nComputing column densities of the emitting molecule...")
+
+        self.cubes["Nmol"] = \
+            rt.column_density_mol(
+                Ntot=self.cubes["Ntot"] * u.cm**(-2),
                 abund=self.abund,
-            )
-            .to(u.cm ** (-2))
-            .value
-        )
-        self.refpixs["NCO"] = self.refpixs["m"]
-        self.noisychans["NCO"] = self.noisychans["m"]
-        self.sigma_noises["NCO"] = self.sigma_noises["m"]
+            ).to(u.cm**(-2)).value
+
+        self.refpixs["Nmol"] = self.refpixs["m"]
+        self.noisychans["Nmol"] = self.noisychans["m"]
+        self.sigma_noises["Nmol"] = self.sigma_noises["m"]
         if self.verbose:
-            print("CO column densities has been calculated\n")
+            print("The column densities of the emitting molecule have been calculated\n")
 
     def calc_tau(self):
         """
         Computes the opacities of the model cube
         """
-        if "NCO" not in self.cubes:
-            self.calc_NCO()
+        if "Nmol" not in self.cubes:
+            self.calc_Nmol()
         if self.verbose:
             print("\nComputing opacities...")
-        self.cubes["tau"] = (
-            rt.tau_N(
-                nu=rt.freq_caract_CO[self.rottrans],
-                J=self.J,
-                mu=0.112 * u.D,
-                Tex=self.Tex,
-                dNdv=self.cubes["NCO"]
-                * u.cm ** (-2)
-                / (self.abschanwidth * u.km / u.s),
-            )
-            .to("")
-            .value
-        )
+
+        self.cubes["tau"] = \
+            self.tau_f(
+                dNmoldv=self.cubes["Nmol"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s)
+                ).to("").value
+
         self.refpixs["tau"] = self.refpixs["m"]
         self.noisychans["tau"] = self.noisychans["m"]
         self.sigma_noises["tau"] = self.sigma_noises["m"]
         if self.verbose:
             print("Opacities has been calculated\n")
 
-    def calc_I(self, opthin=False):
+    def calc_I(self):
         """
         Calculates the intensity [Jy/beam] of the model cube.
         """
@@ -1037,33 +1057,16 @@ class CubeProcessing(BowshockCube):
             self.calc_tau()
         if self.verbose:
             print("\nComputing intensities...")
-        func_I = rt.Inu_tau_thin if opthin else rt.Inu_tau
-        ckI = "Ithin" if opthin else "I"
-        self.cubes[ckI] = (
-            (
-                func_I(
-                    nu=rt.freq_caract_CO[self.rottrans],
-                    Tex=self.Tex,
-                    Tbg=self.Tbg,
-                    tau=self.cubes["tau"],
-                )
-                * self.beamarea_sr
-            )
-            .to(u.Jy)
-            .value
+
+        self.cubes["I"] = (
+            (self.I_f(tau=self.cubes["tau"]) * self.beamarea_sr).to(u.Jy).value
         )
-        self.refpixs[ckI] = self.refpixs["m"]
-        self.noisychans[ckI] = self.noisychans["m"]
-        self.sigma_noises[ckI] = self.sigma_noises["m"]
+
+        self.refpixs["I"] = self.refpixs["m"]
+        self.noisychans["I"] = self.noisychans["m"]
+        self.sigma_noises["I"] = self.sigma_noises["m"]
         if self.verbose:
             print("Intensities has been calculated\n")
-
-    def calc_Ithin(self):
-        """
-        Computes the intensity [Jy/beam] of the model cube, taking into account
-        the optically thin approximation
-        """
-        self.calc_I(opthin=True)
 
     def add_source(self, ck="m", value=None):
         """
@@ -1235,8 +1238,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         dictrad = {
             "mass": "m",
             "intensity": "I",
-            "intensity_opthin": "Ithin",
-            "CO_column_density": "NCO",
+            "mol_column_density": "Nmol",
             "tot_column_density": "Ntot",
             "opacity": "tau",
             "add_source": "s",
@@ -1288,8 +1290,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             - "mass": Total mass of molecular hydrogen in solar mass.
             - "CO_column_density": Column density of the CO in cm-2.
             - "intensity": Intensity in Jy/beam.
-            - "intensity_opthin": Intensity in Jy/beam, using the optically
-              thin approximation.
             - "tau": Opacities.
 
             The values of the dictionary are lists of strings indicating the

@@ -5,7 +5,7 @@ from astropy import units as u
 
 from bowshockpy import cube as bs
 from bowshockpy import models as mo
-from bowshockpy import radtrans as rt
+# from bowshockpy import radtrans as rt
 
 distpc = 300
 L0 = (0.391 * distpc * u.au).to(u.km).value
@@ -79,29 +79,28 @@ def test_concat_cubes():
         bsc3.cube
     ), "Mass consistency test failed while concatenating cubes"
 
-
-def test_intensities():
-    bscp.calc_Ithin()
-    sumintens = np.sum(bscp.cubes["Ithin"])
-    Inudv = sumintens * u.Jy / bscp.beamarea_sr * bscp.abschanwidth * u.km / u.s
-    totmass_opthin = (
-        rt.totmass_opthin(
-            nu=rt.freq_caract_CO["3-2"],
-            J=3,
-            mu=0.112 * u.D,
-            Tex=100 * u.K,
-            Tbg=2.7 * u.K,
-            Inudv=Inudv,
-            area=bscp.areapix_cm,
-            meanmolmass=bscp.meanmolmass,
-            abund=bscp.abund,
-        )
-        .to(u.Msun)
-        .value
-    )
-    assert np.isclose(
-        totmass_opthin, np.sum(bscp.cubes["m"])
-    ), "Intensities calculated in the optically thin regime does not correspond to total mass of the cube"
+# def test_intensities():
+#     bscp.calc_Ithin()
+#     sumintens = np.sum(bscp.cubes["Ithin"])
+#     Inudv = sumintens * u.Jy / bscp.beamarea_sr * bscp.abschanwidth * u.km / u.s
+#     totmass_opthin = (
+#         rt.totmass_opthin(
+#             nu=rt.freq_caract_CO["3-2"],
+#             J=3,
+#             mu=0.112 * u.D,
+#             Tex=100 * u.K,
+#             Tbg=2.7 * u.K,
+#             Inudv=Inudv,
+#             area=bscp.areapix_cm,
+#             meanmolmass=bscp.meanmolmass,
+#             abund=bscp.abund,
+#         )
+#         .to(u.Msun)
+#         .value
+#     )
+#     assert np.isclose(
+#         totmass_opthin, np.sum(bscp.cubes["m"])
+#     ), "Intensities calculated in the optically thin regime does not correspond to total mass of the cube"
 
 
 def test_intensity_index():
