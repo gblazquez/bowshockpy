@@ -34,9 +34,6 @@ The filename of each cube is an abbreviation of its quantity and the operations 
    * - Intensity
      - I
      - Jy/beam
-   * - Intensity optically thin approx.
-     - Ithin
-     - Jy/beam
 
 .. list-table:: Operations performed to the cubes files
    :widths: 10 4

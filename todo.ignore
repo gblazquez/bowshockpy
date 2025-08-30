@@ -220,8 +220,18 @@ x implement higher transitions CO
 
 - Change bowshockpy with BowshockPy
 
-- Change XCO for abund
+x Change XCO for abund
 
 - Dipole moment should be a parameter in the input file
 
 - Change the units of the channels -> masses-> masses/(pix*chan). And so on
+
+- mu as parameter
+
+- implement an example with custom calculation of tau and I
+(Although we could make the radiative transfer from the scratch, we are going
+to use some functions already defined in radtrans.py)
+
+- New test on intensity cubes. Keep track of a value of a pixel in intensities
+  (not in mass, as you alreadyd did)
+

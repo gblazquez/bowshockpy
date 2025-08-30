@@ -27,8 +27,6 @@ modelname = f"example2"
 #  cm-2.
 #  - "CO_column_density": Column density of the CO in cm-2.
 #  - "intensity": Intensity in Jy/beam.
-#  - "intensity_opthin": Intensity in Jy/beam, using the optically thin
-#  approximation.
 #  - "tau": Opacities.
 #
 # The values of the dictionary are lists of strings indicating the operations to
@@ -62,7 +60,6 @@ modelname = f"example2"
 # the masses.
 outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],
-    "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
     "opacity": [],
     "mass": [],
     }
@@ -98,7 +95,7 @@ Tex = 100
 Tbg = 2.7
 
 # Mean molecular mass per hydrogen molecule
-muH2 = 2.8
+meanmolmass = 2.8
 
 # Upper level of the CO rotational transition (e.g. 3 for the "J=3->2" transition).
 J = 3

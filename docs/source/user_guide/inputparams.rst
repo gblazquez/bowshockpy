@@ -29,7 +29,6 @@ These parameters define the desired outputs:
     - "Ntot_column_density": Total (H2 + heavier components) column density in cm-2.
     - "CO_column_density": Column density of the CO in cm-2.
     - "intensity": Intensity in Jy/beam.
-    - "intensity_opthin": Intensity in Jy/beam, using the optically thin approximation.
     - "tau": Opacities.
 
     The values of the dictionary are lists of strings indicating the operations to be performed over the cube. These are the available operations:
@@ -91,7 +90,7 @@ The next parameters are common to all the bowshocks that are going to be generat
 *Tbg* (float)
     Background temperature [K].
 
-*muH2* (float)
+*meanmolmass* (float)
     Mean molecular mass per hydrogen molecule.
 
 *J* (str)

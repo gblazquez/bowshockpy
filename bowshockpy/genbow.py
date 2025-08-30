@@ -90,10 +90,10 @@ Parameters read from {p.filename}
             "verbose": p.verbose,
         }
         mpars = {
-            "muH2": p.muH2,
+            "meanmolmass": p.meanmolmass,
             "J": p.J,
             "abund": p.abund,
-            "meanmolmass": p.muH2,
+            "meanmolmass": p.meanmolmass,
             "Tex": p.Tex * u.K,
             "Tbg": p.Tbg * u.K,
             "ra_source_deg": p.ra_source_deg,
@@ -183,11 +183,10 @@ cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
 name of the fits files:
 
 Abbreviations for quantities are:             Abbreviations for the operations are:
-   m: mass [SolarMass]                           s: add_source
-   I: Intensity [Jy/beam]                        r: rotate
-   Ithin: Intensity opt. thin aprox [Jy/beam]    n: add_noise
-   Ntot: Total column density [cm-2]             c: convolve
-   NCO: CO column density [cm-2]
+   m: mass [SolarMass]                             s: add_source
+   I: Intensity [Jy/beam]                          r: rotate
+   Ntot: Total column density [cm-2]               n: add_noise
+   Nmol: Column density emitting molecule [cm-2]   c: convolve
    tau: Opacity
 """
     )

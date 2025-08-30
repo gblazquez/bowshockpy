@@ -70,7 +70,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   Tbg = 2.7
   
-  muH2 = 2.8
+  meanmolmass = 2.8
   
   J = 3
   
@@ -200,7 +200,6 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   outcubes = {
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
-      "intensity_opthin": ["add_noise", "convolve", "moments_and_pv"],
       "opacity": [],
       "mass": [],
       }
@@ -228,7 +227,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   Tbg = 2.7
   
-  muH2 = 2.8
+  meanmolmass = 2.8
   
   J = 3
   
@@ -387,7 +386,7 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   Tbg = 2.7
   
-  muH2 = 2.8
+  meanmolmass = 2.8
   
   J = 3
   
@@ -544,7 +543,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   Tbg = 2.7
   
-  muH2 = 2.8
+  meanmolmass = 2.8
   
   J = 3
   

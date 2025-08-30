@@ -16,9 +16,6 @@ from bowshockpy import moments
 from bowshockpy.models import BowshockModel
 from bowshockpy.version import __version__
 
-# TODO
-# from bowshockpy.rottrans_linearmol import Inu_rottrans_linearmol, tau_rottrans_linearmol
-
 
 class ObsModel(BowshockModel):
     """
