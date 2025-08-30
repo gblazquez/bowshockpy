@@ -50,6 +50,7 @@ bscp = bs.CubeProcessing(
     meanmolmass=2.8,
     Tex=100 * u.K,
     Tbg=2.7 * u.K,
+    mu=0.112 * u.D,
     coordcube="offset",
     bmin=0.1,
     bmaj=0.10,

@@ -94,6 +94,9 @@ Tex = 100
 # Background temperature [K]
 Tbg = 2.7
 
+# Permanent dipole moment [Debye]
+mu = 0.112
+
 # Mean molecular mass per hydrogen molecule
 meanmolmass = 2.8
 

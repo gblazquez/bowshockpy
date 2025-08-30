@@ -70,6 +70,8 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   Tbg = 2.7
   
+  mu = 0.112
+  
   meanmolmass = 2.8
   
   J = 3
@@ -226,6 +228,8 @@ This example of input file generates one blueshifted bowshock. As defined by out
   Tex = 100
   
   Tbg = 2.7
+  
+  mu = 0.112
   
   meanmolmass = 2.8
   
@@ -386,6 +390,8 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   Tbg = 2.7
   
+  mu = 0.112
+  
   meanmolmass = 2.8
   
   J = 3
@@ -542,6 +548,8 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   Tex = 100
   
   Tbg = 2.7
+  
+  mu = 0.112
   
   meanmolmass = 2.8
   

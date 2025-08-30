@@ -90,6 +90,9 @@ The next parameters are common to all the bowshocks that are going to be generat
 *Tbg* (float)
     Background temperature [K].
 
+*mu* (float)
+    Permanent dipole moment of the molecule [D].
+
 *meanmolmass* (float)
     Mean molecular mass per hydrogen molecule.
 

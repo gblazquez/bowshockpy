@@ -718,6 +718,8 @@ class CubeProcessing(BowshockCube):
         Excitation temperature
     Tbg : astropy.unit.Quantity, optional
         Excitation temperature
+    mu : astropy.unit.Quantity, optional
+        Permanent dipole moment of the molecule
     coordcube : str, optional
         Set to "sky" if you would like to set the cube headers in sky
         coordinates, or "offset" if you prefer them in offsets relative to the

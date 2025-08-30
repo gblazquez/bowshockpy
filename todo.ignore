@@ -235,3 +235,5 @@ to use some functions already defined in radtrans.py)
 - New test on intensity cubes. Keep track of a value of a pixel in intensities
   (not in mass, as you alreadyd did)
 
+- Clarify the differences in Aij between literature
+
