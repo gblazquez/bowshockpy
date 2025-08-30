@@ -710,16 +710,18 @@ class CubeProcessing(BowshockCube):
     J : int, optional
         Upper level of the CO rotational transition (e.g. 3 for transition
         "3-2")
+    nu : astropy.units.Quantity, optional
+        Frequency of the transition
     abund : float, optional
         CO abundance relative to the molecular hydrogen
     meanmolmass : astropy.unit.Quantity, optional
         Mean mass per H molecule
+    mu : astropy.unit.Quantity, optional
+        Permanent dipole moment of the molecule
     Tex : astropy.unit.Quantity, optional
         Excitation temperature
     Tbg : astropy.unit.Quantity, optional
         Excitation temperature
-    mu : astropy.unit.Quantity, optional
-        Permanent dipole moment of the molecule
     coordcube : str, optional
         Set to "sky" if you would like to set the cube headers in sky
         coordinates, or "offset" if you prefer them in offsets relative to the
@@ -826,9 +828,9 @@ class CubeProcessing(BowshockCube):
         nu=345.79598990 * u.GHz,
         abund=8.5 * 10 ** (-5),
         meanmolmass=2.8,
+        mu=0.112 * u.D,
         Tex=100 * u.K,
         Tbg=2.7 * u.K,
-        mu=0.112 * u.D,
         coordcube="offset",
         ra_source_deg=None,
         dec_source_deg=None,
@@ -874,9 +876,9 @@ class CubeProcessing(BowshockCube):
         self.rottrans = f"{int(J)}-{int(J-1)}"
         self.abund = abund
         self.meanmolmass = meanmolmass
+        self.mu = mu
         self.Tex = Tex
         self.Tbg = Tbg
-        self.mu = mu
         self.coordcube = coordcube
         self.ra_source_deg = ra_source_deg
         self.dec_source_deg = dec_source_deg

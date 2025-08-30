@@ -25,8 +25,8 @@ The filename of each cube is an abbreviation of its quantity and the operations 
    * - Column density (H\ :sub:`2`\ + heavier components)
      - Ntot
      - cm-2
-   * - CO column density
-     - NCO
+   * - Column density emitting molecule
+     - Nmol
      - cm-2
    * - Opacities
      - tau

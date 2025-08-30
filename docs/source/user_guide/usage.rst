@@ -38,9 +38,9 @@ In a nutshell, these are the main tasks of each class:
 - **BowshockModel**: This class generates the analytic momentum-conserving bowshock model.
 - **ObsModel**: Allows to project the kinematics and morphology of the bowshock model.
 - **BowshockCube**: Computes the masses in each pixel and velocity channel of the spectral cube.
-- **CubeProcessing**: Performs the radiative transfer, obtaining the intensities of the CO rotational transition. It also allows to convolve the cube and obtain position-velocity diagrams and moment images.
+- **CubeProcessing**: Performs the radiative transfer, obtaining the intensities of the molecule rotational transition. It also allows to convolve the cube and obtain position-velocity diagrams and moment images.
 
-This documentation includes a :doc:`notebook example <../examples/example_notebook>` that shows how to use these classes. For a more detailed description of how to use these classes and other functions available in ``bowshockpy`` package, see the :doc:`API Reference <../api/index>`.
+This documentation includes a :doc:`notebook example <../examples/example_notebook>` that shows how to use these classes. For a more detailed description of how to use these classes and other functions available in ``BowshockPy`` package, see the :doc:`API Reference <../api/index>`.
 
 ..
     Using bowshockpy as a package allows you to either load the model parameters from an input file or to define the parameters in you script and create the bowshock model. The input file that contains all the model parameters, "params.py" can be read in the following manner. 

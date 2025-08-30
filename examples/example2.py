@@ -88,23 +88,26 @@ BOWSHOCKS PARAMETERS
 # Number of bowshocks to model
 nbowshocks = 1
 
+# Upper level of the rotational transition (e.g. 3 for the "J=3->2" transition).
+J = 3
+
+# Frequency of the transition [GHz]
+nu = 345.79598990
+
+# Abundance relative to the molecular hydrogen.
+abund = 8.5 * 10**(-5)
+
+# Mean molecular mass per hydrogen molecule
+meanmolmass = 2.8
+
+# Permanent dipole moment [Debye]
+mu = 0.112
+
 # Excitation temperature [K]
 Tex = 100
 
 # Background temperature [K]
 Tbg = 2.7
-
-# Permanent dipole moment [Debye]
-mu = 0.112
-
-# Mean molecular mass per hydrogen molecule
-meanmolmass = 2.8
-
-# Upper level of the CO rotational transition (e.g. 3 for the "J=3->2" transition).
-J = 3
-
-# CO abundance relative to the molecular hydrogen.
-abund = 8.5 * 10**(-5)
 
 
 # You can model several bowshocks in the same spectral cube. The number of

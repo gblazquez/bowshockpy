@@ -66,17 +66,19 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   nbowshocks = 1
   
-  Tex = 100
+  J = 3
   
-  Tbg = 2.7
+  nu = 345.79598990
   
-  mu = 0.112
+  abund = 8.5 * 10**(-5)
   
   meanmolmass = 2.8
   
-  J = 3
+  mu = 0.112
   
-  abund = 8.5 * 10**(-5)
+  Tex = 100
+  
+  Tbg = 2.7
   
   
   
@@ -225,17 +227,19 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   nbowshocks = 1
   
-  Tex = 100
+  J = 3
   
-  Tbg = 2.7
+  nu = 345.79598990
   
-  mu = 0.112
+  abund = 8.5 * 10**(-5)
   
   meanmolmass = 2.8
   
-  J = 3
+  mu = 0.112
   
-  abund = 8.5 * 10**(-5)
+  Tex = 100
+  
+  Tbg = 2.7
   
   
   
@@ -386,17 +390,19 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   
   nbowshocks = 1
   
-  Tex = 100
+  J = 3
   
-  Tbg = 2.7
+  nu = 345.79598990
   
-  mu = 0.112
+  abund = 8.5 * 10**(-5)
   
   meanmolmass = 2.8
   
-  J = 3
+  mu = 0.112
   
-  abund = 8.5 * 10**(-5)
+  Tex = 100
+  
+  Tbg = 2.7
   
   
   
@@ -545,17 +551,19 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   nbowshocks = 2
   
-  Tex = 100
+  J = 3
   
-  Tbg = 2.7
+  nu = 345.79598990
   
-  mu = 0.112
+  abund = 8.5 * 10**(-5)
   
   meanmolmass = 2.8
   
-  J = 3
+  mu = 0.112
   
-  abund = 8.5 * 10**(-5)
+  Tex = 100
+  
+  Tbg = 2.7
   
   
   

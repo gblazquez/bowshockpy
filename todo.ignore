@@ -216,17 +216,15 @@ model_cube_concat.plot_channels(
 x implement higher transitions CO
 
 - Allow to give as input the frequency of the transition instead of the
-  transition
+  transition. I think the transition should also be given
 
 - Change bowshockpy with BowshockPy
 
 x Change XCO for abund
 
-- Dipole moment should be a parameter in the input file
+x Dipole moment should be a parameter in the input file
 
 - Change the units of the channels -> masses-> masses/(pix*chan). And so on
-
-- mu as parameter
 
 - implement an example with custom calculation of tau and I
 (Although we could make the radiative transfer from the scratch, we are going
