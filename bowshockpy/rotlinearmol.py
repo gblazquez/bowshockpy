@@ -1,5 +1,6 @@
 """
-This module perform the radiative transfer for a CO rotational transition.
+This module perform the radiative transfer for a rotational transition of a
+linear molecule.
 These are the assumptions:
 
 - Negligible population of vibrational excited states

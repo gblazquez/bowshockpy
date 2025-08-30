@@ -211,14 +211,14 @@ model_cube_concat.plot_channels(
 ------------------
 
 
-- change concatenate by combine
+x change concatenate by combine
 
 x implement higher transitions CO
 
-- Allow to give as input the frequency of the transition instead of the
+x Allow to give as input the frequency of the transition instead of the
   transition. I think the transition should also be given
 
-- Change bowshockpy with BowshockPy
+x Change bowshockpy with BowshockPy
 
 x Change XCO for abund
 
@@ -233,5 +233,12 @@ to use some functions already defined in radtrans.py)
 - New test on intensity cubes. Keep track of a value of a pixel in intensities
   (not in mass, as you alreadyd did)
 
-- Clarify the differences in Aij between literature
+- Look for the reasons on the differences in Aij between literature
 
+- Things to fix in the notebook:
+   x All mention to CO (well, the notebook is an example and should be included)
+   x BowshockPy
+   - nu as a new parameter of CubeProcessing
+   - mu as a new parameter of CubeProcessing
+   - Change the order of the parameters in CubeProcessing
+   x Concatenate -> combine

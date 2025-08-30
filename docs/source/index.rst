@@ -4,7 +4,7 @@
 BowshockPy
 ==========
 
-``bowshockpy`` is an open-source Python package for generating synthetic spectral cubes, position-velocity diagrams, and moment images of an analytical momentum-conserving bowshock model driven by a protostellar jet. The software computes the intensities of low-J rotational transitions of the CO molecule, providing mock observations of the CO emission that radio telescopes as ALMA are able to detect at millimeter wavelengths.
+``BowshockPy`` is an open-source Python package for generating synthetic spectral cubes, position-velocity diagrams, and moment images of an analytical momentum-conserving bowshock model driven by a protostellar jet. The software computes the intensities of low-J rotational transitions of a linear molecule as CO, providing mock observations of the emission that radio interferometers as ALMA are able to detect at millimeter wavelengths.
 
 ..
    .. note::
@@ -23,17 +23,17 @@ You can :doc:`install<user_guide/installation>` it from PyPI using pip:
 
 There are two different ways to :doc:`use<user_guide/usage>` the software:
 
-1. Run it from the terminal specifying an input file: Use an :doc:`example of input file<examples/examples_inputfile>` and modify the :doc:`input parameters<user_guide/inputparams>` according your scientific goals. Then, run ``bowshockpy`` in your terminal:
+1. Run it from the terminal specifying an input file: Use an :doc:`example of input file<examples/examples_inputfile>` and modify the :doc:`input parameters<user_guide/inputparams>` according your scientific goals. Then, run ``BowshockPy`` in your terminal:
 
    .. code-block:: console
    
      $ bowshockpy -r inputfile.py 
 
-2. Importing ``bowshockpy`` package in your Python code: We include an :doc:`example of a notebook<examples/example_notebook>` that shows how to use the main classes. Although the notebook contains an explanation of their basic functioning, see the :doc:`API Reference<api/index>` for a detailed documentation.
+2. Importing ``BowshockPy`` package in your Python code: We include an :doc:`example of a notebook<examples/example_notebook>` that shows how to use the main classes. Although the notebook contains an explanation of their basic functioning, see the :doc:`API Reference<api/index>` for a detailed documentation.
 
-A description of the outputs of ``bowshockpy`` can be found in the :doc:`output section<user_guide/outputs>`.
+A description of the outputs of ``BowshockPy`` can be found in the :doc:`output section<user_guide/outputs>`.
 
-If you are interested in the physics behind ``bowshockpy`` an its workflow, see the :doc:`background section<user_guide/background>`.
+If you are interested in the physics behind ``BowshockPy`` an its workflow, see the :doc:`background section<user_guide/background>`.
 
 
 Contributing
@@ -51,7 +51,7 @@ This project is licensed under the `MIT License <https://github.com/gblazquez/bo
 Citation
 --------
 
-If you use ``bowshockpy`` in your research work, please cite it as
+If you use ``BowshockPy`` in your research work, please cite it as
 
 .. code-block:: tex
 

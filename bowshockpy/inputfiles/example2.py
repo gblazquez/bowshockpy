@@ -25,7 +25,7 @@ modelname = f"example2"
 #  - "mass": Total mass of molecular hydrogen in solar mass
 #  - "Ntot_column_density": Total (H2 + heavier components) column density in
 #  cm-2.
-#  - "CO_column_density": Column density of the CO in cm-2.
+#  - "mol_column_density": Column density of the emitting molecule in cm-2.
 #  - "intensity": Intensity in Jy/beam.
 #  - "tau": Opacities.
 #
@@ -50,13 +50,13 @@ modelname = f"example2"
 # outcubes = {
 #     "intensity": ["add_noise", "convolve", "moments_and_pv"],
 #     "opacity": [],
-#     "CO_column_density": ["convolve"],
+#     "mol_column_density": ["convolve"],
 #     "mass": [],
 # }
 # will save 4 spectral cubes in fits format. The first one are the intensities
 # with Gaussian noise added, it will be convolved, and the moments and PV
 # diagrams will be computed; the second cube will be the opacity; the third will
-# be the CO_column_density, which will be convolved; and the forth cube will be
+# be the mol_column_density, which will be convolved; and the forth cube will be
 # the masses.
 outcubes = {
     "intensity": ["add_noise", "convolve", "moments_and_pv"],

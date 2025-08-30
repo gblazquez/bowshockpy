@@ -2,15 +2,15 @@ Input file parameters
 =====================
 
 ..
-  In this section, the input parameters that ``bowshockpy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``bowshockpy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/example_notebook>`).
+  In this section, the input parameters that ``BowshockPy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``BowshockPy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/example_notebook>`).
 
-The quickest and easiest way to :doc:`use <usage>` ``bowshockpy`` is to run it from the terminal, specifying with the ``--read`` flag an input file that contains all the parameters needed to perform the modeling of the bowshock(s): 
+The quickest and easiest way to :doc:`use <usage>` ``BowshockPy`` is to run it from the terminal, specifying with the ``--read`` flag an input file that contains all the parameters needed to perform the modeling of the bowshock(s): 
 
 .. code-block:: console
 
   $ bowshockpy --read inputfile.py 
 
-In the following there is a description of each parameter that should be included in the input file. For a confortable usage, we encourage to download one of the :doc:`examples of input files <../examples/examples_inputfile>` and check this page as a reference, so the user can modify the parameters according to their scientific goals.
+In the following there is a description of each parameter that should be included in the input file. For a comfortable usage, we encourage to download one of the :doc:`examples of input files <../examples/examples_inputfile>` and check this page as a reference, so the user can modify the parameters according to their scientific goals.
 
 
 Specification of the desired outputs
@@ -19,7 +19,7 @@ Specification of the desired outputs
 These parameters define the desired outputs:
 
 *modelname* (str)
-    Folder name where the outputs of the modellling are going to be stored. If
+    Folder name where the outputs of the modeling are going to be stored. If
     it does not exist, it will be created automatically. 
     
 *outcubes* (dict)
@@ -27,7 +27,7 @@ These parameters define the desired outputs:
 
     - "mass": Total mass of molecular hydrogen in solar mass
     - "Ntot_column_density": Total (H2 + heavier components) column density in cm-2.
-    - "CO_column_density": Column density of the CO in cm-2.
+    - "mol_column_density": Column density of the emitting molecule in cm-2.
     - "intensity": Intensity in Jy/beam.
     - "tau": Opacities.
 
@@ -35,11 +35,11 @@ These parameters define the desired outputs:
 
     - "add_source": Add a source at the reference pixel, just for spatial reference purposes.
     - "rotate": Rotate the whole spectral cube by an angle given by parot parameter.
-    - "add_noise": Add gaussian noise, defined by maxcube2noise parameter.
-    - "convolve": Convolve with a gaussian defined by the parameters bmaj, bmin, and pabeam.
+    - "add_noise": Add Gaussian noise, defined by maxcube2noise parameter.
+    - "convolve": Convolve with a Gaussian defined by the parameters bmaj, bmin, and pabeam.
     - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity and the PV diagram.
 
-    The operations will be performed folowing the order of the strings in the list (from left to right). The list can be left empty if no operations are desired.
+    The operations will be performed following the order of the strings in the list (from left to right). The list can be left empty if no operations are desired.
     
     For example, the following dictionary for the outcubes parameter,
 
@@ -48,11 +48,11 @@ These parameters define the desired outputs:
         outcubes = {
             "intensity": ["add_noise", "convolve", "moments_and_pv"],
             "opacity": [],
-            "CO_column_density": ["convolve"],
+            "mol_column_density": ["convolve"],
             "mass": [],
         }
 
-    will save 4 spectral cubes in fits format. The first one are the intensities with gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the CO_column_density, which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third NCO_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
+    will save 4 spectral cubes in fits format. The first one are the intensities with gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the mol_column_density, which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third Nmol_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
 
 *verbose* (bolean)
     Set True to verbose messages about the computation.
@@ -84,27 +84,30 @@ The next parameters are common to all the bowshocks that are going to be generat
 *nbowshocks* (int)
     Number of bowshocks to model.
 
+*J* (int)
+    Upper level of the rotational transition (e.g. 3 for the "J=3->2" transition).
+
+*nu* (float)
+    Frequency of the transition [GHz].
+
+*abund* (float)
+    Abundance relative to the molecular hydrogen.
+
+*meanmolmass* (float)
+    Mean molecular mass per hydrogen molecule.
+
+*mu* (float)
+    Permanent dipole moment of the molecule [D].
+
 *Tex* (float)
     Excitation temperature [K].
 
 *Tbg* (float)
     Background temperature [K].
 
-*mu* (float)
-    Permanent dipole moment of the molecule [D].
+``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, substituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
 
-*meanmolmass* (float)
-    Mean molecular mass per hydrogen molecule.
-
-*J* (str)
-    Upper level of the CO rotational transition (e.g. 3 for the "J=3->2" transition).
-
-*abund* (float)
-    CO abundance relative to the molecular hydrogen.
-
-``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, subtituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
-
-*i_n* (foat)
+*i_n* (float)
     Inclination angle of the bowshock symmetry axis with respect to the line of
     sight. If i>90, the bowshock is redshifted, if i<90, it will be blueshifted
     [degrees].
@@ -186,7 +189,7 @@ These parameters will define the properties of the spectral cube of the bowshock
     the velocity axis following a Gaussian distribution, being **vt** parameter the
     standard deviation of the Gaussian. **tolfactor_vt** parameter truncates the
     Gaussian distribution at **vt** * **tolfactor_vt** in order to make the computation
-    substatially faster. A low **tolfactor_vt** can result in a warning reporting an
+    substantially faster. A low **tolfactor_vt** can result in a warning reporting an
     underestimation of the total mass of the model.
 
 *cic* (bolean)

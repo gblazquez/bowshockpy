@@ -77,10 +77,10 @@ def test_makecube_fromcube():
     ), "Mass consistency test failed while creating cube from an intial cube"
 
 
-def test_concat_cubes():
+def test_combine_cubes():
     assert np.sum(bscp.cube) == np.sum(bsc1.cube) + np.sum(
         bsc3.cube
-    ), "Mass consistency test failed while concatenating cubes"
+    ), "Mass consistency test failed while combining cubes"
 
 
 def test_intensity_index():

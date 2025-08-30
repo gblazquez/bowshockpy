@@ -708,12 +708,12 @@ class CubeProcessing(BowshockCube):
     modelname : str, optional
         Name of the folder in /models where the outputs will be saved
     J : int, optional
-        Upper level of the CO rotational transition (e.g. 3 for transition
+        Upper level of the rotational transition (e.g. 3 for transition
         "3-2")
     nu : astropy.units.Quantity, optional
         Frequency of the transition
     abund : float, optional
-        CO abundance relative to the molecular hydrogen
+        Abundance relative to the molecular hydrogen
     meanmolmass : astropy.unit.Quantity, optional
         Mean mass per H molecule
     mu : astropy.unit.Quantity, optional
@@ -787,7 +787,7 @@ class CubeProcessing(BowshockCube):
         "m": "mass",
         "I": "Intensity",
         "Ntot": "Total column density",
-        "NCO": "CO column density",
+        "Nmol": "Emitting molecule column density",
         "tau": "Opacity",
     }
     bunits = {
@@ -849,7 +849,7 @@ class CubeProcessing(BowshockCube):
 
         if isinstance(modelcubes, list):
             self.nmodels = len(modelcubes)
-            self.concatenate_cubes(modelcubes)
+            self.combine_cubes(modelcubes)
         else:
             self.nmodels = 1
             modelcubes = [modelcubes]
@@ -948,12 +948,12 @@ class CubeProcessing(BowshockCube):
             (self.arcsecpix * self.distpc * u.au) ** 2
         ).to(u.cm**2)
 
-    def _check_concat_possibility(self, modelcubes):
+    def _check_combine_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
             if not ut.allequal([mc.__getattribute__(att) for mc in modelcubes]):
-                raise ValueError(f"Trying to concatenate cubes with different {att}")
+                raise ValueError(f"Trying to combine cubes with different {att}")
 
-    def concatenate_cubes(self, modelcubes):
+    def combine_cubes(self, modelcubes):
         """
         Combines (sums) a list of cubes
 
@@ -962,7 +962,7 @@ class CubeProcessing(BowshockCube):
         modelcubes : list
             List of cubes to combine
         """
-        self._check_concat_possibility(modelcubes)
+        self._check_combine_possibility(modelcubes)
         self.cube = np.sum([modelcube.cube for modelcube in modelcubes], axis=0)
 
     def tau_f(self, dNmoldv):
@@ -1289,7 +1289,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             the available quantities of the spectral cubes:
 
             - "mass": Total mass of molecular hydrogen in solar mass.
-            - "CO_column_density": Column density of the CO in cm-2.
+            - "mol_column_density": Column density of the emitting molecule in
+              cm-2.
             - "intensity": Intensity in Jy/beam.
             - "tau": Opacities.
 
@@ -1318,7 +1319,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         >>> outcubes = {
         >>>    "intensity": ["add_noise", "convolve", "moments_and_pv"],
         >>>    "opacity": [],
-        >>>    "CO_column_density": ["convolve"],
+        >>>    "mol_column_density": ["convolve"],
         >>>    "mass": [],
         >>> }
         >>> cp.calc(outcubes)
@@ -1326,10 +1327,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         will save 4 spectral cubes in fits format. The first one are the
         intensities with gaussian noise added, it will be convolved, and the
         moments and PV diagrams will be computed; the second cube will be the
-        opacity; the third will be the CO_column_density, which will be
+        opacity; the third will be the mol_column_density, which will be
         convolved; and the forth cube will be the masses. The first spectral
         cube will be named I_nc.fits, the second tau.fits, the third
-        NCO_c.fits, and the fourth m.fits.
+        Nmol_c.fits, and the fourth m.fits.
         """
         dostrs = self._useroutputcube2dostr(userdic)
         for ds in dostrs:
@@ -1461,7 +1462,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         >>> outcubes = {
         >>>    "intensity": ["add_noise", "convolve", "moments_and_pv"],
         >>>    "opacity": [],
-        >>>    "CO_column_density": ["convolve"],
+        >>>    "mol_column_density": ["convolve"],
         >>>    "mass": [],
         >>> }
         >>> bscp.savecubes(outputcubes)
@@ -1469,10 +1470,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         will save 4 spectral cubes in fits format. The first one are the
         intensities with gaussian noise added, it will be convolved, and the
         moments and PV diagrams will be computed; the second cube will be the
-        opacity; the third will be the CO_column_density, which will be
+        opacity; the third will be the mol_column_density, which will be
         convolved; and the forth cube will be the masses. The first spectral
         cube will be named I_nc.fits, the second tau.fits, the third
-        NCO_c.fits, and the fourth m.fits.
+        Nmol_c.fits, and the fourth m.fits.
         """
         cks = self._useroutputcube2dostr(userdic)
         for ck in cks:

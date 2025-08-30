@@ -39,12 +39,12 @@ def column_density_mol(Ntot, abund):
     area : astropy.units.quantity
         Projected area
     abund : float
-        CO abundance relative to molecular hydrogen
+        Abundance relative to molecular hydrogen
 
     Returns
     -------
     astropy.units.quantity
-        CO column density
+        Column density of the molecule
     """
     return Ntot * abund
 
