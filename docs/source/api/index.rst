@@ -64,6 +64,15 @@ The API reference guide contains detailed descriptions of the functions and clas
    :show-inheritance:
    :member-order: bysource
 
+``bowshockpy.rotlinearmol``
+---------------------------
+
+.. automodule:: bowshockpy.rotlinearmol
+   :noindex:
+   :members:
+   :show-inheritance:
+   :member-order: bysource
+
 ``bowshockpy.moments``
 ----------------------
 

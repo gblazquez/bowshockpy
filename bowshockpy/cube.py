@@ -722,6 +722,15 @@ class CubeProcessing(BowshockCube):
         Excitation temperature
     Tbg : astropy.unit.Quantity, optional
         Excitation temperature
+    tau_custom_function : callable, optional
+        By default, BowshockPy will compute the opacities from a rotational
+        transition of a linear molecule (neglecting vibrational excited states
+        and centrifugal distortion of the molecule). You can provide a custom
+        function to compute the opacities from the column densities per
+        velocity bin. This function should accept only the column densities per
+        velocity bin, and return the opacities.
+    Inu_custom_function : callable, optional
+        Custom function to compute the intensities from the opacities
     coordcube : str, optional
         Set to "sky" if you would like to set the cube headers in sky
         coordinates, or "offset" if you prefer them in offsets relative to the
@@ -831,6 +840,8 @@ class CubeProcessing(BowshockCube):
         mu=0.112 * u.D,
         Tex=100 * u.K,
         Tbg=2.7 * u.K,
+        tau_custom_function=None,
+        Inu_custom_function=None,
         coordcube="offset",
         ra_source_deg=None,
         dec_source_deg=None,
@@ -842,8 +853,6 @@ class CubeProcessing(BowshockCube):
         sigma_beforeconv=None,
         maxcube2noise=None,
         verbose=True,
-        Inu_custom_call = None,
-        tau_custom_call = None,
         **kwargs,
     ):
 
@@ -879,6 +888,8 @@ class CubeProcessing(BowshockCube):
         self.mu = mu
         self.Tex = Tex
         self.Tbg = Tbg
+        self.tau_custom_function = tau_custom_function
+        self.Inu_custom_function = Inu_custom_function
         self.coordcube = coordcube
         self.ra_source_deg = ra_source_deg
         self.dec_source_deg = dec_source_deg
@@ -890,8 +901,6 @@ class CubeProcessing(BowshockCube):
         self.sigma_beforeconv = sigma_beforeconv
         self.maxcube2noise = maxcube2noise
         self.verbose = verbose
-        self.Inu_custom_call = Inu_custom_call
-        self.tau_custom_call = tau_custom_call
         if bmin is not None and bmaj is not None:
             self.x_FWHM = self.bmin / self.arcsecpix
             self.y_FWHM = self.bmaj / self.arcsecpix
@@ -966,8 +975,8 @@ class CubeProcessing(BowshockCube):
         self.cube = np.sum([modelcube.cube for modelcube in modelcubes], axis=0)
 
     def tau_f(self, dNmoldv):
-        if self.tau_custom_call is not None:
-            return self.tau_custom_call(dNmoldv=dNmoldv)
+        if self.tau_custom_function is not None:
+            return self.tau_custom_function(dNmoldv=dNmoldv)
         return rlm.tau_linearmol(
            dNmoldv=dNmoldv,
            J=self.J,
@@ -977,8 +986,8 @@ class CubeProcessing(BowshockCube):
         )
 
     def I_f(self, tau):
-        if self.Inu_custom_call is not None:
-            return self.Inu_custom_call(tau)
+        if self.Inu_custom_function is not None:
+            return self.Inu_custom_function(tau=tau)
         return rt.Inu_func(
             tau=tau,
             nu=self.nu,

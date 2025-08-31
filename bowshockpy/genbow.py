@@ -14,9 +14,15 @@ from bowshockpy import utils as ut
 from bowshockpy.version import __version__
 
 
-# TODO:
-# Two more inputs: Inu_custom_call and tau_custom_call
 def generate_bowshock(p):
+    """
+    Generates the bowshock model from an input file
+
+    Parameters:
+    -----------
+    p : dict
+        Dictionary with all the parameters from the input file
+    """
     print(
         f"""
 
@@ -90,14 +96,17 @@ Parameters read from {p.filename}
             "verbose": p.verbose,
         }
         mpars = {
-            "meanmolmass": p.meanmolmass,
             "J": p.J,
-            "nu": p.nu,
+            "nu": p.nu * u.GHz,
             "abund": p.abund,
             "mu": p.mu * u.Debye,
             "meanmolmass": p.meanmolmass,
             "Tex": p.Tex * u.K,
             "Tbg": p.Tbg * u.K,
+            "tau_custom_function": p.tau_custom_function if
+                "tau_custom_function" in p.__dict__ else None,
+            "Inu_custom_function": p.Inu_custom_function if
+                "Inu_custom_function" in p.__dict__ else None,
             "ra_source_deg": p.ra_source_deg,
             "dec_source_deg": p.dec_source_deg,
             "coordcube": p.coordcube,
@@ -202,6 +211,8 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         mu=mpars["mu"],
         Tex=mpars["Tex"],
         Tbg=mpars["Tbg"],
+        tau_custom_function=mpars["tau_custom_function"],
+        Inu_custom_function=mpars["Inu_custom_function"],
         coordcube=mpars["coordcube"],
         ra_source_deg=mpars["ra_source_deg"],
         dec_source_deg=mpars["dec_source_deg"],
@@ -212,9 +223,6 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         parot=pscube["parot"],
         sigma_beforeconv=pscube["sigma_beforeconv"],
         maxcube2noise=pscube["maxcube2noise"],
-        # TODO: Two more variables
-        # Inu_custom_call=,
-        # tau_custom_call=,
     )
     bscp.calc(p.outcubes)
     bscp.savecubes(p.outcubes)
@@ -264,16 +272,6 @@ https://bowshockpy.readthedocs.io/en/latest/
         help="Reads a configuration file to generate the bowshock model",
         default="None",
     )
-    # TODO:
-    # parser.add_argument(
-    #     "-c",
-    #     "--custom_radiative_transfer",
-    #     dest="custom_radiative_transfer",
-    #     type=str,
-    #     help="Reads a custom python script that computes the radiative tranfer",
-    #     default="None",
-    # )
-
     parser.add_argument(
         "-p",
         "--print",
@@ -289,18 +287,14 @@ https://bowshockpy.readthedocs.io/en/latest/
         default="None",
     )
 
-    examples_available = ["example1.py", "example2.py", "example3.py", "example4.py"]
+    examples_available = ["example1.py", "example2.py", "example3.py",
+                          "example4.py", "example5.py"]
     args = parser.parse_args()
     filename = args.parameters_file
     _example = args.inputfile_example
     if filename != "None":
         parameters = runpy.run_path(filename)
         p = ut.VarsInParamFile(parameters)
-        # TODO:
-        # Maybe the can be implemented in the same input file. This would solve
-        # the problem of defining several times the same parameters
-        # Inu_custom_call = p["Inu_custom_call"]
-        # tau_custom_call = p["tau_custom_call"]
         generate_bowshock(p)
     if _example != "None":
         example = _example if _example.endswith(".py") else f"{_example}.py"
@@ -309,7 +303,6 @@ https://bowshockpy.readthedocs.io/en/latest/
             print(f"{example} has been created")
         else:
             print(f"{example} file is not available and could not be created")
-
 
 if __name__ == "__main__":
     main()

@@ -242,3 +242,16 @@ to use some functions already defined in radtrans.py)
    - mu as a new parameter of CubeProcessing
    - Change the order of the parameters in CubeProcessing
    x Concatenate -> combine
+
+- Add a description in each .py file
+
+- I think it would be good to split in two cube.py. At least, ObsModel should not be there because it is not the cube
+
+- Also, there should be a way to simplify the code regarding the headers of the fits file
+
+- Implement the possibility of using as input floats (then a unit would be assumed), or astropy units.
+
+- Now I think that the custom radiative transfer must be performed using another script...
+
+
+
