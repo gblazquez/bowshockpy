@@ -1114,6 +1114,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 )
 
     def _useroutputcube2dostr(self, userdic):
+        # TODO: Move to utils?
         dictrad = {
             "mass": "m",
             "intensity": "I",
@@ -1232,6 +1233,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         ck : str
             Key of the cube to convolve
         """
+        hdr = ut.get_default_hdr(naxis=3)
         if self.coordcube == "offset":
             ctype1 = "OFFSET"
             ctype2 = "OFFSET"
@@ -1250,34 +1252,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             crval2 = self.dec_source_deg
             cdelt1 = -self.arcsecpix / 3600
             cdelt2 = self.arcsecpix / 3600
-        hdr = fits.Header()
-        hdr["SIMPLE"] = True
-        hdr["BITPIX"] = -32
-        hdr["NAXIS"] = 3
         hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
         hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
         hdr["NAXIS3"] = np.shape(self.cubes[ck])[0]
-        hdr["EXTEND"] = True
-        hdr["BSCALE"] = 1
-        hdr["BZERO"] = 0
         hdr["BMAJ"] = self.bmaj / 3600
         hdr["BMIN"] = self.bmin / 3600
         hdr["BPA"] = self.pabeam
         hdr["BTYPE"] = self.btypes[self._q(ck)]
         hdr["OBJECT"] = f"{self.modelname}"
         hdr["BUNIT"] = self.bunits[self._q(ck)]
-        hdr["RADESYS"] = "ICRS"
-        hdr["LONPOLE"] = 1.800000000000e02
-        hdr["LATPOLE"] = 3.126777777778e01
-        hdr["PC1_1"] = 1
-        hdr["PC2_1"] = 0
-        hdr["PC1_2"] = 0
-        hdr["PC2_2"] = 1
-        hdr["PC1_3"] = 0
-        hdr["PC2_3"] = 0
-        hdr["PC3_1"] = 0
-        hdr["PC3_2"] = 0
-        hdr["PC3_3"] = 1
         hdr["CTYPE1"] = ctype1
         hdr["CRVAL1"] = crval1
         hdr["CDELT1"] = cdelt1
@@ -1293,24 +1276,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         hdr["CDELT3"] = self.velchans[1] - self.velchans[0]
         hdr["CRPIX3"] = 1
         hdr["CUNIT3"] = "km/s"
-        hdr["PV2_1"] = 0
-        hdr["PV2_2"] = 0
         hdr["RESTFRQ"] = 3.457380000000e11
-        hdr["SPECSYS"] = "LSRK"
-        hdr["ALTRVAL"] = 7.757120529450e02
-        hdr["ALTRPIX"] = -2.700000000000e01
-        hdr["VELREF"] = 257
-        hdr["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
-        hdr["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
-        hdr["DATE-OBS"] = f"{datetime.now().isoformat()}"
-        hdr["TIMESYS"] = "UTC"
-        hdr["OBSRA"] = 5.226562499999e01
-        hdr["OBSDEC"] = 3.126777777778e01
-        hdr["OBSGEO-X"] = 2.225142180269e06
-        hdr["OBSGEO-Y"] = -5.440307370349e06
-        hdr["OBSGEO-Z"] = -2.481029851874e06
-        hdr["DATE"] = f"{datetime.now().isoformat()}"
-        hdr["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
 
         self.hdrs[ck] = hdr
         hdu = fits.PrimaryHDU(self.cubes[ck])
@@ -1530,25 +1496,13 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             axis=1
         )
         if savefits:
-            hdrpv = fits.Header()
-            hdrpv["SIMPLE"] = True
-            hdrpv["BITPIX"] = -32
+            hdrpv = ut.get_default_hdr(naxis=2, beam=False)
             hdrpv["NAXIS"] = 2
             hdrpv["NAXIS1"] = np.shape(self.cubes[ck])[1]
             hdrpv["NAXIS2"] = np.shape(self.cubes[ck])[0]
-            hdrpv["EXTEND"] = True
-            hdrpv["BSCALE"] = 1
-            hdrpv["BZERO"] = 0
             hdrpv["BTYPE"] = self.btypes[self._q(ck)]
             hdrpv["OBJECT"] = f"{self.modelname}"
             hdrpv["BUNIT"] = self.bunits[self._q(ck)]
-            hdrpv["RADESYS"] = "ICRS"
-            hdrpv["LONPOLE"] = 1.800000000000e02
-            hdrpv["LATPOLE"] = 3.126777777778e01
-            hdrpv["PC1_1"] = 1
-            hdrpv["PC2_1"] = 0
-            hdrpv["PC1_2"] = 0
-            hdrpv["PC2_2"] = 1
             hdrpv["CTYPE1"] = "OFFSET"
             hdrpv["CRVAL1"] = 0
             hdrpv["CDELT1"] = self.arcsecpix
@@ -1559,24 +1513,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdrpv["CDELT2"] = self.chanwidth
             hdrpv["CRPIX2"] = 1
             hdrpv["CUNIT2"] = "km/s"
-            hdrpv["PV2_1"] = 0
-            hdrpv["PV2_2"] = 0
             hdrpv["RESTFRQ"] = 3.457380000000e11
-            hdrpv["SPECSYS"] = "LSRK"
-            hdrpv["ALTRVAL"] = 7.757120529450e02
-            hdrpv["ALTRPIX"] = -2.700000000000e01
-            hdrpv["VELREF"] = 257
-            hdrpv["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
-            hdrpv["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
-            hdrpv["DATE-OBS"] = f"{datetime.now().isoformat()}"
-            hdrpv["TIMESYS"] = "UTC"
-            hdrpv["OBSRA"] = 5.226562499999e01
-            hdrpv["OBSDEC"] = 3.126777777778e01
-            hdrpv["OBSGEO-X"] = 2.225142180269e06
-            hdrpv["OBSGEO-Y"] = -5.440307370349e06
-            hdrpv["OBSGEO-Z"] = -2.481029851874e06
-            hdrpv["DATE"] = f"{datetime.now().isoformat()}"
-            hdrpv["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
 
             hdu = fits.PrimaryHDU(pvimage)
             hdul = fits.HDUList([hdu])
@@ -1636,28 +1573,17 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 crval2 = self.dec_source_deg
                 cdelt1 = -self.arcsecpix / 3600
                 cdelt2 = self.arcsecpix / 3600
-            hdr = fits.Header()
-            hdr["SIMPLE"] = True
-            hdr["BITPIX"] = -32
+
+            hdr = ut.get_default_hdr(naxis=2)
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["EXTEND"] = True
-            hdr["BSCALE"] = 1
-            hdr["BZERO"] = 0
             hdr["BMAJ"] = self.bmaj / 3600
             hdr["BMIN"] = self.bmin / 3600
             hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = self.bunits[self._q(ck)]
-            hdr["RADESYS"] = "ICRS"
-            hdr["LONPOLE"] = 1.800000000000e02
-            hdr["LATPOLE"] = 3.126777777778e01
-            hdr["PC1_1"] = 1
-            hdr["PC2_1"] = 0
-            hdr["PC1_2"] = 0
-            hdr["PC2_2"] = 1
             hdr["CTYPE1"] = ctype1
             hdr["CRVAL1"] = crval1
             hdr["CDELT1"] = cdelt1
@@ -1668,24 +1594,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1
             hdr["CUNIT2"] = cunit2
-            hdr["PV2_1"] = 0
-            hdr["PV2_2"] = 0
             hdr["RESTFRQ"] = 3.457380000000e11
-            hdr["SPECSYS"] = "LSRK"
-            hdr["ALTRVAL"] = 7.757120529450e02
-            hdr["ALTRPIX"] = -2.700000000000e01
-            hdr["VELREF"] = 257
-            hdr["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
-            hdr["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
-            hdr["DATE-OBS"] = f"{datetime.now().isoformat()}"
-            hdr["TIMESYS"] = "UTC"
-            hdr["OBSRA"] = 5.226562499999e01
-            hdr["OBSDEC"] = 3.126777777778e01
-            hdr["OBSGEO-X"] = 2.225142180269e06
-            hdr["OBSGEO-Y"] = -5.440307370349e06
-            hdr["OBSGEO-Z"] = -2.481029851874e06
-            hdr["DATE"] = f"{datetime.now().isoformat()}"
-            hdr["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
 
             hdu = fits.PrimaryHDU(sumintimage)
             hdul = fits.HDUList([hdu])
@@ -1747,28 +1656,16 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 crval2 = self.dec_source_deg
                 cdelt1 = -self.arcsecpix / 3600
                 cdelt2 = self.arcsecpix / 3600
-            hdr = fits.Header()
-            hdr["SIMPLE"] = True
-            hdr["BITPIX"] = -32
+            hdr = ut.get_default_hdr(naxis=2)
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["EXTEND"] = True
-            hdr["BSCALE"] = 1
-            hdr["BZERO"] = 0
             hdr["BMAJ"] = self.bmaj / 3600
             hdr["BMIN"] = self.bmin / 3600
             hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = "Jy/beam.km/s"
-            hdr["RADESYS"] = "ICRS"
-            hdr["LONPOLE"] = 1.800000000000e02
-            hdr["LATPOLE"] = 3.126777777778e01
-            hdr["PC1_1"] = 1
-            hdr["PC2_1"] = 0
-            hdr["PC1_2"] = 0
-            hdr["PC2_2"] = 1
             hdr["CTYPE1"] = ctype1
             hdr["CRVAL1"] = crval1
             hdr["CDELT1"] = cdelt1
@@ -1779,24 +1676,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1
             hdr["CUNIT2"] = cunit2
-            hdr["PV2_1"] = 0
-            hdr["PV2_2"] = 0
             hdr["RESTFRQ"] = 3.457380000000e11
-            hdr["SPECSYS"] = "LSRK"
-            hdr["ALTRVAL"] = 7.757120529450e02
-            hdr["ALTRPIX"] = -2.700000000000e01
-            hdr["VELREF"] = 257
-            hdr["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
-            hdr["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
-            hdr["DATE-OBS"] = f"{datetime.now().isoformat()}"
-            hdr["TIMESYS"] = "UTC"
-            hdr["OBSRA"] = 5.226562499999e01
-            hdr["OBSDEC"] = 3.126777777778e01
-            hdr["OBSGEO-X"] = 2.225142180269e06
-            hdr["OBSGEO-Y"] = -5.440307370349e06
-            hdr["OBSGEO-Z"] = -2.481029851874e06
-            hdr["DATE"] = f"{datetime.now().isoformat()}"
-            hdr["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
 
             hdu = fits.PrimaryHDU(mom0)
             hdul = fits.HDUList([hdu])
@@ -1864,28 +1744,16 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 crval2 = self.dec_source_deg
                 cdelt1 = -self.arcsecpix / 3600
                 cdelt2 = self.arcsecpix / 3600
-            hdr = fits.Header()
-            hdr["SIMPLE"] = True
-            hdr["BITPIX"] = -32
+            hdr = ut.get_default_hdr(naxis=2)
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["EXTEND"] = True
-            hdr["BSCALE"] = 1
-            hdr["BZERO"] = 0
             hdr["BMAJ"] = self.bmaj / 3600
             hdr["BMIN"] = self.bmin / 3600
             hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = "km/s"
-            hdr["RADESYS"] = "ICRS"
-            hdr["LONPOLE"] = 1.800000000000e02
-            hdr["LATPOLE"] = 3.126777777778e01
-            hdr["PC1_1"] = 1
-            hdr["PC2_1"] = 0
-            hdr["PC1_2"] = 0
-            hdr["PC2_2"] = 1
             hdr["CTYPE1"] = ctype1
             hdr["CRVAL1"] = crval1
             hdr["CDELT1"] = cdelt1
@@ -1899,21 +1767,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["PV2_1"] = 0
             hdr["PV2_2"] = 0
             hdr["RESTFRQ"] = 3.457380000000e11
-            hdr["SPECSYS"] = "LSRK"
-            hdr["ALTRVAL"] = 7.757120529450e02
-            hdr["ALTRPIX"] = -2.700000000000e01
-            hdr["VELREF"] = 257
-            hdr["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
-            hdr["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
-            hdr["DATE-OBS"] = f"{datetime.now().isoformat()}"
-            hdr["TIMESYS"] = "UTC"
-            hdr["OBSRA"] = 5.226562499999e01
-            hdr["OBSDEC"] = 3.126777777778e01
-            hdr["OBSGEO-X"] = 2.225142180269e06
-            hdr["OBSGEO-Y"] = -5.440307370349e06
-            hdr["OBSGEO-Z"] = -2.481029851874e06
-            hdr["DATE"] = f"{datetime.now().isoformat()}"
-            hdr["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
 
             hdu = fits.PrimaryHDU(mom1)
             hdul = fits.HDUList([hdu])
@@ -1981,15 +1834,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 crval2 = self.dec_source_deg
                 cdelt1 = -self.arcsecpix / 3600
                 cdelt2 = self.arcsecpix / 3600
-            hdr = fits.Header()
-            hdr["SIMPLE"] = True
-            hdr["BITPIX"] = -32
+            hdr = ut.get_default_hdr(naxis=2)
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
             hdr["EXTEND"] = True
-            hdr["BSCALE"] = 1
-            hdr["BZERO"] = 0
             hdr["BMAJ"] = self.bmaj / 3600
             hdr["BMIN"] = self.bmin / 3600
             hdr["BPA"] = self.pabeam
@@ -1997,12 +1846,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = "km/s"
             hdr["RADESYS"] = "ICRS"
-            hdr["LONPOLE"] = 1.800000000000e02
-            hdr["LATPOLE"] = 3.126777777778e01
-            hdr["PC1_1"] = 1
-            hdr["PC2_1"] = 0
-            hdr["PC1_2"] = 0
-            hdr["PC2_2"] = 1
             hdr["CTYPE1"] = ctype1
             hdr["CRVAL1"] = crval1
             hdr["CDELT1"] = cdelt1
@@ -2013,24 +1856,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1
             hdr["CUNIT2"] = cunit2
-            hdr["PV2_1"] = 0
-            hdr["PV2_2"] = 0
             hdr["RESTFRQ"] = 3.457380000000e11
-            hdr["SPECSYS"] = "LSRK"
-            hdr["ALTRVAL"] = 7.757120529450e02
-            hdr["ALTRPIX"] = -2.700000000000e01
-            hdr["VELREF"] = 257
-            hdr["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
-            hdr["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
-            hdr["DATE-OBS"] = f"{datetime.now().isoformat()}"
-            hdr["TIMESYS"] = "UTC"
-            hdr["OBSRA"] = 5.226562499999e01
-            hdr["OBSDEC"] = 3.126777777778e01
-            hdr["OBSGEO-X"] = 2.225142180269e06
-            hdr["OBSGEO-Y"] = -5.440307370349e06
-            hdr["OBSGEO-Z"] = -2.481029851874e06
-            hdr["DATE"] = f"{datetime.now().isoformat()}"
-            hdr["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
 
             hdu = fits.PrimaryHDU(mom2)
             hdul = fits.HDUList([hdu])
@@ -2102,28 +1928,16 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 crval2 = self.dec_source_deg
                 cdelt1 = -self.arcsecpix / 3600
                 cdelt2 = self.arcsecpix / 3600
-            hdr = fits.Header()
-            hdr["SIMPLE"] = True
-            hdr["BITPIX"] = -32
+            hdr = ut.get_default_hdr(naxis=2)
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["EXTEND"] = True
-            hdr["BSCALE"] = 1
-            hdr["BZERO"] = 0
             hdr["BMAJ"] = self.bmaj / 3600
             hdr["BMIN"] = self.bmin / 3600
             hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = self.bunits[self._q(ck)]
-            hdr["RADESYS"] = "ICRS"
-            hdr["LONPOLE"] = 1.800000000000e02
-            hdr["LATPOLE"] = 3.126777777778e01
-            hdr["PC1_1"] = 1
-            hdr["PC2_1"] = 0
-            hdr["PC1_2"] = 0
-            hdr["PC2_2"] = 1
             hdr["CTYPE1"] = ctype1
             hdr["CRVAL1"] = crval1
             hdr["CDELT1"] = cdelt1
@@ -2134,24 +1948,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1
             hdr["CUNIT2"] = cunit2
-            hdr["PV2_1"] = 0
-            hdr["PV2_2"] = 0
             hdr["RESTFRQ"] = 3.457380000000e11
-            hdr["SPECSYS"] = "LSRK"
-            hdr["ALTRVAL"] = 7.757120529450e02
-            hdr["ALTRPIX"] = -2.700000000000e01
-            hdr["VELREF"] = 257
-            hdr["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
-            hdr["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
-            hdr["DATE-OBS"] = f"{datetime.now().isoformat()}"
-            hdr["TIMESYS"] = "UTC"
-            hdr["OBSRA"] = 5.226562499999e01
-            hdr["OBSDEC"] = 3.126777777778e01
-            hdr["OBSGEO-X"] = 2.225142180269e06
-            hdr["OBSGEO-Y"] = -5.440307370349e06
-            hdr["OBSGEO-Z"] = -2.481029851874e06
-            hdr["DATE"] = f"{datetime.now().isoformat()}"
-            hdr["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
 
             hdu = fits.PrimaryHDU(mom8)
             hdul = fits.HDUList([hdu])

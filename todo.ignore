@@ -251,7 +251,7 @@ x New test on intensity cubes. Keep track of a value of a pixel in intensities
    x Concatenate -> combine
    - ObsModel now comes from modelproj.py But I think it does not affect hte notebook
 
-- I think it would be good to split in two cube.py. At least, ObsModel should not be there because it is not the cube
+x I think it would be good to split in two cube.py. At least, ObsModel should not be there because it is not the cube
 
 - Also, there should be a way to simplify the code regarding the headers of the fits file
 

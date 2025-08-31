@@ -1,10 +1,15 @@
+import copy
 import os
+from datetime import datetime
 from itertools import groupby
 
 import numpy as np
 from astropy import units as u
 from astropy.convolution import Gaussian2DKernel, convolve
+from astropy.io import fits
 from matplotlib import colormaps, colors
+
+from bowshockpy.version import __version__
 
 
 def print_example(example):
@@ -226,3 +231,73 @@ def allequal(inputlist):
     g = groupby(_list)
     return next(g, True) and not next(g, False)
 
+
+def get_default_hdr(naxis, beam=True):
+    default_hdr = fits.Header()
+
+    default_hdr["SIMPLE"] = True
+    default_hdr["BITPIX"] = -32
+    default_hdr["NAXIS"] = 3
+    default_hdr["NAXIS1"] = 1
+    default_hdr["NAXIS2"] = 1
+    if naxis > 2:
+        default_hdr["NAXIS3"] = 1
+    default_hdr["EXTEND"] = True
+    default_hdr["BSCALE"] = 1
+    default_hdr["BZERO"] = 0
+    if beam:
+        default_hdr["BMAJ"] = 1.0
+        default_hdr["BMIN"] = 1.0
+        default_hdr["BPA"] = 1.0
+    default_hdr["BTYPE"] = "Intensity"
+    default_hdr["OBJECT"] = "bowshock"
+    default_hdr["BUNIT"] = "Jy/beam"
+    default_hdr["RADESYS"] = "ICRS"
+    default_hdr["LONPOLE"] = 1.800000000000e02
+    default_hdr["LATPOLE"] = 3.126777777778e01
+    default_hdr["PC1_1"] = 1
+    default_hdr["PC2_1"] = 0
+    default_hdr["PC1_2"] = 0
+    default_hdr["PC2_2"] = 1
+    if naxis > 2:
+        default_hdr["PC1_3"] = 0
+        default_hdr["PC2_3"] = 0
+        default_hdr["PC3_1"] = 0
+        default_hdr["PC3_2"] = 0
+        default_hdr["PC3_3"] = 1
+    default_hdr["CTYPE1"] = "RA---SIN"
+    default_hdr["CRVAL1"] = 1.0
+    default_hdr["CDELT1"] = 1.0
+    default_hdr["CRPIX1"] = 1
+    default_hdr["CUNIT1"] = "deg"
+    default_hdr["CTYPE2"] = "DEC--SIN"
+    default_hdr["CRVAL2"] = 1.0
+    default_hdr["CDELT2"] = 1.0
+    default_hdr["CRPIX2"] = 1
+    default_hdr["CUNIT2"] = "deg"
+    if naxis > 2:
+       default_hdr["CTYPE3"] = "VRAD"
+       default_hdr["CRVAL3"] = 1.0
+       default_hdr["CDELT3"] = 1.0
+       default_hdr["CRPIX3"] = 1
+    default_hdr["CUNIT3"] = "km/s"
+    default_hdr["PV2_1"] = 0
+    default_hdr["PV2_2"] = 0
+    default_hdr["RESTFRQ"] = 3.457380000000e11
+    default_hdr["SPECSYS"] = "LSRK"
+    default_hdr["ALTRVAL"] = 7.757120529450e02
+    default_hdr["ALTRPIX"] = -2.700000000000e01
+    default_hdr["VELREF"] = 257
+    default_hdr["TELESCOP"] = f"BOWSHOCKPY v{__version__}"
+    default_hdr["OBSERVER"] = f"BOWSHOCKPY v{__version__}"
+    default_hdr["DATE-OBS"] = f"{datetime.now().isoformat()}"
+    default_hdr["TIMESYS"] = "UTC"
+    default_hdr["OBSRA"] = 5.226562499999e01
+    default_hdr["OBSDEC"] = 3.126777777778e01
+    default_hdr["OBSGEO-X"] = 2.225142180269e06
+    default_hdr["OBSGEO-Y"] = -5.440307370349e06
+    default_hdr["OBSGEO-Z"] = -2.481029851874e06
+    default_hdr["DATE"] = f"{datetime.now().isoformat()}"
+    default_hdr["ORIGIN"] = f"BOWSHOCKPY v{__version__}"
+
+    return copy.deepcopy(default_hdr)
