@@ -1,4 +1,5 @@
-from .cube import BowshockCube, CubeProcessing, ObsModel
+from .cube import BowshockCube, CubeProcessing
+from .modelproj import ObsModel
 from .genbow import generate_bowshock
 from .inputfiles import *
 from .models import BowshockModel

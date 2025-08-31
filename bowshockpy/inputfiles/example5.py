@@ -59,7 +59,7 @@ modelname = f"example5"
 # be the mol_column_density, which will be convolved; and the forth cube will be
 # the masses.
 outcubes = {
-    "intensity": ["add_noise", "convolve", "moments_and_pv"],
+    "intensity": ["convolve", "moments_and_pv"],
     "opacity": [],
     "mol_column_density": [],
     "mass": [],
@@ -310,11 +310,22 @@ pvvalues = {
 CUSTOM TRANSITION MODEL AND RADIATIVE TRANSFER
 (Optional)
 """
-# BowshockPy is able to compute the intensities of a low-J rotational
-# transition of a linear molecule assuming Local Thermodynamic Equilibrium. If
-# you need a different implementation of the modelling of the molecular
-# transition or a different radiative transfer in the following lines.
+# BowshockPy, by default, is able to compute the intensities of a low-J
+# rotational transition of a linear molecule, neglecting the population of
+# excitated vibrational levels and centrifugal distortions of the molecule.
+# Also, Local Thermodynamic Equilibrium. If you need a custom model the
+# molecular transition or a different radiative transfer, you can implement
+# them in the in the following lines.
 
+# First, import the necessary modules of your script
+# import astropy.units as u
+# import astropy.constants as const
+
+# You can define as many functions or classes as you need to implement your
+# model. Nonetheless, BowshockPy will need only two:
+
+# Custom function to compute the opacities. Should be a function only of the
+# column densities per velocity bin
 # def tau_custom_function(dNmoldv):
 #     """
 #     Custom function to compute the opacities from the column densities per
@@ -332,6 +343,7 @@ CUSTOM TRANSITION MODEL AND RADIATIVE TRANSFER
 #     """
 #     pass
 
+# Custom function to compute the intensities from the opacities
 # def Inu_custom_function(tau):
 #     """
 #     Custom function to perform the radiative transfer from the opacities
@@ -349,6 +361,66 @@ CUSTOM TRANSITION MODEL AND RADIATIVE TRANSFER
 #     pass
 
 
+# Import the necessary function of your script
+import bowshockpy.radtrans as rt
+import astropy.constants as const
+import astropy.units as u
+
+
+# Define the functions that you think are useful for your modelling
+def Ej(j, B0, D0):
+    """
+    Energy state of a rotational transition of a linear molecule, taking
+    into account the first order centrifugal distortion
+
+    Parameters
+    ----------
+    j : int
+        Rotational level
+    B0 : astropy.units.quantity
+        Rotation constant
+    D0 : astropy.units.quantity
+        First order centrifugal distortion constant
+
+    Returns
+    -------
+    astropy.units.quantity
+        Energy state of a rotator
+    """
+    return const.h * (B0 * j * (j+1) - D0 * j**2 * (j+1)**2)
+
+def gj(j):
+    """
+    Degeneracy of the level j at which the measurement was made. For a
+    linear molecule, g = 2j + 1
+
+    Parameters
+    ----------
+    j : int
+        Rotational level
+
+    Returns
+    -------
+    int
+        Degeneracy of the level j
+    """
+    return 2*j + 1
+
+def muj_jm1(j, mu_dipole):
+    """
+    Computes the dipole moment matrix element squared for rotational
+    transition j->j-1
+
+    Parameters
+    ----------
+    j : int
+        Rotational level
+    mu_dipole : astropy.units.quantity
+        Permanent dipole moment of the molecule
+    """
+    return mu_dipole * (j / (2*j + 1))**0.5
+
+# Only the next two functions will be read by BowshockPy
 
 def tau_custom_function(dNmoldv):
     """
@@ -365,62 +437,6 @@ def tau_custom_function(dNmoldv):
     tau : float
         Opacity
     """
-    import bowshockpy.radtrans as rt
-    import astropy.constants as const
-    import astropy.units as u
-
-
-    def Ej(j, B0, D0):
-        """
-        Energy state of a rotational transition of a linear molecule, taking
-        into account the first order centrifugal distortion
-
-        Parameters
-        ----------
-        j : int
-            Rotational level
-        B0 : astropy.units.quantity
-            Rotation constant
-        D0 : astropy.units.quantity
-            First order centrifugal distortion constant
-
-        Returns
-        -------
-        astropy.units.quantity
-            Energy state of a rotator
-        """
-        return const.h * (B0 * j * (j+1) - D0 * j**2 * (j+1)**2)
-
-    def gj(j):
-        """
-        Degeneracy of the level j at which the measurement was made. For a
-        linear molecule, g = 2j + 1
-
-        Parameters
-        ----------
-        j : int
-            Rotational level
-
-        Returns
-        -------
-        int
-            Degeneracy of the level j
-        """
-        return 2*j + 1
-
-    def muj_jm1(j, mu_dipole):
-        """
-        Computes the dipole moment matrix element squared for rotational transition
-        j->j-1
-
-        Parameters
-        ----------
-        j : int
-            Rotational level
-        mu_dipole : astropy.units.quantity
-            Permanent dipole moment of the molecule
-        """
-        return mu_dipole * (j / (2*j + 1))**0.5
 
     B0 = 57.62 * u.GHz # nu / (2J)
     D0 = B0 * 2 * 10**(-5)
@@ -437,7 +453,7 @@ def tau_custom_function(dNmoldv):
         Ei=Ej,
         gi=gj,
         mu_ul=mu_ul,
-        Ei_args=(B0, D0),
+        Ei_args=(B0, D0), # pass all the extra arguments to Ei
         gi_args=(),
     )
     return tau
@@ -458,7 +474,5 @@ def Inu_custom_function(tau):
     astropy.units.quantity
         Intensity (energy per unit of area, time, frequency and solid angle)
     """
-    import bowshockpy.radtrans as rt
-    import astropy.units as u
-
-    return rt.Bnu_func(nu*u.GHz, Tex*u.K) * tau
+    Inu = rt.Bnu_func(nu*u.GHz, Tex*u.K) * tau
+    return Inu

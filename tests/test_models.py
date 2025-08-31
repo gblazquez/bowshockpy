@@ -3,6 +3,7 @@ from astropy import units as u
 
 from bowshockpy import cube as bs
 from bowshockpy import models as mo
+from bowshockpy import modelproj as mp
 
 distpc = 300
 L0 = (0.391 * distpc * u.au).to(u.km).value
@@ -15,7 +16,7 @@ rbf_obs = (0.75 * distpc * u.au).to(u.km).value
 bsm = mo.BowshockModel(
     L0=L0, zj=zj, vj=vj, va=va, v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
 )
-bso = bs.ObsModel(
+bso = mp.ObsModel(
     bsm,
     i_deg=20.0,
     vsys=0,

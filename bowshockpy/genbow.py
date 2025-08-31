@@ -10,6 +10,7 @@ import runpy
 
 from bowshockpy import cube as bs
 from bowshockpy import models as mo
+from bowshockpy import modelproj as mp
 from bowshockpy import utils as ut
 from bowshockpy.version import __version__
 
@@ -127,7 +128,7 @@ Parameters read from {p.filename}
             distpc=psobs["distpc"],
             rbf_obs=ps["rbf_obs"],
         )
-        bsmobs = bs.ObsModel(
+        bsmobs = mp.ObsModel(
             model=bsm,
             i_deg=psobs["i_deg"],
             pa_deg=psobs["pa_deg"],

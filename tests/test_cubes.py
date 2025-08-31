@@ -4,6 +4,7 @@ import numpy as np
 from astropy import units as u
 
 from bowshockpy import cube as bs
+from bowshockpy import modelproj as mp
 from bowshockpy import models as mo
 
 # from bowshockpy import radtrans as rt
@@ -19,7 +20,7 @@ rbf_obs = (0.75 * distpc * u.au).to(u.km).value
 bsm = mo.BowshockModel(
     L0=L0, zj=zj, vj=vj, va=va, v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
 )
-bso = bs.ObsModel(
+bso = mp.ObsModel(
     bsm,
     i_deg=20.0,
     vsys=0,
@@ -62,6 +63,8 @@ bscp = bs.CubeProcessing(
     maxcube2noise=0,
 )
 
+bscp.calc_I()
+
 
 def test_cube_mass_consistency():
     massconsistent = bsc1._check_mass_consistency()
@@ -83,10 +86,19 @@ def test_combine_cubes():
     ), "Mass consistency test failed while combining cubes"
 
 
-def test_intensity_index():
+def test_mass_index():
+    # mass in control pixel
+    mass_xyc = bscp.cube[36, 26, 25]
     assert np.isclose(
-        bscp.cube[36, 26, 25], 2.8056152672732146e-07
-    ), "CubeProcessing failed to obtain the expected values of the intensities"
+        mass_xyc, 2.8056152672732146e-07
+    ), "CubeProcessing do not have the expected values of the masses"
+
+def test_intensity_index():
+    # intensity in control pixel
+    intensity_xyc = bscp.cubes["I"][36, 26, 25]
+    assert np.isclose(
+        intensity_xyc, 0.02801070719875003
+    ), f"CubeProcessing failed to obtain the expected values of the intensities"
 
 
 def test_convolution():
