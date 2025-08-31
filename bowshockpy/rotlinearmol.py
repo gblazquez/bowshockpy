@@ -1,18 +1,13 @@
-"""
-This module perform the radiative transfer for a rotational transition of a
-linear molecule.
-These are the assumptions:
-
-- Negligible population of vibrational excited states
-- Negligible centrifugal distortions
-- Local Thermodynamical Equilibrium
-
-"""
+"""This module contains the implementation of the model of a rotational
+transition of a linear molecule. The assumptions are: Local Thermodynamical
+Equilibrium, negligible population of vibrational excited states, negligible
+centrifugal distortions"""
 
 import numpy as np
-import bowshockpy.radtrans as rt
 from astropy import constants as const
 from astropy import units as u
+
+import bowshockpy.radtrans as rt
 
 
 def gJ(J):
@@ -30,7 +25,7 @@ def gJ(J):
     int
         Degeneracy of the level J
     """
-    return 2*J + 1
+    return 2 * J + 1
 
 
 def B0J(J, nu):
@@ -50,7 +45,7 @@ def B0J(J, nu):
     float
         Rigid rotor rotation constant.
     """
-    return nu / (2*J)
+    return nu / (2 * J)
 
 
 def EJ(J, B0):
@@ -69,7 +64,7 @@ def EJ(J, B0):
     astropy.units.quantity
         Energy state of a rotator
     """
-    return const.h * B0 * J * (J+1)
+    return const.h * B0 * J * (J + 1)
 
 
 def muJ_Jm1(J, mu):
@@ -84,7 +79,7 @@ def muJ_Jm1(J, mu):
     mu : astropy.units.quantity
         Permanent dipole moment of the molecule
     """
-    return mu * np.sqrt(J / (2*J + 1))
+    return mu * np.sqrt(J / (2 * J + 1))
 
 
 def tau_linearmol(dNmoldv, J, nu, Tex, mu):

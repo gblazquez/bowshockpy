@@ -1,3 +1,6 @@
+"""This module contains the implementation of the momentum conserving bowshock
+model"""
+
 import astropy.units as u
 import numpy as np
 from scipy.integrate import quad

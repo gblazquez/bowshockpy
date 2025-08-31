@@ -253,12 +253,18 @@ x New test on intensity cubes. Keep track of a value of a pixel in intensities
 
 x I think it would be good to split in two cube.py. At least, ObsModel should not be there because it is not the cube
 
-- Also, there should be a way to simplify the code regarding the headers of the fits file
+x Also, there should be a way to simplify the code regarding the headers of the fits file
 
-- Add a description in each .py file
+- Divide cube.py into two?
+
+x Add a description in each .py file
 
 - Implement the possibility of using as input floats (then a unit would be assumed), or astropy units.
 
 - You write Inu but not taunu. Fix this.
 
 - Make sure that nothing happens if the user do not want noise. How should be defined the parameters about noise in the input param file?
+
+- mom2clipping: I think there is a problem when it is a float and not an string
+
+- Add restfreq in cube header from nu parameter

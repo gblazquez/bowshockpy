@@ -1,3 +1,6 @@
+"""This module contains the tools to plot the bowshock model, the spectral
+cubes, moments maps and position-velocity diagrams"""
+
 from itertools import product
 
 import matplotlib.pyplot as plt

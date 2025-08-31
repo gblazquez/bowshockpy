@@ -1,3 +1,6 @@
+"""This module contains the functions that perform the moments to the spectral
+cubes"""
+
 import numpy as np
 
 
@@ -108,9 +111,6 @@ def mom1(cube, chan_vels, chan_range):
     intensity intensity weighted mean velocity = Sigma I_i v_i/Sigma I_i
     """
     mom1_im = sumIixvi(cube, chan_vels, chan_range) / sumint(cube, chan_range)
-    # or
-    # dv = np.abs(chan_vels[1]-chan_vels[0])
-    # mom1_im = sumIixvi(cube, chan_vels, chan_range) * dv / mom0(cube, chan_vels, chan_range)
     return mom1_im
 
 

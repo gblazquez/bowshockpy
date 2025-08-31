@@ -1,3 +1,6 @@
+"""This module contains the classes that allows to compute the spectral cube of
+a bowshock model"""
+
 import sys
 from datetime import datetime
 
@@ -110,7 +113,7 @@ class BowshockCube(ObsModel):
         refpix=[0, 0],
         cic=True,
         vt="2xchannel",
-      tolfactor_vt=None,
+        tolfactor_vt=None,
         verbose=True,
         **kwargs,
     ):
@@ -714,11 +717,11 @@ class CubeProcessing(BowshockCube):
         coordcube="offset",
         ra_source_deg=None,
         dec_source_deg=None,
-        bmin=0.,
-        bmaj=0.,
-        pabeam=0.,
-        papv=0.,
-        parot=0.,
+        bmin=0.0,
+        bmaj=0.0,
+        pabeam=0.0,
+        papv=0.0,
+        parot=0.0,
         sigma_beforeconv=None,
         maxcube2noise=None,
         verbose=True,
@@ -822,9 +825,7 @@ class CubeProcessing(BowshockCube):
         )
 
     def _calc_areapix_cm(self):
-        self.areapix_cm = (
-            (self.arcsecpix * self.distpc * u.au) ** 2
-        ).to(u.cm**2)
+        self.areapix_cm = ((self.arcsecpix * self.distpc * u.au) ** 2).to(u.cm**2)
 
     def _check_combine_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
@@ -847,11 +848,11 @@ class CubeProcessing(BowshockCube):
         if self.tau_custom_function is not None:
             return self.tau_custom_function(dNmoldv=dNmoldv)
         return rlm.tau_linearmol(
-           dNmoldv=dNmoldv,
-           J=self.J,
-           nu=self.nu,
-           Tex=self.Tex,
-           mu=self.mu,
+            dNmoldv=dNmoldv,
+            J=self.J,
+            nu=self.nu,
+            Tex=self.Tex,
+            mu=self.mu,
         )
 
     def I_f(self, tau):
@@ -874,12 +875,15 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print("\nComputing column densities...")
 
-        self.cubes["Ntot"] = \
+        self.cubes["Ntot"] = (
             rt.column_density_tot(
                 m=self.cubes["m"] * u.solMass,
                 meanmolmass=self.meanmolmass,
                 area=self.areapix_cm,
-            ).to(u.cm**(-2)).value
+            )
+            .to(u.cm ** (-2))
+            .value
+        )
 
         self.refpixs["Ntot"] = self.refpixs["m"]
         self.noisychans["Ntot"] = self.noisychans["m"]
@@ -896,17 +900,22 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print("\nComputing column densities of the emitting molecule...")
 
-        self.cubes["Nmol"] = \
+        self.cubes["Nmol"] = (
             rt.column_density_mol(
-                Ntot=self.cubes["Ntot"] * u.cm**(-2),
+                Ntot=self.cubes["Ntot"] * u.cm ** (-2),
                 abund=self.abund,
-            ).to(u.cm**(-2)).value
+            )
+            .to(u.cm ** (-2))
+            .value
+        )
 
         self.refpixs["Nmol"] = self.refpixs["m"]
         self.noisychans["Nmol"] = self.noisychans["m"]
         self.sigma_noises["Nmol"] = self.sigma_noises["m"]
         if self.verbose:
-            print("The column densities of the emitting molecule have been calculated\n")
+            print(
+                "The column densities of the emitting molecule have been calculated\n"
+            )
 
     def calc_tau(self):
         """
@@ -917,10 +926,15 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print("\nComputing opacities...")
 
-        self.cubes["tau"] = \
+        self.cubes["tau"] = (
             self.tau_f(
-                dNmoldv=self.cubes["Nmol"]*u.cm**(-2) / (self.abschanwidth*u.km/u.s)
-                ).to("").value
+                dNmoldv=self.cubes["Nmol"]
+                * u.cm ** (-2)
+                / (self.abschanwidth * u.km / u.s)
+            )
+            .to("")
+            .value
+        )
 
         self.refpixs["tau"] = self.refpixs["m"]
         self.noisychans["tau"] = self.noisychans["m"]
@@ -1070,9 +1084,7 @@ class CubeProcessing(BowshockCube):
 
         if self.verbose:
             ts = []
-            ut.progressbar_bowshock(
-                0, self.nc, length=50, timelapsed=0, intervaltime=0
-            )
+            ut.progressbar_bowshock(0, self.nc, length=50, timelapsed=0, intervaltime=0)
         for chan in range(np.shape(self.cubes[ck])[0]):
             if self.verbose:
                 t0 = datetime.now()
@@ -1283,10 +1295,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         hdul = fits.HDUList([hdu])
         hdu.header = self.hdrs[ck]
         ut.make_folder(foldername=f"models/{self.modelname}/fits")
-        hdul.writeto(
-            f"models/{self.modelname}/fits/{ck}.fits",
-            overwrite=True
-        )
+        hdul.writeto(f"models/{self.modelname}/fits/{ck}.fits", overwrite=True)
         if self.verbose:
             print(f"models/{self.modelname}/fits/{ck}.fits saved")
 
@@ -1490,10 +1499,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Position velocity diagram
         """
         pvimage = moments.pv(
-            self.cubes[ck],
-            int(self.refpixs[ck][1]),
-            halfwidth=halfwidth,
-            axis=1
+            self.cubes[ck], int(self.refpixs[ck][1]), halfwidth=halfwidth, axis=1
         )
         if savefits:
             hdrpv = ut.get_default_hdr(naxis=2, beam=False)

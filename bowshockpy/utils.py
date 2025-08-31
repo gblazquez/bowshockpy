@@ -1,3 +1,6 @@
+"""This module contains the definition of useful tools used in the rest of
+BowshockPy modules"""
+
 import copy
 import os
 from datetime import datetime
@@ -276,10 +279,10 @@ def get_default_hdr(naxis, beam=True):
     default_hdr["CRPIX2"] = 1
     default_hdr["CUNIT2"] = "deg"
     if naxis > 2:
-       default_hdr["CTYPE3"] = "VRAD"
-       default_hdr["CRVAL3"] = 1.0
-       default_hdr["CDELT3"] = 1.0
-       default_hdr["CRPIX3"] = 1
+        default_hdr["CTYPE3"] = "VRAD"
+        default_hdr["CRVAL3"] = 1.0
+        default_hdr["CDELT3"] = 1.0
+        default_hdr["CRPIX3"] = 1
     default_hdr["CUNIT3"] = "km/s"
     default_hdr["PV2_1"] = 0
     default_hdr["PV2_2"] = 0

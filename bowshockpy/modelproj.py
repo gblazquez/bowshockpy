@@ -1,3 +1,6 @@
+"""This module contains the class that projects the bowshock model morphology
+and kinematics"""
+
 import numpy as np
 
 import bowshockpy.plots as pl
