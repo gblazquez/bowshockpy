@@ -1,5 +1,5 @@
-"""This module contains the implementation of general equations to compute the
-column densities, opacities and to perform the radiative transfer"""
+"""This module contains the general equations that allows to compute the column
+densities and opacities, and to perform the radiative transfer"""
 
 import numpy as np
 from astropy import constants as const

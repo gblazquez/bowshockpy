@@ -1,5 +1,5 @@
-"""This module contains the functions that perform the moments to the spectral
-cubes"""
+"""This module contains the functions that perform the statistical moments to
+the spectral cubes"""
 
 import numpy as np
 

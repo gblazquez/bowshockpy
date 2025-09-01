@@ -12,7 +12,7 @@ import argparse
 import runpy
 
 from bowshockpy import utils as ut
-from bowshockpy.cube import BowshockCube
+from bowshockpy.cubemass import BowshockCube
 from bowshockpy.cubeproc import CubeProcessing
 from bowshockpy.modelproj import ObsModel
 from bowshockpy.models import BowshockModel

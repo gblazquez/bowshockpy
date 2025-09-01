@@ -14,7 +14,7 @@ import bowshockpy.plots as pl
 import bowshockpy.radtrans as rt
 import bowshockpy.rotlinearmol as rlm
 import bowshockpy.utils as ut
-from bowshockpy.cube import BowshockCube
+from bowshockpy.cubemass import BowshockCube
 from bowshockpy import moments
 from bowshockpy.version import __version__
 
@@ -656,7 +656,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Example:
         --------
-        >>> cp = bs.CubeProcessing(...)
+        >>> cp = CubeProcessing(...)
         >>> outcubes = {
         >>>    "intensity": ["add_noise", "convolve", "moments_and_pv"],
         >>>    "opacity": [],
@@ -761,14 +761,14 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Example:
         --------
-        >>> bscp = CubeProcessing(...)
+        >>> cp = CubeProcessing(...)
         >>> outcubes = {
         >>>    "intensity": ["add_noise", "convolve", "moments_and_pv"],
         >>>    "opacity": [],
         >>>    "mol_column_density": ["convolve"],
         >>>    "mass": [],
         >>> }
-        >>> bscp.savecubes(outputcubes)
+        >>> cp.savecubes(outputcubes)
 
         will save 4 spectral cubes in fits format. The first one are the
         intensities with gaussian noise added, it will be convolved, and the
