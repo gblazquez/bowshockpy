@@ -255,7 +255,7 @@ x I think it would be good to split in two cube.py. At least, ObsModel should no
 
 x Also, there should be a way to simplify the code regarding the headers of the fits file
 
-- Divide cube.py into two?
+x Divide cube.py into two?
 
 x Add a description in each .py file
 
@@ -263,13 +263,15 @@ x Header fixed
 
 - Implement the possibility of using as input floats (then a unit would be assumed), or astropy units.
 
+astropy.units.Quantity -> astropy.units.quantity.Quantity
+
 - You write Inu but not taunu. Fix this.
 
 - Make sure that nothing happens if the user do not want noise. How should be defined the parameters about noise in the input param file?
 
 - mom2clipping: I think there is a problem when it is a float and not an string
 
-- Add restfreq in cube header from nu parameter
+x Add restfreq in cube header from nu parameter
 
 - Manage warnings with import warnings?
 https://docs.python.org/3/library/warnings.html

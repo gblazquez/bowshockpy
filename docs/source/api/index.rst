@@ -4,7 +4,7 @@
 API Reference
 =============
 
-The API reference guide contains detailed descriptions of the functions and classes of ``bowshockpy``
+The API reference guide contains detailed descriptions of the functions and classes of ``BowshockPy``
 
 ..
    .. toctree::
@@ -37,19 +37,19 @@ The API reference guide contains detailed descriptions of the functions and clas
    :show-inheritance:
    :member-order: bysource
 
-``bowshockpy.cube``
----------------------
+``bowshockpy.cubemass``
+-----------------------
 
-.. automodule:: bowshockpy.cube
+.. automodule:: bowshockpy.cubemass
    :noindex:
    :members:
    :show-inheritance:
    :member-order: bysource
 
-``bowshockpy.utils``
---------------------
+``bowshockpy.cubeproc``
+-----------------------
 
-.. automodule:: bowshockpy.utils
+.. automodule:: bowshockpy.cubeproc
    :noindex:
    :members:
    :show-inheritance:
@@ -86,6 +86,15 @@ The API reference guide contains detailed descriptions of the functions and clas
 --------------------
 
 .. automodule:: bowshockpy.plots
+   :noindex:
+   :members:
+   :show-inheritance:
+   :member-order: bysource
+
+``bowshockpy.utils``
+--------------------
+
+.. automodule:: bowshockpy.utils
    :noindex:
    :members:
    :show-inheritance:

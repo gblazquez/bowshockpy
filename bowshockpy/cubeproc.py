@@ -32,18 +32,19 @@ class CubeProcessing(BowshockCube):
     J : int, optional
         Upper level of the rotational transition (e.g. 3 for transition
         "3-2")
-    nu : astropy.units.Quantity, optional
-        Frequency of the transition
+    nu : float | astropy.units.Quantity , optional
+        Frequency of the transition. If float, the units of nu should be GHz
     abund : float, optional
         Abundance relative to the molecular hydrogen
-    meanmolmass : astropy.unit.Quantity, optional
-        Mean mass per H molecule
-    mu : astropy.unit.Quantity, optional
-        Permanent dipole moment of the molecule
-    Tex : astropy.unit.Quantity, optional
-        Excitation temperature
-    Tbg : astropy.unit.Quantity, optional
-        Excitation temperature
+    meanmolmass : float, optional
+        Mean mass per H molecule.
+    mu : float | astropy.unit.Quantity, optional
+        Permanent dipole moment of the molecule. If float, the units of mu
+        should be Debye.
+    Tex : float | astropy.unit.Quantity, optional
+        Excitation temperature. If float, the units of Tex should be Kelvin.
+    Tbg : float | astropy.unit.Quantity, optional
+        Excitation temperature. If float, the units of Tex should be Kelvin.
     tau_custom_function : callable, optional
         By default, BowshockPy will compute the opacities from a rotational
         transition of a linear molecule (neglecting vibrational excited states
@@ -203,13 +204,13 @@ class CubeProcessing(BowshockCube):
 
         self.modelname = modelname
         self.J = J
-        self.nu = nu
+        self.nu = nu if isinstance(nu, type(1*u.GHz)) else nu * u.GHz
         self.rottrans = f"{int(J)}-{int(J-1)}"
         self.abund = abund
         self.meanmolmass = meanmolmass
-        self.mu = mu
-        self.Tex = Tex
-        self.Tbg = Tbg
+        self.mu = mu if isinstance(mu, type(1*u.Debye)) else mu * u.Debye
+        self.Tex = Tex if isinstance(Tex, type(1*u.K)) else Tex * u.K
+        self.Tbg = Tbg if isinstance(Tbg, type(1*u.K)) else Tbg * u.K
         self.tau_custom_function = tau_custom_function
         self.Inu_custom_function = Inu_custom_function
         self.coordcube = coordcube

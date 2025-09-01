@@ -3,7 +3,7 @@ import copy
 import numpy as np
 from astropy import units as u
 
-from bowshockpy.cube import BowshockCube
+from bowshockpy.cubemass import BowshockCube
 from bowshockpy.cubeproc import CubeProcessing
 from bowshockpy.modelproj import ObsModel
 from bowshockpy.models import BowshockModel
