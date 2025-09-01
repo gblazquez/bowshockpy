@@ -158,7 +158,12 @@ These parameters will define the properties of the spectral cube of the bowshock
     Central velocity of the first channel map [km/s].
 
 *vchf* (float)
-    Central velocity of the last channel map [km/s].
+    Central velocity of the last channel map [km/s]. Set to None if chanwidth
+    is used.
+
+*chanwidth* (float) = None
+    Width of the velocity channel [km/s]. If chanwidth>0, then vch0<vchf, if
+    chanwidth<0, then vch0>vchf. Set to None if vchf is used.
 
 *nxs* (int)
     Number of pixels in the right ascension axis.

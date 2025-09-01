@@ -27,11 +27,12 @@ bso = ObsModel(
 bsc1 = BowshockCube(
     bso,
     nphis=100,
-    nzs=100,
-    nc=50,
+    xpmax=5,
     vch0=-10,
     vchf=-120,
-    xpmax=5,
+    chanwidth=None,
+    nzs=100,
+    nc=50,
     nxs=50,
     nys=50,
     refpix=[25, 10],
@@ -69,6 +70,11 @@ mom1 = bscp.mom1(ck="I")
 mom2 = bscp.mom2(ck="I")
 mom8 = bscp.mom8(ck="I")
 
+def test_channel_consistency_vchf():
+    assert np.isclose(bsc1.vchf, bsc1.velchans[-1])
+
+def test_channel_consistency_chanwidth():
+    assert np.isclose(bsc1.chanwidth, np.diff(bsc1.velchans)[0])
 
 def test_cube_mass_consistency():
     massconsistent = bsc1._check_mass_consistency()

@@ -3,8 +3,6 @@
 ############################
 
 
-
-
 # Added by you:
 rebuild_wheels.sh
 examples2docs.py
@@ -15,6 +13,7 @@ models/*
 examples/models/*
 examples/*
 !examples/example_notebook.ipynb
+!examples/example5.py
 !examples/example4.py
 !examples/example3.py
 !examples/example2.py

@@ -84,6 +84,7 @@ Parameters read from {p.filename}
             "vt": p.vt,
             "vch0": p.vch0,
             "vchf": p.vchf,
+            "chanwidth": p.chanwidth,
             "nxs": p.nxs,
             "nys": p.nys,
             "nzs": p.nzs,
@@ -168,10 +169,11 @@ Generating bowshock {i+1}/{p.nbowshocks}
                 BowshockCube(
                     obsmodel=bsmobs,
                     nphis=pscube["nphis"],
-                    nzs=pscube["nzs"],
+                    xpmax=pscube["xpmax"],
                     vch0=pscube["vch0"],
                     vchf=pscube["vchf"],
-                    xpmax=pscube["xpmax"],
+                    chanwidth=pscube["chanwidth"],
+                    nzs=pscube["nzs"],
                     nc=pscube["nc"],
                     nxs=pscube["nxs"],
                     nys=pscube["nys"],
@@ -185,8 +187,10 @@ Generating bowshock {i+1}/{p.nbowshocks}
             bscs[i].makecube()
             print(
                 f"""
-Channel width: {bscs[i].abschanwidth:.3} km/s
-Pixel size: {bscs[i].arcsecpix:.4} arcsec/pix
+Central velocity of the first channel: {bscs[i].vch0:.2f} km/s
+Central velocity of the last channel: {bscs[i].vchf:.2f} km/s
+Channel width: {bscs[i].chanwidth:.3f} km/s
+Pixel size: {bscs[i].arcsecpix:.5f} arcsec/pix
      """
             )
 

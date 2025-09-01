@@ -22,12 +22,20 @@ class BowshockCube(ObsModel):
         Instance of ObsModel
     nphis : int
         Number of azimuthal angles phi to calculate the bowshock solution
-    vch0 : float
-        Central velocity of the first channel map [km/s]
-    vchf : float
-        Central velocity of the last channel map [km/s]
     xpmax : float
         Physical size of the channel maps along the x axis [arcsec]
+    vch0 : float
+        Central velocity of the first channel map [km/s]
+    vchf : float | None
+        Central velocity of the last channel map [km/s]. If None, you should
+        provide instead the channel width with chanwidth parameter. If a float
+        is provided, chanwidth should be None, since chanwidth would be
+        computed internally. Default is None.
+    chanwidth : float | None
+        Channel width of the spectral cube [km/s]. If positive, vch0<vchf,
+        negative, vch0>vchf. If None, you should provide instead the central
+        velocity of the last channel map. If a float is provided, vchf should
+        be None, since vchf would be computed internally. Default is None.
     nzs : int, optional
         Number of points used to compute the model solutions
     nc : int, optional
@@ -95,9 +103,10 @@ class BowshockCube(ObsModel):
         self,
         obsmodel,
         nphis,
-        vch0,
-        vchf,
         xpmax,
+        vch0,
+        vchf=None,
+        chanwidth=None,
         nzs=200,
         nc=50,
         nxs=200,
@@ -111,9 +120,10 @@ class BowshockCube(ObsModel):
     ):
         self.__dict__ = obsmodel.__dict__
         self.nphis = nphis
+        self.xpmax = xpmax
         self.vch0 = vch0
         self.vchf = vchf
-        self.xpmax = xpmax
+        self.chanwidth = chanwidth
         self.nzs = nzs
         self.nc = nc
         self.nxs = nxs
@@ -155,6 +165,21 @@ self.nys, self.nxs)}. Please, provide a cube with the right dimensions or do not
 provide any cube.
 """
         )
+    def _required_parameter_absent_error(self,):
+        sys.exit(
+                    """
+ERROR: Both chanwidth and vchf parameters are None. Please, provide one value
+of type float to one of them.
+"""
+                )
+
+    def _ambiguous_input_error(self,):
+        sys.exit(
+            """
+ ERROR: Ambiguous input. A not None input was provided to both chanwidth and
+ vchf. Only one should be float, while the other should be None.
+ """
+    )
 
     def _outsidegrid_warning(
         self,
@@ -237,8 +262,19 @@ size (nxs and nys parameters).
         )
 
     def _calc_params_init(self):
-        self.chanwidth = (self.vchf - self.vch0) / (self.nc - 1)
+        if self.chanwidth is None and self.vchf is None:
+            self._required_parameter_absent_error()
+        elif self.chanwidth is not None and self.vchf is not None:
+            self._ambiguous_input_error()
+        else:
+            pass
+
+        if self.chanwidth is None:
+            self.chanwidth = (self.vchf - self.vch0) / (self.nc - 1)
+        elif self.vchf is None:
+            self.vchf = self.chanwidth * (self.nc - 1) + self.vch0
         self.abschanwidth = np.abs(self.chanwidth)
+
         self.vt = (
             self.vt
             if not isinstance(self.vt, str)

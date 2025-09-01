@@ -4,7 +4,7 @@ x Compute for several bowshocks
 
 x Make channel plots, moments 0 and 1
 
- (+ (not for this version) Generalize for a non zero jet radius) not in this version
++ (not for this version) Generalize for a non zero jet radius) not in this version
 
 x PA for each bowshock: Rotate the model instead of rotate the image
 
@@ -224,7 +224,7 @@ x Change XCO for abund
 
 x Dipole moment should be a parameter in the input file
 
-+ Change the units of the channels -> masses-> masses/(pix*chan). And so on
+x Change the units of the channels -> masses-> masses/(pix*chan). And so on
   (Doubt: Put it in the units or in the quantity)
   I change it as mass per pixel per channel (I don't know if this is a good idea)
 
@@ -252,6 +252,12 @@ x New test on intensity cubes. Keep track of a value of a pixel in intensities
    - Change the order of the parameters in CubeProcessing
    x Concatenate -> combine
    - ObsModel now comes from modelproj.py But I think it does not affect hte notebook
+   - Set chanwidth to None in BowshockCube
+   - Check that chanwidth works
+   - End the notebook with an example of custom model transition
+
++ Implement the possibility of giving the channel width instead of the final channel
+  - Choose an example and implement this instead of vchf
 
 x I think it would be good to split in two cube.py. At least, ObsModel should not be there because it is not the cube
 
@@ -284,9 +290,9 @@ x Hacer test de momentos.
 - Manage warnings with import warnings?
 https://docs.python.org/3/library/warnings.html
 
-- You can put as example5 parameters based on HCO+. The discussion of Tafalla 2010 regarding this molecule and its relation with the EHV is interesting:
+x Example 5 should appear in docs
 
-- Example 5 should appear in docs
+- You can put as example5 parameters based on HCO+. The discussion of Tafalla 2010 regarding this molecule and its relation with the EHV is interesting:
 
 The third species with a likely EHV feature in the spectrum
 is HCO+ . As Fig. 5 shows, the HCO+ (1−0) line from the L1448
