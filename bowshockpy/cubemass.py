@@ -318,7 +318,6 @@ Mass consistency test passed: The input total mass of the bowshock model
 coincides with the total mass of the cube.
 """
             )
-        # (only a small fraction of mass, {massloss:.1e} %, is lost due to numerical errors
         else:
             self._mass_consistency_warning(massloss)
         return mass_consistent
@@ -494,7 +493,7 @@ coincides with the total mass of the cube.
             vmax=vmax,
             vmin=vmin,
             cmap=cmap,
-            units="Mass [Msun]",
+            units="Mass per pixel per channel [Msun]",
             refpix=self.refpix,
             return_fig_axs=True,
         )

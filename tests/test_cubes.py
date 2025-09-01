@@ -64,6 +64,11 @@ bscp = CubeProcessing(
 
 bscp.calc_I()
 
+mom0 = bscp.mom0(ck="I")
+mom1 = bscp.mom1(ck="I")
+mom2 = bscp.mom2(ck="I")
+mom8 = bscp.mom8(ck="I")
+
 
 def test_cube_mass_consistency():
     massconsistent = bsc1._check_mass_consistency()
@@ -98,12 +103,35 @@ def test_intensity_index():
     intensity_xyc = bscp.cubes["I"][36, 26, 25]
     assert np.isclose(
         intensity_xyc, 0.02801070719875003
-    ), f"CubeProcessing failed to obtain the expected values of the intensities"
+    ), "CubeProcessing failed to obtain the expected values of the intensities"
 
 
 def test_convolution():
-    bscp.calc_I()
     bscp.convolve("I")
     assert np.isclose(
         np.sum(bscp.cubes["I"]), np.sum(bscp.cubes["I_c"])
     ), "Convolution failed: flux is not conserved"
+
+def test_mom0():
+    mom0_xy = mom0[26, 25]
+    assert np.isclose(
+        mom0_xy, 1.715026191836612
+    ), "Failed to obtain the expected values of the moment 0"
+
+def test_mom1():
+    mom1_xy = mom1[26, 25]
+    assert np.isclose(
+        mom1_xy, -86.69768758752018
+    ), "Failed to obtain the expected values of the moment 1"
+
+def test_mom2():
+    mom2_xy = mom2[26, 25]
+    assert np.isclose(
+        mom2_xy, 27.87445981444194
+    ), "Fail to obtain the expected vaules of moment 2"
+
+def test_mom8():
+    mom8_xy = mom8[26, 25]
+    assert np.isclose(
+        mom8_xy, 0.06893409211230457
+    ), "Fail to obtain the expected values of moment 8"

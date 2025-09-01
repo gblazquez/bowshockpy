@@ -122,6 +122,13 @@ class CubeProcessing(BowshockCube):
         "Nmol": "Emitting molecule column density",
         "tau": "Opacity",
     }
+    btypes_colorbar = {
+        "m": "mass per pixel per channel",
+        "I": "Intensity",
+        "Ntot": "Total column density per channel",
+        "Nmol": "Emitting molecule column density per channel",
+        "tau": "Opacity",
+    }
     bunits = {
         "m": "solMass",
         "I": "Jy/beam",
@@ -265,9 +272,9 @@ class CubeProcessing(BowshockCube):
 
     def _getunitlabel(self, ck):
         if self.bunits[self._q(ck)] == "-":
-            unitlabel = f"{self.btypes[self._q(ck)]}"
+            unitlabel = f"{self.btypes_colorbar[self._q(ck)]}"
         else:
-            unitlabel = f"{self.btypes[self._q(ck)]} [{self.bunits[self._q(ck)]}]"
+            unitlabel = f"{self.btypes_colorbar[self._q(ck)]} [{self.bunits[self._q(ck)]}]"
         return unitlabel
 
     def _calc_beamarea_sr(self):
