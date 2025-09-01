@@ -1,9 +1,8 @@
 import numpy as np
 from astropy import units as u
 
-from bowshockpy import cube as bs
-from bowshockpy import models as mo
-from bowshockpy import modelproj as mp
+from bowshockpy.modelproj import ObsModel
+from bowshockpy.models import BowshockModel
 
 distpc = 300
 L0 = (0.391 * distpc * u.au).to(u.km).value
@@ -13,10 +12,10 @@ va = 0
 v0 = 22.9
 mass = 0.000231
 rbf_obs = (0.75 * distpc * u.au).to(u.km).value
-bsm = mo.BowshockModel(
+bsm = BowshockModel(
     L0=L0, zj=zj, vj=vj, va=va, v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
 )
-bso = mp.ObsModel(
+bso = ObsModel(
     bsm,
     i_deg=20.0,
     vsys=0,
@@ -48,4 +47,3 @@ def test_numerical_vs_analytical():
     assert np.isclose(
         mass_halfradius_analytical, mass_halfradius_numerical
     ), "Analytical mass computation differs from the numerical"
-

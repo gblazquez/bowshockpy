@@ -1,6 +1,7 @@
-"""Initialization of Bowshockpy"""
+"""Initialization of BowshockPy"""
 
-from .cube import BowshockCube, CubeProcessing
+from .cube import BowshockCube
+from .cubeproc import CubeProcessing
 from .genbow import generate_bowshock
 from .inputfiles import *
 from .modelproj import ObsModel

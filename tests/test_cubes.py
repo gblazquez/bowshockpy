@@ -3,11 +3,10 @@ import copy
 import numpy as np
 from astropy import units as u
 
-from bowshockpy import cube as bs
-from bowshockpy import modelproj as mp
-from bowshockpy import models as mo
-
-# from bowshockpy import radtrans as rt
+from bowshockpy.cube import BowshockCube
+from bowshockpy.cubeproc import CubeProcessing
+from bowshockpy.modelproj import ObsModel
+from bowshockpy.models import BowshockModel
 
 distpc = 300
 L0 = (0.391 * distpc * u.au).to(u.km).value
@@ -17,15 +16,15 @@ va = 0
 v0 = 22.9
 mass = 0.000231
 rbf_obs = (0.75 * distpc * u.au).to(u.km).value
-bsm = mo.BowshockModel(
+bsm = BowshockModel(
     L0=L0, zj=zj, vj=vj, va=va, v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
 )
-bso = mp.ObsModel(
+bso = ObsModel(
     bsm,
     i_deg=20.0,
     vsys=0,
 )
-bsc1 = bs.BowshockCube(
+bsc1 = BowshockCube(
     bso,
     nphis=100,
     nzs=100,
@@ -44,11 +43,11 @@ bsc1 = bs.BowshockCube(
 bsc2 = copy.deepcopy(bsc1)
 bsc1.makecube()
 bsc3 = copy.deepcopy(bsc1)
-bscp = bs.CubeProcessing(
+bscp = CubeProcessing(
     [bsc1, bsc3],
     J=3,
     nu=345.79598990 * u.GHz,
-    abund=8.5 * 10**(-5),
+    abund=8.5 * 10 ** (-5),
     meanmolmass=2.8,
     mu=0.112 * u.D,
     Tex=100 * u.K,
@@ -92,6 +91,7 @@ def test_mass_index():
     assert np.isclose(
         mass_xyc, 2.8056152672732146e-07
     ), "CubeProcessing do not have the expected values of the masses"
+
 
 def test_intensity_index():
     # intensity in control pixel

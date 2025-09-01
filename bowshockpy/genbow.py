@@ -11,10 +11,11 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 import argparse
 import runpy
 
-from bowshockpy import cube as bs
-from bowshockpy import modelproj as mp
-from bowshockpy import models as mo
 from bowshockpy import utils as ut
+from bowshockpy.cube import BowshockCube
+from bowshockpy.cubeproc import CubeProcessing
+from bowshockpy.modelproj import ObsModel
+from bowshockpy.models import BowshockModel
 from bowshockpy.version import __version__
 
 
@@ -123,7 +124,7 @@ Parameters read from {p.filename}
 
     bscs = []
     for i, (ps, psobs) in enumerate(zip(pss, psobss)):
-        bsm = mo.BowshockModel(
+        bsm = BowshockModel(
             L0=ps["L0"],
             zj=ps["zj"],
             vj=ps["vj"],
@@ -133,7 +134,7 @@ Parameters read from {p.filename}
             distpc=psobs["distpc"],
             rbf_obs=ps["rbf_obs"],
         )
-        bsmobs = mp.ObsModel(
+        bsmobs = ObsModel(
             model=bsm,
             i_deg=psobs["i_deg"],
             pa_deg=psobs["pa_deg"],
@@ -164,7 +165,7 @@ Generating bowshock {i+1}/{p.nbowshocks}
                   """
             )
             bscs += [
-                bs.BowshockCube(
+                BowshockCube(
                     obsmodel=bsmobs,
                     nphis=pscube["nphis"],
                     nzs=pscube["nzs"],
@@ -207,7 +208,7 @@ Abbreviations for quantities are:             Abbreviations for the operations a
    tau: Opacity
 """
     )
-    bscp = bs.CubeProcessing(
+    bscp = CubeProcessing(
         bscs,
         modelname=p.modelname,
         J=mpars["J"],

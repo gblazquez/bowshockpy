@@ -34,15 +34,16 @@ eq1 = (
         * (mu.to(u.Debye) * 10 ** (-18)) ** 2
         / const.h.cgs
         * J
-        / (2*J + 1)
+        / (2 * J + 1)
         * rlm.gJ(J=J)
         / rt.Qpart(Tex, gi=rlm.gJ, Ei=rlm.EJ, Ei_args=(rlm.B0J(J, nu)))
-        * np.exp(-rlm.EJ(J=J,B0=rlm.B0J(J,nu)) / const.k_B / Tex)
+        * np.exp(-rlm.EJ(J=J, B0=rlm.B0J(J, nu)) / const.k_B / Tex)
         * (rt.exp_hnkt(nu=nu, T=Tex) - 1)
     )
     .to((u.D) ** 2 / u.erg / u.cm**3)
     .value
 )
+
 
 def test_Aeinstein():
     Aeinstein = rt.A_ul(nu=freq_caract_CO["1-0"], mu_ul=rlm.muJ_Jm1(J=1, mu=mu)).value

@@ -259,6 +259,8 @@ x Also, there should be a way to simplify the code regarding the headers of the 
 
 x Add a description in each .py file
 
+x Header fixed
+
 - Implement the possibility of using as input floats (then a unit would be assumed), or astropy units.
 
 - You write Inu but not taunu. Fix this.
@@ -268,3 +270,28 @@ x Add a description in each .py file
 - mom2clipping: I think there is a problem when it is a float and not an string
 
 - Add restfreq in cube header from nu parameter
+
+- Manage warnings with import warnings?
+https://docs.python.org/3/library/warnings.html
+
+- You can put as example5 parameters based on HCO+. The discussion of Tafalla 2010 regarding this molecule and its relation with the EHV is interesting:
+
+The third species with a likely EHV feature in the spectrum
+is HCO+ . As Fig. 5 shows, the HCO+ (1−0) line from the L1448
+outflow presents an almost continuous wing with a hint of a rela-
+tive maximum near the EHV velocity range. In the I04166 spec-
+trum, on the other hand, HCO+ (1−0) presents a distinct emission
+peak at the velocity expected for the EHV regime, suggesting
+that at least part of the HCO+ emission at high velocities truly
+arises from the EHV gas. These two HCO+ spectra illustrate a
+trend, further seen in CS and HCN, of increasing confusion be-
+tween the EHV feature and what seems to be a high-velocity
+continuation of the wing emission. As mentioned in Sect. 3.1,
+the wing emission in an outflow probably does not end at the ve-
+locity at which the EHV component starts to dominate the spec-
+trum, but it continues to higher velocities overlapping with the
+EHV gas. In the lines of CO (also SiO and SO), the EHV emis-
+sion is brighter than the wing, so it dominates the spectrum. In
+HCO+ , CS, and HCN, the weak EHV emission barely (if at all)
+stands out over the wing emission, and its separation from the
+fastest wing is ambiguous
