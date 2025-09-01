@@ -42,7 +42,7 @@ class BowshockCube(ObsModel):
         second is the  Dec. axis [[int, int] or None]
     cic : bolean, optional
         Set to True to perform Cloud in Cell interpolation [1].
-    vt : str | float, optional
+    vt : float | str, optional
         Thermal+turbulent line-of-sight velocity dispersion [km/s] If
         thermal+turbulent line-of-sight velocity dispersion is smaller than the
         instrumental spectral resolution, vt should be the spectral resolution.

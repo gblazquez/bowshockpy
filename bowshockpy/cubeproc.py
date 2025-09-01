@@ -32,7 +32,7 @@ class CubeProcessing(BowshockCube):
     J : int, optional
         Upper level of the rotational transition (e.g. 3 for transition
         "3-2")
-    nu : float | astropy.units.Quantity , optional
+    nu : float | astropy.units.Quantity, optional
         Frequency of the transition. If float, the units of nu should be GHz
     abund : float, optional
         Abundance relative to the molecular hydrogen
@@ -204,13 +204,13 @@ class CubeProcessing(BowshockCube):
 
         self.modelname = modelname
         self.J = J
-        self.nu = nu if isinstance(nu, type(1*u.GHz)) else nu * u.GHz
+        self.nu = ut.make_astropy_units(nu, u.GHz)
         self.rottrans = f"{int(J)}-{int(J-1)}"
         self.abund = abund
         self.meanmolmass = meanmolmass
-        self.mu = mu if isinstance(mu, type(1*u.Debye)) else mu * u.Debye
-        self.Tex = Tex if isinstance(Tex, type(1*u.K)) else Tex * u.K
-        self.Tbg = Tbg if isinstance(Tbg, type(1*u.K)) else Tbg * u.K
+        self.mu = ut.make_astropy_units(mu, u.Debye)
+        self.Tex = ut.make_astropy_units(Tex, u.K)
+        self.Tbg = ut.make_astropy_units(Tbg, u.K)
         self.tau_custom_function = tau_custom_function
         self.Inu_custom_function = Inu_custom_function
         self.coordcube = coordcube
@@ -329,8 +329,8 @@ class CubeProcessing(BowshockCube):
         self.cubes["Ntot"] = (
             rt.column_density_tot(
                 m=self.cubes["m"] * u.solMass,
-                meanmolmass=self.meanmolmass,
                 area=self.areapix_cm,
+                meanmolmass=self.meanmolmass,
             )
             .to(u.cm ** (-2))
             .value
@@ -953,7 +953,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             self.cubes[ck], int(self.refpixs[ck][1]), halfwidth=halfwidth, axis=1
         )
         if savefits:
-            hdrpv = ut.get_default_hdr(naxis=2, beam=False)
+            hdrpv = ut.get_default_hdr(naxis=2, beam=False, pv=True)
             hdrpv["NAXIS"] = 2
             hdrpv["NAXIS1"] = np.shape(self.cubes[ck])[1]
             hdrpv["NAXIS2"] = np.shape(self.cubes[ck])[0]
@@ -965,7 +965,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdrpv["CDELT1"] = self.arcsecpix
             hdrpv["CRPIX1"] = self.refpixs[ck][0] + 1.0
             hdrpv["CUNIT1"] = "arcsec"
-            hdrpv["CTYPE2"] = "VELOCITY"
+            hdrpv["CTYPE2"] = "VRAD"
             hdrpv["CRVAL2"] = self.velchans[0]
             hdrpv["CDELT2"] = self.chanwidth
             hdrpv["CRPIX2"] = 1.0
@@ -1051,7 +1051,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            hdr["RESTFRQ"] = self.nu.to(u.Hz).value
+            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(sumintimage)
             hdul = fits.HDUList([hdu])
@@ -1133,7 +1133,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            hdr["RESTFRQ"] = self.nu.to(u.Hz).value
+            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(mom0)
             hdul = fits.HDUList([hdu])
@@ -1221,7 +1221,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            hdr["RESTFRQ"] = self.nu.to(u.Hz).value
+            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(mom1)
             hdul = fits.HDUList([hdu])
@@ -1311,7 +1311,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            hdr["RESTFRQ"] = self.nu.to(u.Hz).value
+            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(mom2)
             hdul = fits.HDUList([hdu])
@@ -1403,7 +1403,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            hdr["RESTFRQ"] = self.nu.to(u.Hz).value
+            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(mom8)
             hdul = fits.HDUList([hdu])

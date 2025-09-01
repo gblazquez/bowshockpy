@@ -114,9 +114,9 @@ def mb_sa_gaussian_f(maja, mina):
     Parameters:
     -----------
     maja : astropy.units.Quantity
-        Beam major axis (FWHM) in degrees or radians
+        Beam major axis (FWHM)
     mina : astropy.units.Quantity
-        Beam minor axis (FWHM) in degrees or radians
+        Beam minor axis (FWHM)
 
     Returns:
     --------
@@ -235,7 +235,31 @@ def allequal(inputlist):
     return next(g, True) and not next(g, False)
 
 
-def get_default_hdr(naxis, beam=True):
+def make_astropy_units(quantity, astropy_unit):
+    """
+    Transform to astropy.units.Quantity unless it is already an
+    astropy.units.Quantity
+
+    Parameters:
+    -----------
+    quantity : float | astropy.units.Quantity
+        Value to transform to astropy.units.Quantity
+    astropy_unit : astropy.units.Quantity
+        Unit
+
+    Returns:
+    --------
+    astropy.units.Quantity
+        Input quantity as an astropy.units.Quantity type
+    """
+    if isinstance(quantity, u.Quantity):
+        astropy_quantity = quantity
+    else:
+        astropy_quantity = quantity * astropy_unit
+    return astropy_quantity
+
+
+def get_default_hdr(naxis, beam=True, pv=False):
     default_hdr = fits.Header()
 
     default_hdr["SIMPLE"] = True
@@ -286,8 +310,9 @@ def get_default_hdr(naxis, beam=True):
         default_hdr["CUNIT3"] = "km/s"
     default_hdr["PV2_1"] = 0.0
     default_hdr["PV2_2"] = 0.0
-    default_hdr["RESTFRQ"] = 3.457380000000e11
-    default_hdr["SPECSYS"] = "LSRK"
+    if naxis > 2 or pv:
+        default_hdr["RESTFRQ"] = 3.457380000000e11
+        default_hdr["SPECSYS"] = "LSRK"
     default_hdr["ALTRVAL"] = 7.757120529450e02
     default_hdr["ALTRPIX"] = -2.700000000000e01
     default_hdr["VELREF"] = 257

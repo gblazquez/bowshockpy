@@ -8,6 +8,7 @@ from astropy import constants as const
 from astropy import units as u
 
 import bowshockpy.radtrans as rt
+import bowshockpy.utils as ut
 
 
 def gJ(J):
@@ -37,14 +38,15 @@ def B0J(J, nu):
     ----------
     J : int
         Rotational level
-    nu : astropy.units.quantity
-        Frequency of the transition
+    nu : float | astropy.units.Quantity
+        Frequency of the transition. If float, it should be in GHz
 
     Returns
     -------
     float
         Rigid rotor rotation constant.
     """
+    nu = ut.make_astropy_units(nu, u.GHz)
     return nu / (2 * J)
 
 
@@ -56,14 +58,15 @@ def EJ(J, B0):
     ----------
     J : int
         Rotational level
-    B0 : astropy.units.quantity
-        Rotation constant
+    B0 : float | astropy.units.Quantity
+        Rotation constant. If float, it should be in GHz
 
     Returns
     -------
-    astropy.units.quantity
+    astropy.units.Quantity
         Energy state of a rotator
     """
+    B0 = ut.make_astropy_units(B0, u.GHz)
     return const.h * B0 * J * (J + 1)
 
 
@@ -76,9 +79,11 @@ def muJ_Jm1(J, mu):
     ----------
     J : int
         Rotational level
-    mu : astropy.units.quantity
-        Permanent dipole moment of the molecule
+    mu : float | astropy.units.Quantity
+        Permanent dipole moment of the molecule. If float, it should be in
+        Debye
     """
+    mu = ut.make_astropy_units(mu, u.Debye)
     return mu * np.sqrt(J / (2 * J + 1))
 
 
@@ -89,22 +94,29 @@ def tau_linearmol(dNmoldv, J, nu, Tex, mu):
 
     Parameters
     ----------
-    dNmol : astropy.units.quantity
-        Column density per velocity bin dv
+    dNmoldv : float | astropy.units.Quantity
+        Column density per velocity bin dv. If float, it should be in s / km /
+        cm**2
     J : int
         Rotational level
-    nu : astropy.units.quantity
-        Frequency
-    Tex : astropy.units.quantity
-        Excitation temperature
-    mu : astropy.units.quantity
-        Permanent dipole moment of the molecule
+    nu : float | astropy.units.Quantity
+        Frequency. If float, it should be in GHz.
+    Tex : float | astropy.units.Quantity
+        Excitation temperature. If float, it should be in Kelvin
+    mu : float | astropy.units.Quantity
+        Permanent dipole moment of the molecule. If float, it should be in
+        Debye
 
     Returns
     -------
     float
         Opacity
     """
+    dNmoldv = ut.make_astropy_units(dNmoldv, u.s / u.km / u.cm**2)
+    nu = ut.make_astropy_units(nu, u.GHz)
+    Tex = ut.make_astropy_units(Tex, u.K)
+    mu = ut.make_astropy_units(mu, u.Debye)
+
     B0 = B0J(J, nu)
     mu_ul = muJ_Jm1(J, mu)
     tau = rt.tau_func(

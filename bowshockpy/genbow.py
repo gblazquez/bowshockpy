@@ -263,7 +263,7 @@ def main():
     """
 
     description = """
-Bowshockpy is a Python package that generates synthetic spectral cubes,
+BowshockPy is a Python package that generates synthetic spectral cubes,
 position-velocity diagrams, and moment images for a simple analytical jet-driven
 bowshock model, using the prescription for protostellar jets presented in
 Ostriker et al. (2001) and Tabone et al. (2018). Please, see the documentation

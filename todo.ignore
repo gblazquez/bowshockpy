@@ -263,6 +263,8 @@ x Header fixed
 
 - Implement the possibility of using as input floats (then a unit would be assumed), or astropy units.
 
+- tau_func should depend on A_ul instead of mu_ul, since mu_ul appear more usually in the table than mu_ul.
+
 astropy.units.Quantity -> astropy.units.quantity.Quantity
 
 - You write Inu but not taunu. Fix this.

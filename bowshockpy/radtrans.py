@@ -5,26 +5,30 @@ import numpy as np
 from astropy import constants as const
 from astropy import units as u
 
+import bowshockpy.utils as ut
 
-def column_density_tot(m, meanmolmass, area):
+
+def column_density_tot(m, area, meanmolmass):
     """
     Computes the total (H2 + heavier components) column density given the mass
     and the projected area
 
     Parameters
     ----------
-    m : astropy.units.quantity
-        Mass
-    meanmolmass : astropy.units.quantity
+    m : float | astropy.units.Quantity
+        Mass. If float, units should be Solar Masses.
+    area : float | astropy.units.Quantity
+        Projected area. If float, the area should be in cm**2.
+    meanmolmass : float
         Mean molecular mass per hydrogen molecule
-    area : astropy.units.quantity
-        Projected area
 
     Returns
     -------
-    astropy.units.quantity
-        Total column density
+    astropy.units.Quantity
+        Total column density (H2 + heavier components)
     """
+    m = ut.make_astropy_units(m, u.Msun)
+    area = ut.make_astropy_units(area, u.cm**2)
     return m / (meanmolmass * const.m_p * area)
 
 
@@ -35,20 +39,18 @@ def column_density_mol(Ntot, abund):
 
     Parameters
     ----------
-    m : astropy.units.quantity
-        Mass
-    meanmolmass : float
-        Mean molecular mass per hydrogen molecule
-    area : astropy.units.quantity
-        Projected area
+    Ntot : float | astropy.units.Quantity
+        Total column density (H2 + heavier components). If float, the column
+        density should be given in particles per cm**2
     abund : float
         Abundance relative to molecular hydrogen
 
     Returns
     -------
-    astropy.units.quantity
+    astropy.units.Quantity
         Column density of the molecule
     """
+    Ntot = ut.make_astropy_units(Ntot, u.cm**(-2))
     return Ntot * abund
 
 
@@ -58,8 +60,8 @@ def Qpart(Tex, Ei, gi, Ei_args=(), gi_args=(), tol=10 ** (-15)):
 
     Parameters
     ----------
-    Tex : astropy.units.quntity
-        Excitation temperature
+    Tex : float | astropy.units.quntity
+        Excitation temperature. If float, it should be in Kelvin
     Ei : callable
         Function Ei(i, \*Ei_args) to compute the energy at level i
     gi : callable
@@ -76,6 +78,7 @@ def Qpart(Tex, Ei, gi, Ei_args=(), gi_args=(), tol=10 ** (-15)):
     float
         Partition function
     """
+    Tex = ut.make_astropy_units(Tex, u.K)
     if not isinstance(Ei_args, tuple):
         Ei_args = (Ei_args,)
     if not isinstance(gi_args, tuple):
@@ -98,10 +101,10 @@ def column_density_mol_i(Nmol, Tex, i, Ei, gi, Ei_args=(), gi_args=()):
 
     Parameters
     ----------
-    N : astropy.units.quantity
-       Column density of the molecule
-    Tex : astropy.units.quantity
-        Excitation temperature
+    Nmol : float | astropy.units.Quantity
+       Column density of the emitting molecule. If float, should be in cm**(-2)
+    Tex : float | astropy.units.Quantity
+        Excitation temperature. If float, should be in Kelvin.
     Ei : callable
         Function Ei(i, \*Ei_args) to compute the energy at level i
     gi : callable
@@ -113,10 +116,12 @@ def column_density_mol_i(Nmol, Tex, i, Ei, gi, Ei_args=(), gi_args=()):
 
     Returns
     -------
-    astropy.units.quantity
+    astropy.units.Quantity
         Column density of the molecule at energy level i
 
     """
+    Nmol = ut.make_astropy_units(Nmol, u.cm**(-2))
+    Tex = ut.make_astropy_units(Tex, u.K)
     if not isinstance(Ei_args, tuple):
         Ei_args = (Ei_args,)
     if not isinstance(gi_args, tuple):
@@ -136,17 +141,20 @@ def A_ul(nu, mu_ul):
 
     Parameters
     ----------
-    nu : astropy.units.quantity
-        Frequency of the transition
-    mu_ul : astropy.units.quantity
-        Dipole moment matrix element u,l
+    nu : float | astropy.units.Quantity
+        Frequency of the transition. If float, it should be in GHz.
+    mu_ul : float | astropy.units.Quantity
+        Dipole moment matrix element u,l. If float, it should be in Debye.
     """
+
+    nu = ut.make_astropy_units(nu, u.GHz)
+    mu_ul = ut.make_astropy_units(mu_ul, u.Debye)
     acoeff = (
         64
         * np.pi**4
         * nu.cgs.value**3
         / (3 * const.h.cgs.value * const.c.cgs.value**3)
-        * (mu_ul.to(u.D).value * 10 ** (-18)) ** 2
+        * (mu_ul.to(u.Debye).value * 10 ** (-18)) ** 2
     )
     return acoeff * u.s**(-1)
 
@@ -167,16 +175,17 @@ def tau_func(
 
     Parameters
     ----------
-    dNmoldv : astropy.units.quantity
-        Column density per velocity bin
-    nu : astropy.units.quantity
-        Frequency
-    Tex : astropy.units.quantity
-        Excitation temperature
+    dNmoldv : float | astropy.units.Quantity
+        Column density per velocity bin. If float, it should be given in
+        cm**(-2) * s * km**(-1)
+    nu : float | astropy.units.Quantity
+        Frequency. If float, it should be in GHz.
+    Tex : astropy.units.Quantity
+        Excitation temperature. If float, it should be in Kelvin.
     i : int
         Level
-    mu_ul : astropy.units.quantity
-        Dipole moment matrix element i, i-1
+    mu_ul : float | astropy.units.Quantity
+        Dipole moment matrix element i, i-1. If float should be in Debye.
     Ei : callable
         Function Ei(i, \*Ei_args) to compute the energy at level i
     gi : callable
@@ -191,6 +200,12 @@ def tau_func(
     float
         Opacity
     """
+
+    Tex = ut.make_astropy_units(Tex, u.K)
+    dNmoldv = ut.make_astropy_units(dNmoldv, u.s / u.km / u.cm**2)
+    nu = ut.make_astropy_units(nu, u.GHz)
+    mu_ul = ut.make_astropy_units(mu_ul, u.Debye)
+
     dNmolidv = column_density_mol_i(
         Nmol=dNmoldv, Tex=Tex, i=i, Ei=Ei, gi=gi, Ei_args=Ei_args, gi_args=gi_args
     )
@@ -206,17 +221,19 @@ def exp_hnkt(nu, T):
 
     Parameters
     ----------
-    nu : astropy.units.quantity
-        Frequency
+    nu : float | astropy.units.Quantity
+        Frequency. If float, it should be in GHz
 
-    T : astropy.units.quantity
-        Temperature
+    T : float | astropy.units.Quantity
+        Temperature. If float, should be in Kelvin
 
     Returns
     -------
     float
         exp(h nu / k_B/T)
     """
+    T = ut.make_astropy_units(T, u.K)
+    nu = ut.make_astropy_units(nu, u.GHz)
     return np.exp(const.h * nu / (const.k_B * T))
 
 
@@ -227,16 +244,18 @@ def Bnu_func(nu, T):
 
     Parameters
     ----------
-    nu : astropy.units.quantity
-        Frequency
-    T : astropy.units.quantity
-        Temperature
+    nu : float | astropy.units.Quantity
+        Frequency. If float, it should be in GHz.
+    T : float | astropy.units.Quantity
+        Temperature. If float, it should be in Kelvin.
 
     Returns
     -------
-    Bnu : astropy.units.quantity
+    Bnu : astropy.units.Quantity
         Spectral radiance in u.Jy / u.sr
     """
+    T = ut.make_astropy_units(T, u.K)
+    nu = ut.make_astropy_units(nu, u.GHz)
     Bnu = 2 * const.h * nu**3 / (const.c**2 * (exp_hnkt(nu, T) - 1))
     return Bnu.to(u.Jy) / u.sr
 
@@ -248,17 +267,20 @@ def Inu_func(tau, nu, Tex, Tbg):
     Parameters
     ----------
     tau : float
-        Opacity
-    nu : astropy.units.quantity
-        Frequency of the transition
-    Tex : astropy.units.quntity
-        Excitation temperature
-    Tbg: astropy.units.quantity
-        Background temperature
+        Opacity.
+    nu : float | astropy.units.Quantity
+        Frequency of the transition. If float, it should be in GHz
+    Tex : float | astropy.units.quntity
+        Excitation temperature. If float, it should be in Kelvin.
+    Tbg: float | astropy.units.Quantity
+        Background temperature. If float, it should be in Kelvin
 
     Returns
     -------
-    astropy.units.quantity
+    astropy.units.Quantity
         Intensity (energy per unit of area, time, frequency and solid angle)
     """
+    Tex = ut.make_astropy_units(Tex, u.K)
+    Tbg = ut.make_astropy_units(Tbg, u.K)
+    nu = ut.make_astropy_units(nu, u.GHz)
     return (Bnu_func(nu, Tex) - Bnu_func(nu, Tbg)) * (1 - np.exp(-tau))

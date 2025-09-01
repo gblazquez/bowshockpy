@@ -16,7 +16,7 @@ dv = 1 * u.km / u.s
 abund = 10 ** (-4)
 mu = 0.112 * u.Debye
 Tex = 100 * u.K
-Ntot = rt.column_density_tot(m=m, meanmolmass=meanmolmass, area=area)
+Ntot = rt.column_density_tot(m=m, area=area, meanmolmass=meanmolmass)
 Nco = rt.column_density_mol(Ntot, abund=abund)
 dNcodv = (Nco / dv).to(u.cm ** (-2) / u.km * u.s)
 Aeinstein_CO10 = 7.45447951542228e-08
