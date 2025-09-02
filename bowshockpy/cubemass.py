@@ -11,8 +11,22 @@ import bowshockpy.utils as ut
 from bowshockpy.modelproj import ObsModel
 from bowshockpy.version import __version__
 
-warnings.filterwarnings("error", message="Error:*", category=UserWarning)
-warnings.filterwarnings("always", message="Warning:*", category=UserWarning)
+
+def formatwarning(message, category, filename, lineno, line):
+    """Custom format of warning compatible with the progress bar"""
+    return f"{filename}:{lineno}\n{category.__name__}: {message}"
+
+
+class UserError(Warning):
+    """Warning category to interrupt the program"""
+
+    pass
+
+
+warnings.formatwarning = formatwarning
+warnings.filterwarnings("error", category=UserError)
+warnings.filterwarnings("always", category=UserWarning)
+
 
 class BowshockCube(ObsModel):
     """
@@ -161,56 +175,71 @@ class BowshockCube(ObsModel):
     def _dimension_error(self, fromcube):
         warnings.warn(
             message=f"""
-Error: The provided cube into which the model is to be build has dimensions
-{np.shape(fromcube)} but the dimensions of the desired model cube is {(self.nc,
-self.nys, self.nxs)}. Please, provide a cube with the right dimensions or do not
-provide any cube.
+The provided cube into which the model is to be build has dimensions
+{np.shape(fromcube)} but the dimensions of the desired model cube is
+{(self.nc, self.nys, self.nxs)}. Please, provide a cube with the right
+dimensions or do not provide any cube.
 """,
-            category=UserWarning,
+            category=UserError,
         )
 
     def _required_parameter_absent_error(self):
         warnings.warn(
             message="""
-Error: Both chanwidth and vchf parameters are None. Please, provide one value
-of type float to one of them.
+Both chanwidth and vchf parameters are None. Please, provide one value of type
+float to one of them.
 """,
-            category=UserWarning,
+            category=UserError,
         )
 
     def _ambiguous_input_error(self):
         warnings.warn(
             message="""
- Error: Ambiguous input. A not None input was provided to both chanwidth and
- vchf. Only one should be float, while the other should be None.
+Ambiguous input. The user provided values to both chanwidth and vchf. Only one
+of them should be a float, the other should be None.
  """,
-            category=UserWarning,
+            category=UserError,
         )
 
     def _outsidegrid_warning(self):
         warnings.warn(
             message="""
-Warning: Part of the model lie outside the grid of the spectral cube! The model
-will be truncated or not appearing at all in your spectral cube. This is due to
-at least one of three reasons:
+Part of the model lie outside the grid of the spectral cube! The model will be
+truncated or not appearing at all in your spectral cube. This is due to at
+least one of three reasons:
     - The image is too small. Try to make the image larger by increasing the
-    number of pixels (parameters nxs and nys), or increase the physical size of
-    the image (parameter xpmax).
+      number of pixels (parameters nxs and nys), or increase the physical size
+      of the image (parameter xpmax).
     - The model is far away from the image center. Try to change the reference
-    pixel where the physical center (the source) is found (parameter refpix).
+      pixel where the physical center (the source) is found (parameter refpix).
     - The model is outside your velocity coverage. Try to change the range of
-    velocity channels of the spectral cube (parameters vch0 and vchf, consider
-    negative floats if the model is blueshifted).\n
+      velocity channels of the spectral cube (parameters vch0 and vchf,
+      consider negative floats if the model is blueshifted).\n
 """,
             category=UserWarning,
+            stacklevel=1,
         )
+
+    #        print("""
+    # Warning: Part of the model lie outside the grid of the spectral cube! The model
+    # will be truncated or not appearing at all in your spectral cube. This is due to
+    # at least one of three reasons:
+    #     - The image is too small. Try to make the image larger by increasing the
+    #     number of pixels (parameters nxs and nys), or increase the physical size of
+    #     the image (parameter xpmax).
+    #     - The model is far away from the image center. Try to change the reference
+    #     pixel where the physical center (the source) is found (parameter refpix).
+    #     - The model is outside your velocity coverage. Try to change the range of
+    #     velocity channels of the spectral cube (parameters vch0 and vchf, consider
+    #     negative floats if the model is blueshifted).\n
+    # """
+    #         )
 
     def _mass_consistency_warning(self, massloss):
         warnings.warn(
             message=rf"""
-Warning: The integrated mass of the cube is {massloss:.1e} % less than the
-input
-total mass of the bowshock. This can be due to several factors:
+The integrated mass of the cube is {massloss:.1e} % less than the input total
+mass of the bowshock. This can be due to several factors:
     - Part of the model lie outside the grid of the spectral cube. If this is
       not intended, try to solve it by making the maps larger, changing the
       reference pixel to center the model in the maps, or increasing the
@@ -227,15 +256,16 @@ total mass of the bowshock. This can be due to several factors:
       tolfactor_vt larger.
 """,
             category=UserWarning,
+            stacklevel=1,
         )
 
     def _sampling_xy_warning(self):
         warnings.warn(
             message="""
-Warning: It is possible that the model is not well sampled in the plane of sky
-given the cube dimensions and the number of model points. You can ensure a
-better sampling by increasing the number of model points (nzs
-parameter) or decreasing the pixel size (nxs and nys parameters).
+It is possible that the model is not well sampled in the plane of sky given the
+cube dimensions and the number of model points. You can ensure a better
+sampling by increasing the number of model points (nzs parameter) or decreasing
+the pixel size (nxs and nys parameters).
 """,
             category=UserWarning,
         )
@@ -243,10 +273,10 @@ parameter) or decreasing the pixel size (nxs and nys parameters).
     def _sampling_v_warning(self):
         warnings.warn(
             message="""
-Warning: It is possible that the model is not well sampled in the velocity
-direction given the cube dimensions and the number of model points. You can
-ensure a better sampling by increasing the number of model points in the
-azimuthal direction (nphis parameter) or decreasing the pixel size (nxs and nys
+It is possible that the model is not well sampled in the velocity direction
+given the cube dimensions and the number of model points. You can ensure a
+better sampling by increasing the number of model points in the azimuthal
+direction (nphis parameter) or decreasing the pixel size (nxs and nys
 parameters).
 """,
             category=UserWarning,
@@ -255,11 +285,11 @@ parameters).
     def _sampling_phi_warning(self):
         warnings.warn(
             message="""
-Warning: It is possible that the model is not well sampled in the plane of sky
-given the cube dimensions and the number of azimuthal points of the model
-(nphis). You can ensure a better sampling by increasing the number of model
-points in the azimuthal direction (nphis parameter) or decreasing the pixel
-size (nxs and nys parameters).
+It is possible that the model is not well sampled in the plane of sky given the
+cube dimensions and the number of azimuthal points of the model (nphis). You
+can ensure a better sampling by increasing the number of model points in the
+azimuthal direction (nphis parameter) or decreasing the pixel size (nxs and nys
+parameters).
 """,
             category=UserWarning,
         )
@@ -596,4 +626,3 @@ coincides with the total mass of the cube.
             return fig, axs, cbax
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
-

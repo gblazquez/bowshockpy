@@ -27,13 +27,13 @@ class BowshockModelPlot:
         Name of the model to include in the plot
     nzs : int, optional
         Number of points used to compute the model solutions
-    figsize: tuple, optional
+    figsize : tuple, optional
         Tuple passed to `matplotib.pyplot.figure` to define the dimensions of
         the figure
-    narrows: int, optional
+    narrows : int, optional
         Number of arrows to show in order to indicate the velocity at each
         symmetrical half of the model.
-    v_arrow_ref: float, optional
+    v_arrow_ref : float, optional
         Velocity in km/s to use as reference in the reference arrow
     linespacing : float, optional
         Spacing between the text lines

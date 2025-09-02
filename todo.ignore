@@ -293,6 +293,9 @@ https://docs.python.org/3/library/warnings.html
 
 x Example 5 should appear in docs
 
+- Split the CubeProcessing class in two: radiative transfer and moments /
+  pv-diagrams
+
 - You can put as example5 parameters based on HCO+. The discussion of Tafalla 2010 regarding this molecule and its relation with the EHV is interesting:
 
 The third species with a likely EHV feature in the spectrum

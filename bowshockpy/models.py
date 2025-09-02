@@ -652,13 +652,39 @@ class BowshockModel:
         mpamb_f = np.pi * rhoa * (self.vj - self.va) * self.rbf**2
         return mpamb_f
 
-    def get_modelplot(self, **kwargs):
+    def get_modelplot(
+        self,
+        modelname="none",
+        nzs=200,
+        figsize=(16, 3),
+        narrows=10,
+        v_arrow_ref=100,
+        linespacing=0.08,
+        textbox_widthratio=0.7,
+        **kwargs,
+    ):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
 
         Parameters
-        -----------
+        ----------
+        modelname : str, optional
+            Name of the model to include in the plot
+        nzs : int, optional
+            Number of points used to compute the model solutions
+        figsize : tuple, optional
+            Tuple passed to `matplotib.pyplot.figure` to define the
+            dimensions of the figure
+        narrows : int, optional
+            Number of arrows to show in order to indicate the velocity at
+            each symmetrical half of the model.
+        v_arrow_ref : float, optional
+            Velocity in km/s to use as reference in the reference arrow
+        linespacing : float, optional
+            Spacing between the text lines
+        textbox_widthratio : float, optional
+            Width ratio of the text ax to pass to GridSpec
         kwargs : optional
             Keyword arguments into `~bowshockpy.plot.BowshockModelPlot`
 
@@ -668,5 +694,15 @@ class BowshockModel:
             An instance of a class BowshockModelPlot, which contains
             information on the figure and the model data
         """
-        modelplot = pl.BowshockModelPlot(self, **kwargs)
+        modelplot = pl.BowshockModelPlot(
+            self,
+            modelname=modelname,
+            nzs=nzs,
+            figsize=figsize,
+            narrows=narrows,
+            v_arrow_ref=v_arrow_ref,
+            linespacing=linespacing,
+            textbox_widthratio=textbox_widthratio,
+            **kwargs,
+        )
         return modelplot

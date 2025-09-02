@@ -118,21 +118,64 @@ class ObsModel(BowshockModel):
         """
         return -self.rb(zb) * np.cos(phi) * np.sin(self.i) + zb * np.cos(self.i)
 
-    def get_obsmodelplot(self, **kwargs):
+    def get_obsmodelplot(
+        self,
+        modelname="none",
+        nzs=150,
+        nphis=150,
+        figsize=(12, 6),
+        linespacing=0.09,
+        textbox_widthratio=0.8,
+        cmap="turbo",
+        minpointsize=0.1,
+        maxpointsize=10,
+        **kwargs,
+        ):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
 
         Parameters
         -----------
+        modelname : str, optional
+            Name of the model to include in the plot
+        nzs : int, optional
+            Number of z coordinates used to compute the model solutions
+        nphis : int, optional
+            Number of phi coordinates used to compute the model solutions
+        figsize: tuple, optional
+            Tuple passed to `matplotib.pyplot.figure` to define the dimensions of
+            the figure
+        linespacing : float, optional
+            Spacing between the text lines
+        textbox_widthratio : float, optional
+            Width ratio of the text ax to pass to GridSpec
+        cmap : str, optional
+            Colormap label
+        minpointsize : float, optional
+            Minsize of the points to plot
+        maxpointsize : float, optional
+            Minsize of the points to plot
         kwargs : optional
-            Keyword arguments into `~bowshockpy.plot.BowshockModelPlot`
+            Keyword arguments into `~bowshockpy.plot.BowshockObsModelPlot`
 
         Returns
         --------
-        modelplot : `~bowshockpy.plot.BowshockModelPlot` class instance
+        modelplot : `~bowshockpy.plot.BowshockObsModelPlot` class instance
             An instance of a class BowshockModelPlot, which contains
             information on the figure and the model data
         """
-        modelplot = pl.BowshockObsModelPlot(self, **kwargs)
+        modelplot = pl.BowshockObsModelPlot(
+            self,
+            modelname=modelname,
+            nzs=nzs,
+            nphis=nphis,
+            figsize=figsize,
+            linespacing=linespacing,
+            textbox_widthratio=textbox_widthratio,
+            cmap=cmap,
+            minpointsize=minpointsize,
+            maxpointsize=maxpointsize,
+            **kwargs
+        )
         return modelplot
