@@ -2,11 +2,8 @@
 terminal"""
 
 import os
-import warnings
 
 import astropy.units as u
-
-# warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 import argparse
 import runpy

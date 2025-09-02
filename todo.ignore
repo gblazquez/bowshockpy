@@ -247,15 +247,15 @@ x New test on intensity cubes. Keep track of a value of a pixel in intensities
 - Things to fix in the notebook:
    x All mention to CO (well, the notebook is an example and should be included)
    x BowshockPy
-   - nu as a new parameter of CubeProcessing
-   - mu as a new parameter of CubeProcessing
-   - Change the order of the parameters in CubeProcessing
+   x nu as a new parameter of CubeProcessing
+   x mu as a new parameter of CubeProcessing
+   x Change the order of the parameters in CubeProcessing
    x Concatenate -> combine
-   - ObsModel now comes from modelproj.py But I think it does not affect hte notebook
-   - Set chanwidth to None in BowshockCube
-   - Check that chanwidth works
+   x ObsModel now comes from modelproj.py But I think it does not affect hte notebook
+   x Set chanwidth to None in BowshockCube
+   x Check that chanwidth works
    - End the notebook with an example of custom model transition
-   - Test warnings
+   x Test warnings
 
 + Implement the possibility of giving the channel width instead of the final channel
   - Choose an example and implement this instead of vchf
@@ -293,10 +293,16 @@ https://docs.python.org/3/library/warnings.html
 
 x Example 5 should appear in docs
 
-- Split the CubeProcessing class in two: radiative transfer and moments /
++ Split the CubeProcessing class in two: radiative transfer and moments /
   pv-diagrams
+  (too much for now...)
 
 - You can put as example5 parameters based on HCO+. The discussion of Tafalla 2010 regarding this molecule and its relation with the EHV is interesting:
+
+- If a beam size is not provided, the units of intensity should be Jy /
+  arcsec^2
+
+- Should the plots in the notebook return the figure, axes and cbax?
 
 The third species with a likely EHV feature in the spectrum
 is HCO+ . As Fig. 5 shows, the HCO+ (1−0) line from the L1448

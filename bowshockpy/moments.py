@@ -110,7 +110,8 @@ def mom1(cube, chan_vels, chan_range):
     (units should be km/s, and not an adimensional value). The moment1 is  the
     intensity intensity weighted mean velocity = Sigma I_i v_i/Sigma I_i
     """
-    mom1_im = sumIixvi(cube, chan_vels, chan_range) / sumint(cube, chan_range)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        mom1_im = sumIixvi(cube, chan_vels, chan_range) / sumint(cube, chan_range)
     return mom1_im
 
 
@@ -143,10 +144,12 @@ def mom2(cube, chan_vels, chan_range):
     dispersion = [Sigma I_i v^2_i/Sigma I_i]**(1/2)
 
     """
-    disp = np.sqrt(
-        sumIixvi(cube, chan_vels, chan_range, exp=2) / sumint(cube, chan_range)
-        - mom1(cube, chan_vels, chan_range) ** 2
-    )
+
+    with np.errstate(divide="ignore", invalid="ignore"):
+        disp = np.sqrt(
+            sumIixvi(cube, chan_vels, chan_range, exp=2) / sumint(cube, chan_range)
+            - mom1(cube, chan_vels, chan_range) ** 2
+        )
     return disp
 
 

@@ -123,10 +123,10 @@ class CubeProcessing(BowshockCube):
         "tau": "Opacity",
     }
     btypes_colorbar = {
-        "m": "mass per pixel per channel",
+        "m": r"mass / (pixel $\times$ channel)",
         "I": "Intensity",
-        "Ntot": "Total column density per channel",
-        "Nmol": "Emitting molecule column density per channel",
+        "Ntot": "Total column density / channel",
+        "Nmol": "Emitting molecule col. dens. / channel",
         "tau": "Opacity",
     }
     bunits = {

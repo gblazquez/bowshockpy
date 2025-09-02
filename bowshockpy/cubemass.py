@@ -562,7 +562,7 @@ coincides with the total mass of the cube.
             vmax=vmax,
             vmin=vmin,
             cmap=cmap,
-            units="Mass per pixel per channel [Msun]",
+            units=r"Mass / (pixel $\times$ channel) [Msun]",
             refpix=self.refpix,
             return_fig_axs=True,
         )
