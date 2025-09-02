@@ -255,6 +255,7 @@ x New test on intensity cubes. Keep track of a value of a pixel in intensities
    - Set chanwidth to None in BowshockCube
    - Check that chanwidth works
    - End the notebook with an example of custom model transition
+   - Test warnings
 
 + Implement the possibility of giving the channel width instead of the final channel
   - Choose an example and implement this instead of vchf
@@ -287,7 +288,7 @@ x Add restfreq in cube header from nu parameter
 
 x Hacer test de momentos.
 
-- Manage warnings with import warnings?
+x Manage warnings with import warnings?
 https://docs.python.org/3/library/warnings.html
 
 x Example 5 should appear in docs
