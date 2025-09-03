@@ -249,7 +249,7 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         mom0values=p.mom0values,
         mom1values=p.mom1values,
         mom2values=p.mom2values,
-        mom8values=p.mom8values,
+        maxintensvalues=p.maxintensvalues,
         pvvalues=p.pvvalues,
         add_beam=True,
     )

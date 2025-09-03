@@ -2122,8 +2122,8 @@ def plotmom2(
         return fig, ax, cbax, velcmap
 
 
-def plotmom8(
-    mom8,
+def plotmaxintens(
+    maxintens,
     ax=None,
     cbax=None,
     extent=None,
@@ -2145,7 +2145,7 @@ def plotmom8(
 
     Parameters
     ----------
-    mom8 : numpy.ndarray
+    maxintens : numpy.ndarray
         Image of the maximum pixel along the velocty axis.
     ax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the position velodity
@@ -2203,12 +2203,12 @@ def plotmom8(
     else:
         fig = None
 
-    vmax = vmax if vmax is not None else np.max(mom8[~np.isnan(mom8)])
-    vmin = vmin if vmin is not None else np.min(mom8[~np.isnan(mom8)])
+    vmax = vmax if vmax is not None else np.max(maxintens[~np.isnan(maxintens)])
+    vmin = vmin if vmin is not None else np.min(maxintens[~np.isnan(maxintens)])
     vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
     norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
     im = ax.imshow(
-        mom8,
+        maxintens,
         origin="lower",
         cmap=cmap,
         norm=norm,

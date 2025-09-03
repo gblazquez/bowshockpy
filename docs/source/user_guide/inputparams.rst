@@ -2,7 +2,7 @@ Input file parameters
 =====================
 
 ..
-  In this section, the input parameters that ``BowshockPy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``BowshockPy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/example_notebook>`).
+  In this section, the input parameters that ``BowshockPy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``BowshockPy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/notebook_tutorial>`).
 
 The quickest and easiest way to :doc:`use <usage>` ``BowshockPy`` is to run it from the terminal, specifying with the ``--read`` flag an input file that contains all the parameters needed to perform the modeling of the bowshock(s): 
 
@@ -255,12 +255,12 @@ This parameters control the properties of the moments and the position-velocity 
     considered, respectively. Example: mom2values = {"vmax": None, "vcenter": None,
     "vmin": None,}. 
 
-*mom8values* (dict)
+*maxintensvalues* (dict)
     Dictionary with the maximum, central, and minimum value to show in the plot
     of the maximum value along the velocity axis. If the dictionary value is
     None for vmax, vcenter, or vmin, then the maximum, central, or the minimum
     value of the moment image will be considered, respectively. Example:
-    mom8values = {"vmax": None, "vcenter": None, "vmin": None,}. 
+    maxintensvalues = {"vmax": None, "vcenter": None, "vmin": None,}. 
 
 *pvvalues* (dict) 
     Set the maximum, central, and minimum value to show in the plot of the

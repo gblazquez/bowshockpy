@@ -292,8 +292,8 @@ mom2values = {
 # of the maximum value along the velocity axis. If the dictionary value is
 # None for vmax, vcenter, or vmin, then the maximum, central, or the minimum
 # value of the moment image will be considered, respectively. Example:
-# mom8values = {"vmax": None, "vcenter": None, "vmin": None,}.
-mom8values = {
+# maxintensvalues = {"vmax": None, "vcenter": None, "vmin": None,}.
+maxintensvalues = {
     "vmax": None,
     "vcenter": None,
     "vmin": None,

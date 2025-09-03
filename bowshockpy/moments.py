@@ -153,7 +153,7 @@ def mom2(cube, chan_vels, chan_range):
     return disp
 
 
-def mom8(cube, chan_range):
+def maxintens(cube, chan_range):
     """
     Computes the moment the maximum value of a cube along the along the 0 axis
 
@@ -167,15 +167,15 @@ def mom8(cube, chan_range):
 
     Return:
     -------
-    mom8_im : numpy.ndarray
+    maxintens_im : numpy.ndarray
         Moment 8 (maximum value along the 0 axis)
 
     References:
     -----------
     https://www.aoc.nrao.edu/~kgolap/casa_trunk_docs/CasaRef/image.moments.html
     """
-    mom8_im = np.max(cube[chan_range[0] : chan_range[1], :, :], axis=0)
-    return mom8_im
+    maxintens_im = np.max(cube[chan_range[0] : chan_range[1], :, :], axis=0)
+    return maxintens_im
 
 
 def pv(cube, xpv, halfwidth, axis=1):

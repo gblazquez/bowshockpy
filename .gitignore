@@ -13,7 +13,7 @@ todo.ignore
 models/*
 examples/models/*
 examples/*
-!examples/example_notebook.ipynb
+!examples/notebook_tutorial.ipynb
 !examples/example5.py
 !examples/example4.py
 !examples/example3.py

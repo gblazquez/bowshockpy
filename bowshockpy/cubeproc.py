@@ -1331,7 +1331,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 print(f"models/{self.modelname}/fits/{ck}_mom2.fits saved")
         return mom2
 
-    def mom8(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
+    def maxintens(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
         """
         Computes the maximum value of the cube along the velocity axis
 
@@ -1354,7 +1354,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         Returns
         --------
-        mom8 : numpy.ndarray
+        maxintens : numpy.ndarray
             Maximum value of the pixels of the cubes along the velocity axis
 
         """
@@ -1365,8 +1365,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             clipping if clipping != 0 else self.momtol_clipping * np.max(self.cubes[ck])
         )
         cube_clipped[cube_clipped < clipping] = 0
-        mom8 = np.nan_to_num(
-            moments.mom8(
+        maxintens = np.nan_to_num(
+            moments.maxintens(
                 cube_clipped,
                 chan_range=chan_range,
             )
@@ -1412,7 +1412,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CUNIT2"] = cunit2
             # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
-            hdu = fits.PrimaryHDU(mom8)
+            hdu = fits.PrimaryHDU(maxintens)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
             if filename is None:
@@ -1420,8 +1420,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 filename = f"models/{self.modelname}/fits/{ck}_mom1.fits"
             hdul.writeto(filename, overwrite=True)
             if self.verbose:
-                print(f"models/{self.modelname}/fits/{ck}_mom8.fits saved")
-        return mom8
+                print(f"models/{self.modelname}/fits/{ck}_maxintens.fits saved")
+        return maxintens
 
     def plotpv(
         self,
@@ -1876,7 +1876,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
 
-    def plotmom8(
+    def plotmaxintens(
         self,
         ck,
         chan_range=None,
@@ -1925,12 +1925,12 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbax : tuple of matplotlib.axes.Axes
             Axes of the channel map and the colorbar, only returns if
             return_fig_axs_im=True.
-        mom8 : numpy.ndarray
+        maxintens : numpy.ndarray
             Peak intensity
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         add_beam = add_beam if "c" in ck else False
-        mom8 = self.mom8(
+        maxintens = self.maxintens(
             ck,
             chan_range=chan_range,
             savefits=savefits,
@@ -1946,8 +1946,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
             * self.arcsecpix
         )
-        fig, axs, cbax = pl.plotmom8(
-            mom8,
+        fig, axs, cbax = pl.plotmaxintens(
+            maxintens,
             extent=extent,
             ax=ax,
             cbax=cbax,
@@ -1960,7 +1960,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             **kwargs,
         )
         if return_fig_axs_im:
-            return fig, axs, cbax, mom8
+            return fig, axs, cbax, maxintens
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
 
@@ -1979,7 +1979,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom0values={v: None for v in ["vmax", "vcenter", "vmin"]},
         mom1values={v: None for v in ["vmax", "vcenter", "vmin"]},
         mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
-        mom8values={v: None for v in ["vmax", "vcenter", "vmin"]},
+        maxintensvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
         pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
     ):
         """
@@ -2008,7 +2008,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Clipping to in order to compute the moment 2. Pixels with values
             smaller than the one given by clipping parameter will be masked
             with 0 values.
-        mom8clipping : float
+        maxintensclipping : float
             Clipping to in order to compute the maximum value of the pixels
             along the velocity axis. Pixels with values smaller than the one
             given by clipping parameter will be masked with 0 values.
@@ -2030,12 +2030,12 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             vcenter, or vmin, then the maximum, central, or the minimum value
             of the moment image will be considered, respectively. Example:
             mom1values = {"vmax": None, "vcenter": None, "vmin": 0,}.
-        mom8values : dict or None
+        maxintensvalues : dict or None
            Dictionary with the maximum, central, and minimum value to show in
            the plot of the maximum value along the velocity axis. If the
            dictionary value is None for vmax, vcenter, or vmin, then the
            maximum, central, or the minimum value of the moment image will be
-           considered, respectively. Example: mom8values = {"vmax": None,
+           considered, respectively. Example: maxintensvalues = {"vmax": None,
            "vcenter": None, "vmin": None,}.
         """
 
@@ -2078,7 +2078,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         axs[ik] = plt.subplot(gss[ik][1, 0])
         cbaxs[ik] = plt.subplot(gss[ik][0, 0])
 
-        ik = "mom8"
+        ik = "maxintens"
         gss[ik] = gs[0, 2].subgridspec(
             2,
             1,
@@ -2201,8 +2201,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             **pvvalues,
         )
 
-        ak = "mom8"
-        self.plotmom8(
+        ak = "maxintens"
+        self.plotmaxintens(
             ck=ck,
             chan_range=chan_range,
             ax=axs[ak],
@@ -2210,7 +2210,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             savefits=savefits,
             return_fig_axs_im=False,
             add_beam=add_beam,
-            **mom8values,
+            **maxintensvalues,
         )
 
         if saveplot:

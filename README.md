@@ -42,7 +42,7 @@ There are two different ways to use `BowshockPy`:
 $ bowshockpy -r inputfile.py
 ```
 
-2. Importing `BowshockPy` package in your Python code: We include an [notebook example](https://github.com/gblazquez/bowshockpy/tree/main/examples/example_notebook.ipynb) that shows how to use the main classes.
+2. Importing `BowshockPy` package in your Python code: We include an [notebook tutorial](https://github.com/gblazquez/bowshockpy/tree/main/examples/notebook_tutorial.ipynb) that shows how to use the main classes.
 
 See the [documentation](https://bowshockpy.readthedocs.io/en/latest/) for more details on the usage of `BowshockPy`.
 

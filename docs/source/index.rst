@@ -29,7 +29,7 @@ There are two different ways to :doc:`use<user_guide/usage>` the software:
    
      $ bowshockpy -r inputfile.py 
 
-2. Importing ``BowshockPy`` package in your Python code: We include an :doc:`example of a notebook<examples/example_notebook>` that shows how to use the main classes. Although the notebook contains an explanation of their basic functioning, see the :doc:`API Reference<api/index>` for a detailed documentation.
+2. Importing ``BowshockPy`` package in your Python code: We include an :doc:`notebook tutorial<examples/notebook_tutorial>` that shows how to use the main classes. Although the notebook contains an explanation of their basic functioning, see the :doc:`API Reference<api/index>` for a detailed documentation.
 
 A description of the outputs of ``BowshockPy`` can be found in the :doc:`output section<user_guide/outputs>`.
 
@@ -85,7 +85,7 @@ Table of contents
    :caption: Examples
    :maxdepth: 2
    
-   examples/example_notebook
+   examples/notebook_tutorial
    examples/examples_inputfile
 
 .. toctree::

@@ -181,7 +181,7 @@ This example of input file generates one redshifted bowshock. As specified by th
       "vmin": None,
   }
   
-  mom8values = {
+  maxintensvalues = {
       "vmax": None,
       "vcenter": None,
       "vmin": None,
@@ -345,7 +345,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
       "vmin": None,
   }
   
-  mom8values = {
+  maxintensvalues = {
       "vmax": None,
       "vcenter": None,
       "vmin": None,
@@ -509,7 +509,7 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
       "vmin": None,
   }
   
-  mom8values = {
+  maxintensvalues = {
       "vmax": None,
       "vcenter": None,
       "vmin": None,
@@ -695,7 +695,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
       "vmin": None,
   }
   
-  mom8values = {
+  maxintensvalues = {
       "vmax": None,
       "vcenter": None,
       "vmin": None,
@@ -859,7 +859,7 @@ This example of input file generates one redshifted. A custom model for the tran
       "vmin": None,
   }
   
-  mom8values = {
+  maxintensvalues = {
       "vmax": None,
       "vcenter": None,
       "vmin": None,
