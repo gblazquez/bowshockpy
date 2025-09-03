@@ -15,6 +15,17 @@ from matplotlib import colormaps, colors
 from bowshockpy.version import __version__
 
 
+def formatwarning(message, category, filename, lineno, line):
+    """Custom format of warning compatible with the progress bar"""
+    return f"{filename}:{lineno}\n{category.__name__}: {message}"
+
+
+class UserError(Warning):
+    """Warning category to interrupt the program"""
+
+    pass
+
+
 def print_example(example):
     """
     Prints one of the available examples of input file to run bowshockpy.

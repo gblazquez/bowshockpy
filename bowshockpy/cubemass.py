@@ -11,20 +11,8 @@ import bowshockpy.utils as ut
 from bowshockpy.modelproj import ObsModel
 from bowshockpy.version import __version__
 
-
-def formatwarning(message, category, filename, lineno, line):
-    """Custom format of warning compatible with the progress bar"""
-    return f"{filename}:{lineno}\n{category.__name__}: {message}"
-
-
-class UserError(Warning):
-    """Warning category to interrupt the program"""
-
-    pass
-
-
-warnings.formatwarning = formatwarning
-warnings.filterwarnings("error", category=UserError)
+warnings.formatwarning = ut.formatwarning
+warnings.filterwarnings("error", category=ut.UserError)
 warnings.filterwarnings("always", category=UserWarning)
 
 
@@ -180,7 +168,7 @@ The provided cube into which the model is to be build has dimensions
 {(self.nc, self.nys, self.nxs)}. Please, provide a cube with the right
 dimensions or do not provide any cube.
 """,
-            category=UserError,
+            category=ut.UserError,
         )
 
     def _required_parameter_absent_error(self):
@@ -189,7 +177,7 @@ dimensions or do not provide any cube.
 Both chanwidth and vchf parameters are None. Please, provide one value of type
 float to one of them.
 """,
-            category=UserError,
+            category=ut.UserError,
         )
 
     def _ambiguous_input_error(self):
@@ -198,7 +186,7 @@ float to one of them.
 Ambiguous input. The user provided values to both chanwidth and vchf. Only one
 of them should be a float, the other should be None.
  """,
-            category=UserError,
+            category=ut.UserError,
         )
 
     def _outsidegrid_warning(self):

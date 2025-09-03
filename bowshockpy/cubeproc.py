@@ -1,6 +1,7 @@
 """This module contains the tools that allows to compute the column densities,
 opacities, and intensities of the bowshock model spectral cubes"""
 
+import warnings
 from datetime import datetime
 
 import astropy.units as u
@@ -14,9 +15,13 @@ import bowshockpy.plots as pl
 import bowshockpy.radtrans as rt
 import bowshockpy.rotlinearmol as rlm
 import bowshockpy.utils as ut
-from bowshockpy.cubemass import BowshockCube
 from bowshockpy import moments
+from bowshockpy.cubemass import BowshockCube
 from bowshockpy.version import __version__
+
+warnings.formatwarning = ut.formatwarning
+warnings.filterwarnings("error", category=ut.UserError)
+warnings.filterwarnings("always", category=UserWarning)
 
 
 class CubeProcessing(BowshockCube):
@@ -62,9 +67,9 @@ class CubeProcessing(BowshockCube):
         Source right ascension [deg]
     dec_source_deg : float, optional
         Source declination [deg]
-    bmin : float, optional
+    bmin : float | None, optional
         Beam minor axis [arcsec]
-    bmaj : float, optional
+    bmaj : float | None, optional
         Beam major axis [arcsec]
     pabeam : float
         Beam position angle [degrees]
@@ -87,13 +92,13 @@ class CubeProcessing(BowshockCube):
 
     Attributes
     ----------
-    x_FWHM : float or None
+    x_FWHM : float | None
         Full width half maximum of the gaussian beam for the x direction
         [pixel]
-    y_FWHM : float or None
+    y_FWHM : float | None
         Full width half maximum of the gaussian beam for the y direction
         [pixel]
-    beamarea : float or None
+    beamarea : float | None
         Area of the beam [pixel^2]
     cubes : dict
         Dictionary of the processed cubes. Keys are abbreviations of the
@@ -106,8 +111,9 @@ class CubeProcessing(BowshockCube):
         The headers are generated when savecube method is used.
     areapix_cm : float
         Area of a pixel in cm.
-    beamarea_sr : `astropy.units.Quantity`
-        Area of the beam in stereoradians.
+    beamarea_sr : `astropy.units.Quantity` | None
+        Area of the beam in stereoradians. If no beam is provided, beamarea_sr
+        will be None, and all the intensities will be expressed in Jy/arcsec^2
     listmompvs : list
         List of cubes to which the moments and the position velocity diagrams
         are going to performed when the method self.momentsandpv_all and
@@ -129,9 +135,9 @@ class CubeProcessing(BowshockCube):
         "Nmol": "Emitting molecule col. dens. / channel",
         "tau": "Opacity",
     }
-    bunits = {
+    bunits_default = {
         "m": "solMass",
-        "I": "Jy/beam",
+        "I": "Jy arcsec-2",
         "Ntot": "cm-2",
         "Nmol": "cm-2",
         "tau": "-",
@@ -175,9 +181,9 @@ class CubeProcessing(BowshockCube):
         coordcube="offset",
         ra_source_deg=None,
         dec_source_deg=None,
-        bmin=0.0,
-        bmaj=0.0,
-        pabeam=0.0,
+        bmin=None,
+        bmaj=None,
+        pabeam=0,
         papv=0.0,
         parot=0.0,
         sigma_beforeconv=None,
@@ -231,14 +237,6 @@ class CubeProcessing(BowshockCube):
         self.sigma_beforeconv = sigma_beforeconv
         self.maxcube2noise = maxcube2noise
         self.verbose = verbose
-        if bmin is not None and bmaj is not None:
-            self.x_FWHM = self.bmin / self.arcsecpix
-            self.y_FWHM = self.bmaj / self.arcsecpix
-            self.beamarea = np.pi * self.y_FWHM * self.x_FWHM / (4 * np.log(2))
-        else:
-            self.x_FWHM = None
-            self.y_FWHM = None
-            self.beamarea = None
 
         for kwarg in self.default_kwargs:
             kwarg_attr = (
@@ -258,7 +256,12 @@ class CubeProcessing(BowshockCube):
         self.listmompvs = []
 
         self.areapix_cm = None
+        self.x_FWHM = None
+        self.y_FWHM = None
+        self.beamarea = None
         self.beamarea_sr = None
+        self.bunits = self.bunits_default
+
         self._calc_beamarea_sr()
         self._calc_areapix_cm()
 
@@ -278,9 +281,20 @@ class CubeProcessing(BowshockCube):
         return unitlabel
 
     def _calc_beamarea_sr(self):
-        self.beamarea_sr = ut.mb_sa_gaussian_f(
-            self.bmaj * u.arcsec, self.bmin * u.arcsec
+        if self.bmin is not None and self.bmaj is not None:
+            self.x_FWHM = self.bmin / self.arcsecpix
+            self.y_FWHM = self.bmaj / self.arcsecpix
+            self.beamarea = np.pi * self.y_FWHM * self.x_FWHM / (4 * np.log(2))
+            self.beamarea_sr = ut.mb_sa_gaussian_f(
+                self.bmaj * u.arcsec, self.bmin * u.arcsec
         )
+            self.bunits["I"] = "Jy/beam"
+        else:
+            self.x_FWHM = None
+            self.y_FWHM = None
+            self.beamarea = None
+            self.beamarea_sr = None
+            self.bunits["I"] = "Jy arcsec-2"
 
     def _calc_areapix_cm(self):
         self.areapix_cm = ((self.arcsecpix * self.distpc * u.au) ** 2).to(u.cm**2)
@@ -409,9 +423,14 @@ class CubeProcessing(BowshockCube):
         if self.verbose:
             print("\nComputing intensities...")
 
-        self.cubes["I"] = (
-            (self.I_f(tau=self.cubes["tau"]) * self.beamarea_sr).to(u.Jy).value
-        )
+        if self.beamarea_sr is not None:
+            self.cubes["I"] = (
+                (self.I_f(tau=self.cubes["tau"]) * self.beamarea_sr).to(u.Jy).value
+            )
+        else:
+            self.cubes["I"] = (
+                (self.I_f(tau=self.cubes["tau"])).to(u.Jy / u.arcsec**2).value
+            )
 
         self.refpixs["I"] = self.refpixs["m"]
         self.noisychans["I"] = self.noisychans["m"]
@@ -535,53 +554,65 @@ class CubeProcessing(BowshockCube):
             Key of the cube to convolve
         """
 
-        nck = self._newck(ck, "c")
-        if self.verbose:
-            print(f"\nConvolving {nck}... ")
-        self.cubes[nck] = np.zeros_like(self.cubes[ck])
-
-        if self.verbose:
-            ts = []
-            ut.progressbar_bowshock(0, self.nc, length=50, timelapsed=0, intervaltime=0)
-        for chan in range(np.shape(self.cubes[ck])[0]):
+        if self.beamarea is None:
+            warnings.warn(
+                message="""
+The major axis and minor axis of the beam to be used for the convolution were
+not provided (bmaj and bmin parameters, respectively). Please, instantiate the
+class CubeProcessing again providing a value for both beam axis.
+""",
+                category=ut.UserError,
+            )
+        else:
+            nck = self._newck(ck, "c")
             if self.verbose:
-                t0 = datetime.now()
-            self.cubes[nck][chan] = ut.gaussconvolve(
-                self.cubes[ck][chan],
+                print(f"\nConvolving {nck}... ")
+            self.cubes[nck] = np.zeros_like(self.cubes[ck])
+
+            if self.verbose:
+                ts = []
+                ut.progressbar_bowshock(
+                    0, self.nc, length=50, timelapsed=0, intervaltime=0
+                )
+            for chan in range(np.shape(self.cubes[ck])[0]):
+                if self.verbose:
+                    t0 = datetime.now()
+                self.cubes[nck][chan] = ut.gaussconvolve(
+                    self.cubes[ck][chan],
+                    x_FWHM=self.x_FWHM,
+                    y_FWHM=self.y_FWHM,
+                    pa=self.pabeam,
+                    return_kernel=False,
+                )
+                if self.verbose:
+                    tf = datetime.now()
+                    intervaltime = (tf - t0).total_seconds()
+                    ts.append(intervaltime)
+                    ut.progressbar_bowshock(
+                        chan + 1, self.nc, np.sum(ts), intervaltime, length=50
+                    )
+            self.refpixs[nck] = self.refpixs[ck]
+            self.noisychans[nck] = ut.gaussconvolve(
+                self.noisychans[ck],
                 x_FWHM=self.x_FWHM,
                 y_FWHM=self.y_FWHM,
                 pa=self.pabeam,
                 return_kernel=False,
             )
+            self.sigma_noises[nck] = np.std(self.noisychans[nck])
             if self.verbose:
-                tf = datetime.now()
-                intervaltime = (tf - t0).total_seconds()
-                ts.append(intervaltime)
-                ut.progressbar_bowshock(
-                    chan + 1, self.nc, np.sum(ts), intervaltime, length=50
-                )
-        self.refpixs[nck] = self.refpixs[ck]
-        self.noisychans[nck] = ut.gaussconvolve(
-            self.noisychans[ck],
-            x_FWHM=self.x_FWHM,
-            y_FWHM=self.y_FWHM,
-            pa=self.pabeam,
-            return_kernel=False,
-        )
-        self.sigma_noises[nck] = np.std(self.noisychans[nck])
-        if self.verbose:
-            print(
-                f"""
+                print(
+                    f"""
 {nck} has been convolved with a gaussian kernel with a size of
 [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and with a PA of {self.pabeam:.2f}deg
 """
-            )
-            if "n" in nck:
-                print(
-                    f"""
+                )
+                if "n" in nck:
+                    print(
+                        f"""
 The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self._q(nck)]}
 """
-                )
+                    )
 
     def _useroutputcube2dostr(self, userdic):
         # TODO: Move to utils or a function above the class?
@@ -725,9 +756,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
         hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
         hdr["NAXIS3"] = np.shape(self.cubes[ck])[0]
-        hdr["BMAJ"] = self.bmaj / 3600
-        hdr["BMIN"] = self.bmin / 3600
-        hdr["BPA"] = self.pabeam
+        if self.beamarea is not None:
+            hdr["BMAJ"] = self.bmaj / 3600
+            hdr["BMIN"] = self.bmin / 3600
+            hdr["BPA"] = self.pabeam
         hdr["BTYPE"] = self.btypes[self._q(ck)]
         hdr["OBJECT"] = f"{self.modelname}"
         hdr["BUNIT"] = self.bunits[self._q(ck)]
@@ -1042,9 +1074,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["BMAJ"] = self.bmaj / 3600
-            hdr["BMIN"] = self.bmin / 3600
-            hdr["BPA"] = self.pabeam
+            if self.beamarea is not None:
+                hdr["BMAJ"] = self.bmaj / 3600
+                hdr["BMIN"] = self.bmin / 3600
+                hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = self.bunits[self._q(ck)]
@@ -1124,9 +1157,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["BMAJ"] = self.bmaj / 3600
-            hdr["BMIN"] = self.bmin / 3600
-            hdr["BPA"] = self.pabeam
+            if self.beamarea is not None:
+                hdr["BMAJ"] = self.bmaj / 3600
+                hdr["BMIN"] = self.bmin / 3600
+                hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = "Jy/beam.km/s"
@@ -1212,9 +1246,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["BMAJ"] = self.bmaj / 3600
-            hdr["BMIN"] = self.bmin / 3600
-            hdr["BPA"] = self.pabeam
+            if self.beamarea is not None:
+                hdr["BMAJ"] = self.bmaj / 3600
+                hdr["BMIN"] = self.bmin / 3600
+                hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = "km/s"
@@ -1301,9 +1336,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
             hdr["EXTEND"] = True
-            hdr["BMAJ"] = self.bmaj / 3600
-            hdr["BMIN"] = self.bmin / 3600
-            hdr["BPA"] = self.pabeam
+            if self.beamarea is not None:
+                hdr["BMAJ"] = self.bmaj / 3600
+                hdr["BMIN"] = self.bmin / 3600
+                hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = "km/s"
@@ -1394,9 +1430,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["NAXIS"] = 2
             hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
             hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["BMAJ"] = self.bmaj / 3600
-            hdr["BMIN"] = self.bmin / 3600
-            hdr["BPA"] = self.pabeam
+            if self.beamarea is not None:
+                hdr["BMAJ"] = self.bmaj / 3600
+                hdr["BMIN"] = self.bmin / 3600
+                hdr["BPA"] = self.pabeam
             hdr["BTYPE"] = self.btypes[self._q(ck)]
             hdr["OBJECT"] = f"{self.modelname}"
             hdr["BUNIT"] = self.bunits[self._q(ck)]

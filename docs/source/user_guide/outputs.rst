@@ -97,7 +97,7 @@ If specified in the input parameter **outcubes** (see :doc:`input file parameter
 Fits files
 ----------
 
-The cubes in fits files format will be saved in ``models/<modelname>/fits``. It can be open with ``casaviewer`` or ``ds9``.
+The cubes in fits files format will be saved in ``models/<modelname>/fits``. It can be open with ``casaviewer``, ``CARTA``, or ``ds9``.
 
 .. figure:: images/channel_casaviewer.png
 
