@@ -237,7 +237,8 @@ to use some functions already defined in radtrans.py)
         - You do not have to define twice some parameters
         - No extra arguments in running bowshockpy 
     · Cons:
-        - You have to import packages in a file that a priori was just a configuration file
+        - You have to import packages in a file that a priori was just a
+          configuration file
 
 x New test on intensity cubes. Keep track of a value of a pixel in intensities
   (not in mass, as you alreadyd did)
@@ -251,18 +252,26 @@ x New test on intensity cubes. Keep track of a value of a pixel in intensities
    x mu as a new parameter of CubeProcessing
    x Change the order of the parameters in CubeProcessing
    x Concatenate -> combine
-   x ObsModel now comes from modelproj.py But I think it does not affect hte notebook
+   x ObsModel now comes from modelproj.py But I think it does not affect hte
+   notebook
    x Set chanwidth to None in BowshockCube
    x Check that chanwidth works
    - End the notebook with an example of custom model transition
    x Test warnings
 
-+ Implement the possibility of giving the channel width instead of the final channel
+x Add a table of contents in the notebook
+
+x Rename example_notebook with notebook_tutorial
+
++ Implement the possibility of giving the channel width instead of the final
+channel
   - Choose an example and implement this instead of vchf
 
-x I think it would be good to split in two cube.py. At least, ObsModel should not be there because it is not the cube
+x I think it would be good to split in two cube.py. At least, ObsModel should
+not be there because it is not the cube
 
-x Also, there should be a way to simplify the code regarding the headers of the fits file
+x Also, there should be a way to simplify the code regarding the headers of the
+fits file
 
 x Divide cube.py into two?
 
@@ -270,19 +279,27 @@ x Add a description in each .py file
 
 x Header fixed
 
-x Implement the possibility of using as input floats (then a unit would be assumed), or astropy units.
+x Implement the possibility of using as input floats (then a unit would be
+assumed), or astropy units.
 
-+ tau_func should depend on A_ul instead of mu_ul, since mu_ul appear more usually in the table than mu_ul.
-  (I will leave it like it is from now)
++ (I will leave it like it is from now) tau_func should depend on A_ul instead of mu_ul, since mu_ul appear more
+usually in the table than mu_ul. 
 
 x astropy.units.quantity -> astropy.units.Quantity
 
-+ You write Inu but not taunu. Fix this.
-  (Not important)
++ (Not important) You write Inu but not taunu. Fix this.
+  
 
-- Make sure that nothing happens if the user do not want noise. How should be defined the parameters about noise in the input param file?
+- Make sure that nothing happens if the user do not want noise. How should be
+  defined the parameters about noise in the input param file?
 
 - mom2clipping: I think there is a problem when it is a float and not an string
+
+- Save figures in a consistent way in the jupyter notebook:
+   - There should be a folder created called models. Then, a folder called
+     "notebook_tutorial". Notebook_tutorial is the model name. In
+     notebook_tutorial, a folder called fits 
+
 
 x Add restfreq in cube header from nu parameter
 
@@ -293,11 +310,11 @@ https://docs.python.org/3/library/warnings.html
 
 x Example 5 should appear in docs
 
-+ Split the CubeProcessing class in two: radiative transfer and moments /
++ (too much for now...) Split the CubeProcessing class in two: radiative transfer and moments /
   pv-diagrams
-  (too much for now...)
 
-- You can put as example5 parameters based on HCO+. The discussion of Tafalla 2010 regarding this molecule and its relation with the EHV is interesting:
+- You can put as example5 parameters based on HCO+. The discussion of Tafalla
+  2010 regarding this molecule and its relation with the EHV is interesting:
 
 - If a beam size is not provided, the units of intensity should be Jy /
   arcsec^2

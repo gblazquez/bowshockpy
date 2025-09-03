@@ -220,21 +220,6 @@ least one of three reasons:
             stacklevel=1,
         )
 
-    #        print("""
-    # Warning: Part of the model lie outside the grid of the spectral cube! The model
-    # will be truncated or not appearing at all in your spectral cube. This is due to
-    # at least one of three reasons:
-    #     - The image is too small. Try to make the image larger by increasing the
-    #     number of pixels (parameters nxs and nys), or increase the physical size of
-    #     the image (parameter xpmax).
-    #     - The model is far away from the image center. Try to change the reference
-    #     pixel where the physical center (the source) is found (parameter refpix).
-    #     - The model is outside your velocity coverage. Try to change the range of
-    #     velocity channels of the spectral cube (parameters vch0 and vchf, consider
-    #     negative floats if the model is blueshifted).\n
-    # """
-    #         )
-
     def _mass_consistency_warning(self, massloss):
         warnings.warn(
             message=rf"""
@@ -617,7 +602,7 @@ coincides with the total mass of the cube.
             cube=self.cube,
             arcsecpix=self.arcsecpix,
             velchans=self.velchans,
-            units="Mass [Msun]",
+            units=r"Mass / (pixel $\times$ channel)[Msun]",
             refpix=self.refpix,
             return_fig_axs=True,
             **kwargs,

@@ -9,6 +9,7 @@ examples2docs.py
 makedocs.sh
 
 # ignore files in folder
+todo.ignore
 models/*
 examples/models/*
 examples/*
