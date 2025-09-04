@@ -31,13 +31,13 @@ Importing ``BowshockPy`` package
 
 This the most flexible way to use ``BowshockPy``. The basic functioning can be performed by for classes, that can be directly imported from the package 
 
->>> from bowshockpy import BowshockModel, ObsModel, BowshockCube, CubeProcessing
+>>> from bowshockpy import BowshockModel, ObsModel, MassCube, CubeProcessing
 
 In a nutshell, these are the main tasks of each class:
 
 - **BowshockModel**: This class generates the analytic momentum-conserving bowshock model.
 - **ObsModel**: Allows to project the kinematics and morphology of the bowshock model.
-- **BowshockCube**: Computes the masses in each pixel and velocity channel of the spectral cube.
+- **MassCube**: Computes the masses in each pixel and velocity channel of the spectral cube.
 - **CubeProcessing**: Performs the radiative transfer, obtaining the intensities of the molecule rotational transition. It also allows to convolve the cube and obtain position-velocity diagrams and moment images.
 
 This documentation includes a :doc:`notebook tutorial <../examples/notebook_tutorial>` that shows how to use these classes. For a more detailed description of how to use these classes and other functions available in ``BowshockPy`` package, see the :doc:`API Reference <../api/index>`.

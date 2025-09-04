@@ -16,7 +16,7 @@ warnings.filterwarnings("error", category=ut.UserError)
 warnings.filterwarnings("always", category=UserWarning)
 
 
-class BowshockCube(ObsModel):
+class MassCube(ObsModel):
     """
     Computes the spectral cube of the bowshock model
 

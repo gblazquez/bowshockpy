@@ -1,6 +1,6 @@
 """Initialization of BowshockPy"""
 
-from .cubemass import BowshockCube
+from .cubemass import MassCube
 from .cubeproc import CubeProcessing
 from .genbow import generate_bowshock
 from .inputfiles import *

@@ -9,7 +9,7 @@ import argparse
 import runpy
 
 from bowshockpy import utils as ut
-from bowshockpy.cubemass import BowshockCube
+from bowshockpy.cubemass import MassCube
 from bowshockpy.cubeproc import CubeProcessing
 from bowshockpy.modelproj import ObsModel
 from bowshockpy.models import BowshockModel
@@ -163,7 +163,7 @@ Generating bowshock {i+1}/{p.nbowshocks}
                   """
             )
             bscs += [
-                BowshockCube(
+                MassCube(
                     obsmodel=bsmobs,
                     nphis=pscube["nphis"],
                     xpmax=pscube["xpmax"],

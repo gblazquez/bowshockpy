@@ -16,7 +16,7 @@ import bowshockpy.radtrans as rt
 import bowshockpy.rotlinearmol as rlm
 import bowshockpy.utils as ut
 from bowshockpy import moments
-from bowshockpy.cubemass import BowshockCube
+from bowshockpy.cubemass import MassCube
 from bowshockpy.version import __version__
 
 warnings.formatwarning = ut.formatwarning
@@ -24,14 +24,14 @@ warnings.filterwarnings("error", category=ut.UserError)
 warnings.filterwarnings("always", category=UserWarning)
 
 
-class CubeProcessing(BowshockCube):
+class CubeProcessing(MassCube):
     """
-    Process a BowshockCube instance
+    Process a MassCube instance
 
     Parameters
     ----------
     bscube :  class instance
-        Instance of BowshockCube
+        Instance of MassCube
     modelname : str, optional
         Name of the folder in /models where the outputs will be saved
     J : int, optional
