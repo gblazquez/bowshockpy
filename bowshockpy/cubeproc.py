@@ -565,9 +565,9 @@ compute the PV diagram
         if self.beamarea is None:
             warnings.warn(
                 message="""
-The major axis and minor axis of the beam to be used for the convolution were
-not provided (bmaj and bmin parameters, respectively). Please, instantiate the
-class CubeProcessing again providing a value for both beam axis.
+The major axis and minor axis of the beam to be used for the convolution (bmaj
+and bmin parameters, respectively) were not provided . Please, instantiate the
+class CubeProcessing again providing values for both beam axis.
 """,
                 category=ut.UserError,
             )
