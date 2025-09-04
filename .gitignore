@@ -14,7 +14,7 @@ todo.ignore
 models/*
 examples/models/*
 examples/*
-bowshockpy/docs/source/examples/models/*
+docs/source/examples/models/*
 !examples/notebook_tutorial.ipynb
 !examples/example5.py
 !examples/example4.py
