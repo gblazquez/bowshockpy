@@ -44,7 +44,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   outcubes = {
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
       "opacity": [],
-      "mol_column_density": [],
+      "total_column_density": [],
       "mass": [],
       }
   
@@ -372,7 +372,7 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   outcubes = {
       "intensity": ["add_noise", "convolve", "moments_and_pv"],
       "opacity": [],
-      "mol_column_density": [],
+      "emitting_molecule_column_density": [],
       "mass": [],
       }
   
@@ -722,7 +722,7 @@ This example of input file generates one redshifted. A custom model for the tran
   outcubes = {
       "intensity": ["convolve", "moments_and_pv"],
       "opacity": [],
-      "mol_column_density": [],
+      "emitting_molecule_column_density": [],
       "mass": [],
       }
   

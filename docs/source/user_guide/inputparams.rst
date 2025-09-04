@@ -26,8 +26,8 @@ These parameters define the desired outputs:
     Dictionary indicating the desired output spectral cubes and the operations performed over them. The keys of the dictionary are strings indicating the quantities of the desired cubes. These are the available quantities of the spectral cubes:
 
     - "mass": Total mass of molecular hydrogen in solar mass
-    - "Ntot_column_density": Total (H2 + heavier components) column density in cm-2.
-    - "mol_column_density": Column density of the emitting molecule in cm-2.
+    - "total_column_density": Total (H2 + heavier components) column density in cm-2.
+    - "emitting_molecule_column_density": Column density of the emitting molecule in cm-2.
     - "intensity": Intensity in Jy/beam.
     - "tau": Opacities.
 
@@ -48,11 +48,11 @@ These parameters define the desired outputs:
         outcubes = {
             "intensity": ["add_noise", "convolve", "moments_and_pv"],
             "opacity": [],
-            "mol_column_density": ["convolve"],
+            "emitting_molecule_column_density": ["convolve"],
             "mass": [],
         }
 
-    will save 4 spectral cubes in fits format. The first one are the intensities with gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the mol_column_density, which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third Nmol_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
+    will save 4 spectral cubes in fits format. The first one are the intensities with Gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the emitting_molecule_column_density, which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third Nmol_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
 
 *verbose* (bolean)
     Set True to verbose messages about the computation.

@@ -93,10 +93,10 @@ class CubeProcessing(BowshockCube):
     Attributes
     ----------
     x_FWHM : float | None
-        Full width half maximum of the gaussian beam for the x direction
+        Full width half maximum of the Gaussian beam for the x direction
         [pixel]
     y_FWHM : float | None
-        Full width half maximum of the gaussian beam for the y direction
+        Full width half maximum of the Gaussian beam for the y direction
         [pixel]
     beamarea : float | None
         Area of the beam [pixel^2]
@@ -361,7 +361,7 @@ class CubeProcessing(BowshockCube):
         self.noisychans["Ntot"] = self.noisychans["m"]
         self.sigma_noises["Ntot"] = self.sigma_noises["m"]
         if self.verbose:
-            print("column densities has been calculated\n")
+            print("column densities has been calculated (Ntot cube)\n")
 
     def calc_Nmol(self):
         """
@@ -386,7 +386,7 @@ class CubeProcessing(BowshockCube):
         self.sigma_noises["Nmol"] = self.sigma_noises["m"]
         if self.verbose:
             print(
-                "The column densities of the emitting molecule have been calculated\n"
+                "The column densities of the emitting molecule have been calculated (Nmol cube)\n"
             )
 
     def calc_tau(self):
@@ -412,7 +412,7 @@ class CubeProcessing(BowshockCube):
         self.noisychans["tau"] = self.noisychans["m"]
         self.sigma_noises["tau"] = self.sigma_noises["m"]
         if self.verbose:
-            print("Opacities has been calculated\n")
+            print("Opacities has been calculated (tau cube)\n")
 
     def calc_I(self):
         """
@@ -436,7 +436,7 @@ class CubeProcessing(BowshockCube):
         self.noisychans["I"] = self.noisychans["m"]
         self.sigma_noises["I"] = self.sigma_noises["m"]
         if self.verbose:
-            print("Intensities has been calculated\n")
+            print("Intensities has been calculated (I cube)\n")
 
     def add_source(self, ck="m", value=None):
         """
@@ -452,7 +452,7 @@ class CubeProcessing(BowshockCube):
         """
         nck = self._newck(ck, "s")
         if self.verbose:
-            print(f"\nAdding source to {nck}...")
+            print(f"\nAdding source to {ck}...")
         self.cubes[nck] = np.copy(self.cubes[ck])
         value = value if value is not None else np.max(self.cubes[ck])
         if self.refpixs[ck][1] >= 0 and self.refpixs[ck][0] >= 0:
@@ -461,13 +461,15 @@ class CubeProcessing(BowshockCube):
         self.noisychans[nck] = self.noisychans[ck]
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
-            print(
-                f"A source has been added to {nck}, in pix [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n"
+            print(f"""
+{nck} cube has been created by adding a point source to {ck}, in pix
+[{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n
+"""
             )
 
     def rotate(self, ck="m", forpv=False):
         """
-        Rotates the cube an angle self.parot.
+        Rotates the cube an angle self.parot
 
         Parameters
         -----------
@@ -481,9 +483,9 @@ class CubeProcessing(BowshockCube):
         nck = self._newck(ck, "r") if not forpv else self._newck(ck, "R")
         if self.verbose:
             if forpv:
-                print(f"\nRotatng {nck} in order to compute the PV diagram...")
+                print(f"\nRotatng {ck} in order to compute the PV diagram...")
             else:
-                print(f"\nRotatng {nck}...")
+                print(f"\nRotating {ck}...")
         # before allowing rotation of the model and not the cube
         # angle = -self.pa-90 if not forpv else self.pa+90
         # after allowing the model to be rotated
@@ -510,7 +512,10 @@ class CubeProcessing(BowshockCube):
         )
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
-            print(f"{nck} has been rotated {angle} deg to compute the PV diagram\n")
+            print(f"""
+{nck} cube has been created by rotating {ck} cube an angle {angle} deg to
+compute the PV diagram
+""")
 
     def add_noise(self, ck="m"):
         """
@@ -523,7 +528,7 @@ class CubeProcessing(BowshockCube):
         """
         nck = self._newck(ck, "n")
         if self.verbose:
-            print(f"\nAdding noise to {nck}...")
+            print(f"\nAdding noise to {ck}...")
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
             # sigma_noise = self.target_noise * 2 * np.sqrt(np.pi) \
@@ -541,7 +546,10 @@ class CubeProcessing(BowshockCube):
         self.noisychans[nck] = noise_matrix
         self.sigma_noises[nck] = sigma_noise
         if self.verbose:
-            print(f"Noise added to {nck}\n")
+            print(f"""
+{nck} cube has been created by adding Gaussian noise to {ck} cube
+"""
+                  )
 
     def convolve(self, ck="m"):
         """
@@ -566,7 +574,7 @@ class CubeProcessing again providing a value for both beam axis.
         else:
             nck = self._newck(ck, "c")
             if self.verbose:
-                print(f"\nConvolving {nck}... ")
+                print(f"\nConvolving {ck}... ")
             self.cubes[nck] = np.zeros_like(self.cubes[ck])
 
             if self.verbose:
@@ -603,8 +611,8 @@ class CubeProcessing again providing a value for both beam axis.
             if self.verbose:
                 print(
                     f"""
-{nck} has been convolved with a gaussian kernel with a size of
-[{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and with a PA of {self.pabeam:.2f}deg
+{nck} cube has been created by convolving {ck} cube with a Gaussian kernel of
+size [{self.x_FWHM:.2f}, {self.y_FWHM:.2f}] pix and PA of {self.pabeam:.2f}deg
 """
                 )
                 if "n" in nck:
@@ -619,8 +627,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         dictrad = {
             "mass": "m",
             "intensity": "I",
-            "mol_column_density": "Nmol",
-            "tot_column_density": "Ntot",
+            "emitting_molecule_column_density": "Nmol",
+            "total_column_density": "Ntot",
             "opacity": "tau",
             "add_source": "s",
             "rotate": "r",
@@ -682,9 +690,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
               spatial reference purposes.
             - "rotate": Rotate the whole spectral cube by an angle given by
               parot parameter.
-            - "add_noise": Add gaussian noise, defined by maxcube2noise
+            - "add_noise": Add Gaussian noise, defined by maxcube2noise
               parameter.
-            - "convolve": Convolve with a gaussian defined by the parameters
+            - "convolve": Convolve with a Gaussian defined by the parameters
               bmaj, bmin, and pabeam.
             - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum
               intensity and the PV diagram.
@@ -705,7 +713,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         >>> cp.calc(outcubes)
 
         will save 4 spectral cubes in fits format. The first one are the
-        intensities with gaussian noise added, it will be convolved, and the
+        intensities with Gaussian noise added, it will be convolved, and the
         moments and PV diagrams will be computed; the second cube will be the
         opacity; the third will be the mol_column_density, which will be
         convolved; and the forth cube will be the masses. The first spectral
@@ -725,7 +733,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                     if self._newck(ck, s) not in self.cubes:
                         self.__getattribute__(self.dos[s])(ck=ck)
 
-    def savecube(self, ck):
+    def savecube(self, ck, fitsname=None):
         """
         Saves the cube in fits format
 
@@ -733,6 +741,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         -----------
         ck : str
             Key of the cube to convolve
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}.fits. If the path does not
+            exist, it will be created.
         """
         hdr = ut.get_default_hdr(naxis=3)
         if self.coordcube == "offset":
@@ -784,10 +796,14 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         hdu = fits.PrimaryHDU(self.cubes[ck])
         hdul = fits.HDUList([hdu])
         hdu.header = self.hdrs[ck]
-        ut.make_folder(foldername=f"models/{self.modelname}/fits")
-        hdul.writeto(f"models/{self.modelname}/fits/{ck}.fits", overwrite=True)
+        if fitsname is None:
+            savefolder = f"models/{self.modelname}/fits"
+            ut.make_folder(foldername=savefolder)
+            fitsname = f"models/{self.modelname}/fits/{ck}.fits"
+
+        hdul.writeto(fitsname, overwrite=True)
         if self.verbose:
-            print(f"models/{self.modelname}/fits/{ck}.fits saved")
+            print(f"{fitsname} saved")
 
     def savecubes(self, userdic):
         """
@@ -811,7 +827,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         >>> cp.savecubes(outputcubes)
 
         will save 4 spectral cubes in fits format. The first one are the
-        intensities with gaussian noise added, it will be convolved, and the
+        intensities with Gaussian noise added, it will be convolved, and the
         moments and PV diagrams will be computed; the second cube will be the
         opacity; the third will be the mol_column_density, which will be
         convolved; and the forth cube will be the masses. The first spectral
@@ -965,7 +981,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         if return_fig_axs:
             return fig, axs, cbax
 
-    def pvalongz(self, ck, halfwidth=0, savefits=False, filename=None):
+    def pvalongz(self, ck, halfwidth=0, savefits=False, fitsname=None):
         """
         Performs the position velocity diagram along the self.papv direction
 
@@ -978,7 +994,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             compute the PV-diagram.
         savefits : boolean
             If True, save the PV-diagram in fits format.
-        filename : str
+        fitsname : str
             Full path name of the fits file. If None, it will be saved as
             models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
             exist, it will be created.
@@ -1014,15 +1030,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu = fits.PrimaryHDU(pvimage)
             hdul = fits.HDUList([hdu])
             hdu.header = hdrpv
-            if filename is None:
+            if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                filename = f"models/{self.modelname}/fits/{ck}_pv.fits"
-            hdul.writeto(filename, overwrite=True)
+                fitsname = f"models/{self.modelname}/fits/{ck}_pv.fits"
+            hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_pv.fits saved")
         return pvimage
 
-    def sumint(self, ck, chan_range=None, savefits=False, filename=None):
+    def sumint(self, ck, chan_range=None, savefits=False, fitsname=None):
         """
         Computes the image of the summation of pixels of the cube along the
         velocity axis
@@ -1036,9 +1052,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             the moment. If None, the whole cube will be considered.
         savefits : boolean
             If True, save the PV-diagram in fits format.
-        filename : str
+        fitsname : str
             Full path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
+            models/{self.modelname}/fits/{ck}_sumint.fits. If the path does not
             exist, it will be created.
 
         Returns
@@ -1096,15 +1112,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu = fits.PrimaryHDU(sumintimage)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            if filename is None:
+            if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                filename = f"models/{self.modelname}/fits/{ck}_sumint.fits"
-            hdul.writeto(filename, overwrite=True)
+                fitsname = f"models/{self.modelname}/fits/{ck}_sumint.fits"
+            hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_sumint.fits saved")
         return sumintimage
 
-    def mom0(self, ck, chan_range=None, savefits=False, filename=None):
+    def mom0(self, ck, chan_range=None, savefits=False, fitsname=None):
         """
         Computes the 0th order moment along the velocity axis
 
@@ -1117,9 +1133,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             the moment. If None, the whole cube will be considered.
         savefits : boolean
             If True, save the PV-diagram in fits format.
-        filename : str
+        fitsname : str
             Full path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
+            models/{self.modelname}/fits/{ck}_mom0.fits. If the path does not
             exist, it will be created.
 
         Returns
@@ -1179,15 +1195,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu = fits.PrimaryHDU(mom0)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            if filename is None:
+            if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                filename = f"models/{self.modelname}/fits/{ck}_mom0.fits"
-            hdul.writeto(filename, overwrite=True)
+                fitsname = f"models/{self.modelname}/fits/{ck}_mom0.fits"
+            hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_mom0.fits saved")
         return mom0
 
-    def mom1(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
+    def mom1(self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None):
         """
         Computes the 1th order moment along the velocity axis
 
@@ -1203,9 +1219,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             will be masked with 0 values.
         savefits : boolean, optional
             If True, save the PV-diagram in fits format.
-        filename : str
+        fitsname : str
             Full path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
+            models/{self.modelname}/fits/{ck}_mom1.fits. If the path does not
             exist, it will be created.
 
         Returns
@@ -1268,15 +1284,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu = fits.PrimaryHDU(mom1)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            if filename is None:
+            if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                filename = f"models/{self.modelname}/fits/{ck}_mom1.fits"
-            hdul.writeto(filename, overwrite=True)
+                fitsname = f"models/{self.modelname}/fits/{ck}_mom1.fits"
+            hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_mom1.fits saved")
         return mom1
 
-    def mom2(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
+    def mom2(self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None):
         """
         Computes the 2th order moment along the velocity axis
 
@@ -1292,9 +1308,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             will be masked with 0 values.
         savefits : boolean, optional
             If True, save the PV-diagram in fits format.
-        filename : str, optional
+        fitsname : str, optional
             Full path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
+            models/{self.modelname}/fits/{ck}_mom2.fits. If the path does not
             exist, it will be created.
 
         Returns
@@ -1359,15 +1375,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu = fits.PrimaryHDU(mom2)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            if filename is None:
+            if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                filename = f"models/{self.modelname}/fits/{ck}_mom1.fits"
-            hdul.writeto(filename, overwrite=True)
+                fitsname = f"models/{self.modelname}/fits/{ck}_mom1.fits"
+            hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_mom2.fits saved")
         return mom2
 
-    def maxintens(self, ck, chan_range=None, clipping=0, savefits=False, filename=None):
+    def maxintens(self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None):
         """
         Computes the maximum value of the cube along the velocity axis
 
@@ -1383,9 +1399,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             will be masked with 0 values.
         savefits : boolean, optional
             If True, save the moment in fits format.
-        filename : str, optional
+        fitsname : str, optional
             Full path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
+            models/{self.modelname}/fits/{ck}_maxintens.fits. If the path does not
             exist, it will be created.
 
         Returns
@@ -1452,10 +1468,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu = fits.PrimaryHDU(maxintens)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
-            if filename is None:
+            if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                filename = f"models/{self.modelname}/fits/{ck}_mom1.fits"
-            hdul.writeto(filename, overwrite=True)
+                fitsname = f"models/{self.modelname}/fits/{ck}_mom1.fits"
+            hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_maxintens.fits saved")
         return maxintens
@@ -1467,6 +1483,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         ax=None,
         cbax=None,
         savefits=False,
+        fitsname=None,
         savefig=None,
         return_fig_axs_im=False,
         **kwargs,
@@ -1489,6 +1506,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             If None, it will create one. By default, None
         savefits : bool
             If True, the position velocity diagram will be saved in fits format
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}_pv.fits. If the path does not
+            exist, it will be created.
         savefig : str, optional
             String of the full path to save the figure. If None, no figure is
             saved. By default, None.
@@ -1516,6 +1537,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ckpv,
             halfwidth=halfwidth,
             savefits=savefits,
+            fitsname=fitsname,
         )
         rangex = (
             np.array(
@@ -1546,6 +1568,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbax=None,
         add_beam=False,
         savefits=False,
+        fitsname=False,
         savefig=None,
         return_fig_axs_im=False,
         **kwargs,
@@ -1570,6 +1593,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             If True, plots a ellipse of the beam size in the left bottom corner.
         savefits : bool
             If True, the moment will be saved in fits format
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}_sumint.fits. If the path does not
+            exist, it will be created.
         savefig : str, optional
             String of the full path to save the figure. If None, no figure is
             saved. By default, None.
@@ -1595,6 +1622,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ck,
             chan_range=chan_range,
             savefits=savefits,
+            fitsname=fitsname,
         )
         extent = (
             np.array(
@@ -1634,6 +1662,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbax=None,
         add_beam=False,
         savefits=False,
+        fitsname=None,
         savefig=None,
         return_fig_axs_im=False,
         **kwargs,
@@ -1659,6 +1688,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             corner.
         savefits : bool
             If True, the moment will be saved in fits format
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}_mom0.fits. If the path does not
+            exist, it will be created.
         savefig : str, optional
             String of the full path to save the figure. If None, no figure is
             saved. By default, None.
@@ -1684,6 +1717,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ck,
             chan_range=chan_range,
             savefits=savefits,
+            fitsname=fitsname,
         )
         extent = (
             np.array(
@@ -1724,6 +1758,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbax=None,
         add_beam=False,
         savefits=False,
+        fitsname=None,
         savefig=None,
         return_fig_axs_im=False,
         **kwargs,
@@ -1752,6 +1787,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             If True, plots a ellipse of the beam size in the left bottom corner.
         savefits : bool
             If True, the moment will be saved in fits format.
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}_mom1.fits. If the path does not
+            exist, it will be created.
         savefig : str, optional
             String of the full path to save the figure. If None, no figure is
             saved. By default, None.
@@ -1781,8 +1820,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom1 = self.mom1(
             ck,
             chan_range=chan_range,
-            savefits=savefits,
             clipping=clipping,
+            savefits=savefits,
+            fitsname=fitsname,
         )
         extent = (
             np.array(
@@ -1823,6 +1863,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbax=None,
         add_beam=False,
         savefits=False,
+        fitsname=None,
         savefig=None,
         return_fig_axs_im=False,
         **kwargs,
@@ -1851,6 +1892,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             If True, plots a ellipse of the beam size in the left bottom corner.
         savefits : bool
             If True, the moment will be saved in fits format
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}_mom2.fits. If the path does not
+            exist, it will be created.
         savefig : str, optional
             String of the full path to save the figure. If None, no figure is
             saved. By default, None.
@@ -1880,8 +1925,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom2 = self.mom2(
             ck,
             chan_range=chan_range,
-            savefits=savefits,
             clipping=clipping,
+            savefits=savefits,
+            fitsname=fitsname,
         )
         extent = (
             np.array(
@@ -1921,6 +1967,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         cbax=None,
         add_beam=False,
         savefits=False,
+        fitsname=None,
         savefig=None,
         return_fig_axs_im=False,
         **kwargs,
@@ -1946,6 +1993,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         savefits : bool
             If True, the moments and the position velocity diagram will be
             saved in fits format
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}_maxintens.fits. If the path does not
+            exist, it will be created.
         savefig : str, optional
             String of the full path to save the figure. If None, no figure is
             saved. By default, None.
@@ -1971,6 +2022,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             ck,
             chan_range=chan_range,
             savefits=savefits,
+            fitsname=fitsname,
         )
         extent = (
             np.array(
@@ -2082,10 +2134,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 \nComputing moments and the PV-diagram along the jet axis
 """
             )
-
-        # ckpv = ck + "R"
-        # if ckpv not in self.cubes:
-        #     self.rotate(ck, forpv=True)
 
         fig = plt.figure(figsize=(14, 10))
         gs = GridSpec(
