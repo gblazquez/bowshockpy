@@ -2053,7 +2053,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
 
-    # TODO: This should go to plot module
+
     def momentsandpv_and_params(
         self,
         ck,
