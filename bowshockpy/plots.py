@@ -727,27 +727,30 @@ class BowshockObsModelPlot:
         self.axs[3] = plt.subplot(gsss[4][:, 0])
         self.axs["text"].set_axis_off()
 
-    def plot(self):
+    def plot(self, custom_showtext=None):
         """
         Plots the 2D bowshock model
         """
         self._create_axes()
-        showtext = rf"""
-            {self.modelname}
-            $i = {{{self.mo.i*180/np.pi:.2f}}}^\circ$
-            $v_\mathrm{{vsys}} = {{{self.mo.vsys:.2f}}}$ km/s
-            $v_\mathrm{{j}} = {{{self.mo.vj:.2f}}}$ km/s
-            $v_0 = {{{self.mo.v0:.2f}}}$ km/s
-            $v_a = {{{self.mo.va:.2f}}}$ km/s
-            $L_0 = {{{self.mo.L0_arcsec:.2f}}}$ arcsec
-            $z_\mathrm{{j}} = {{{self.mo.zj_arcsec:.2f}}}$ arcsec
-            $r_\mathrm{{b,f}} = {{{self.mo.rbf_arcsec:.2f}}}$ arcsec
-            $m$ = ${{{self.mo.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
-            $t_\mathrm{{j}} = {{{self.mo.tj_yr:.2f}}}$ yr
-            $\rho_a = {{{self.mo.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
-            $\dot{{m}}_0 = {{{self.mo.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-            $\dot{{m}}_{{a,f}} = {{{self.mo.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-            """
+        if custom_showtext is None:
+            showtext = rf"""
+                {self.modelname}
+                $i = {{{self.mo.i*180/np.pi:.2f}}}^\circ$
+                $v_\mathrm{{vsys}} = {{{self.mo.vsys:.2f}}}$ km/s
+                $v_\mathrm{{j}} = {{{self.mo.vj:.2f}}}$ km/s
+                $v_0 = {{{self.mo.v0:.2f}}}$ km/s
+                $v_a = {{{self.mo.va:.2f}}}$ km/s
+                $L_0 = {{{self.mo.L0_arcsec:.2f}}}$ arcsec
+                $z_\mathrm{{j}} = {{{self.mo.zj_arcsec:.2f}}}$ arcsec
+                $r_\mathrm{{b,f}} = {{{self.mo.rbf_arcsec:.2f}}}$ arcsec
+                $m$ = ${{{self.mo.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
+                $t_\mathrm{{j}} = {{{self.mo.tj_yr:.2f}}}$ yr
+                $\rho_a = {{{self.mo.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+                $\dot{{m}}_0 = {{{self.mo.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+                $\dot{{m}}_{{a,f}} = {{{self.mo.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+                """
+        else:
+            showtext = custom_showtext
 
         self.axs["text"].set_axis_off()
         for n, line in enumerate(showtext.split("\n")):

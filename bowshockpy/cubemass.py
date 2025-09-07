@@ -123,6 +123,7 @@ class MassCube(ObsModel):
         **kwargs,
     ):
         self.__dict__ = obsmodel.__dict__
+        self.o = obsmodel
         self.nphis = nphis
         self.xpmax = xpmax
         self.vch0 = vch0
@@ -138,11 +139,11 @@ class MassCube(ObsModel):
         self.tolfactor_vt = tolfactor_vt
         self.verbose = verbose
         self._calc_params_init()
-        for kwarg in self.default_kwargs:
-            kwarg_attr = (
-                kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
-            )
-            setattr(self, kwarg, kwarg_attr)
+        # for kwarg in self.default_kwargs:
+        #     kwarg_attr = (
+        #         kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
+        #     )
+        #     setattr(self, kwarg, kwarg_attr)
 
         self.nrs = 0
         self.rs = np.array([])
@@ -398,15 +399,15 @@ coincides with the total mass of the cube.
             print("\nComputing masses in the spectral cube...")
 
         self.nrs = self.nzs
-        self.rs = np.linspace(self.rbf, 0, self.nrs)
+        self.rs = np.linspace(self.o.m.rbf, 0, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
-        self.zs = self.zb_r(self.rs)
-        self.dzs = self.dz_func(self.zb_r(self.rs), self.dr)
+        self.zs = self.o.m.zb_r(self.rs)
+        self.dzs = self.o.m.dz_func(self.o.m.zb_r(self.rs), self.dr)
 
         self.phis = np.linspace(0, 2 * np.pi, self.nphis + 1)[:-1]
         self.dphi = self.phis[1] - self.phis[0]
 
-        self.vs = np.array([self.vtot(zb) for zb in self.zs])
+        self.vs = np.array([self.o.m.vtot(zb) for zb in self.zs])
         self.velchans = np.linspace(self.vch0, self.vchf, self.nc)
         minvelchans = np.min(self.velchans)
         maxvelchans = np.max(self.velchans)
@@ -436,15 +437,15 @@ coincides with the total mass of the cube.
 
             if iz == 0:
                 # Treat boundary of the outer parts of the bowshock wings
-                intmass = self.intmass_analytical(self.rbf)
-                intmass_halfdr = self.intmass_analytical(self.rbf - self.dr / 2)
+                intmass = self.o.m.intmass_analytical(self.o.m.rbf)
+                intmass_halfdr = self.o.m.intmass_analytical(self.o.m.rbf - self.dr / 2)
                 dmass = (intmass - intmass_halfdr) / self.nphis
             elif iz == len(self.zs) - 1:
                 # Treat head boundary
-                dmass = self.intmass_analytical(self.dr / 2) / self.nphis
+                dmass = self.o.m.intmass_analytical(self.dr / 2) / self.nphis
             else:
                 # Treat the rest of the bowshock
-                dmass = self.dmass_func(z, self.dzs[iz], self.dphi)
+                dmass = self.o.m.dmass_func(z, self.dzs[iz], self.dphi)
 
             for phi in self.phis:
                 # for phi in self.phis+self.dphi*np.random.rand():
@@ -452,7 +453,7 @@ coincides with the total mass of the cube.
                 _yp = self.rs[iz] * np.cos(phi) * ci + z * si
                 xp = _xp * cpa - _yp * spa
                 yp = _xp * spa + _yp * cpa
-                vzp = -self.vzp(z, phi)
+                vzp = -self.o.vzp(z, phi)
                 vlsr = vzp + self.vsys
 
                 xpixcoord = self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]

@@ -4,10 +4,10 @@ and kinematics"""
 import numpy as np
 
 import bowshockpy.plots as pl
-from bowshockpy.models import BowshockModel
+from bowshockpy.models import BaseModel
 
 
-class ObsModel(BowshockModel):
+class ObsModel(BaseModel):
     """
     Computes the projected morphology and kinematics of a BowshockModel model
 
@@ -26,6 +26,7 @@ class ObsModel(BowshockModel):
 
     def __init__(self, model, i_deg, pa_deg=0, vsys=0, **kwargs):
         self.__dict__ = model.__dict__
+        self.m = model
         self.i_deg = i_deg
         self.i = i_deg * np.pi / 180
         self.pa_deg = pa_deg
@@ -33,11 +34,11 @@ class ObsModel(BowshockModel):
         self.vsys = vsys
         # for param in model.__dict__:
         #     setattr(self, param, getattr(model, param))
-        for kwarg in self.default_kwargs:
-            kwarg_attr = (
-                kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
-            )
-            setattr(self, kwarg, kwarg_attr)
+        # for kwarg in self.default_kwargs:
+        #     kwarg_attr = (
+        #         kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
+        #     )
+        #     setattr(self, kwarg, kwarg_attr)
 
     def vzp(self, zb, phi):
         """
@@ -56,8 +57,8 @@ class ObsModel(BowshockModel):
         float
             Line-of-sight velocity [km/s]
         """
-        a = self.alpha(zb)
-        return self.vtot(zb) * (
+        a = self.m.alpha(zb)
+        return self.m.vtot(zb) * (
             np.cos(a) * np.cos(self.i) - np.sin(a) * np.cos(phi) * np.sin(self.i)
         )
 
@@ -78,7 +79,7 @@ class ObsModel(BowshockModel):
         float
             xp coordinate in the plane-of-sky [km]
         """
-        return self.rb(zb) * np.cos(phi) * np.cos(self.i) + zb * np.sin(self.i)
+        return self.m.rb(zb) * np.cos(phi) * np.cos(self.i) + zb * np.sin(self.i)
 
     def yp(self, zb, phi):
         """
@@ -97,7 +98,7 @@ class ObsModel(BowshockModel):
         float
             yp coordinate in the plane-of-sky [km]
         """
-        return self.rb(zb) * np.sin(phi)
+        return self.m.rb(zb) * np.sin(phi)
 
     def zp(self, zb, phi):
         """
@@ -116,7 +117,7 @@ class ObsModel(BowshockModel):
         float
             zp coordinate, along the line-of-sight direction [km]
         """
-        return -self.rb(zb) * np.cos(phi) * np.sin(self.i) + zb * np.cos(self.i)
+        return -self.m.rb(zb) * np.cos(phi) * np.sin(self.i) + zb * np.cos(self.i)
 
     def get_obsmodelplot(
         self,
@@ -130,7 +131,7 @@ class ObsModel(BowshockModel):
         minpointsize=0.1,
         maxpointsize=10,
         **kwargs,
-        ):
+    ):
         """
         Plot a figure including the main parameters of the bowshock model, its
         morphology and kinematics, and the distribution of the surface density
@@ -176,6 +177,6 @@ class ObsModel(BowshockModel):
             cmap=cmap,
             minpointsize=minpointsize,
             maxpointsize=maxpointsize,
-            **kwargs
+            **kwargs,
         )
         return modelplot
