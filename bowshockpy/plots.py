@@ -84,7 +84,7 @@ class BowshockModelPlot:
         linespacing=0.08,
         textbox_widthratio=0.7,
     ):
-        self.mo = bsm
+        self.m = bsm
         self.modelname = modelname
         self.nzs = nzs
         self.nrs = nzs
@@ -133,15 +133,15 @@ class BowshockModelPlot:
         #     np.linspace(self.rbf, self.rj, self.nzs)
         # )
         # self.nrs = self.nzs
-        self.rs = np.linspace(self.mo.rbf, 0, self.nrs)
+        self.rs = np.linspace(self.m.rbf, 0, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
-        self.zs = self.mo.zb_r(self.rs)
-        self.dzs = self.mo.dz_func(self.mo.zb_r(self.rs), self.dr)
+        self.zs = self.m.zb_r(self.rs)
+        self.dzs = self.m.dz_func(self.m.zb_r(self.rs), self.dr)
 
-        self.vs = np.array([self.mo.vtot(zb) for zb in self.zs])
-        self.Rs = np.array([self.mo.rb(zb) for zb in self.zs])
-        self.vrs = np.array([self.mo.vr(zb) for zb in self.zs])
-        self.vzs = np.array([self.mo.vz(zb) for zb in self.zs])
+        self.vs = np.array([self.m.vtot(zb) for zb in self.zs])
+        self.Rs = np.array([self.m.rb(zb) for zb in self.zs])
+        self.vrs = np.array([self.m.vr(zb) for zb in self.zs])
+        self.vzs = np.array([self.m.vz(zb) for zb in self.zs])
         self.vs = np.array(
             [np.sqrt(vrr**2 + vzz**2) for vrr, vzz in zip(self.vrs, self.vzs)]
         )
@@ -151,11 +151,11 @@ class BowshockModelPlot:
             [np.arctan(self.Rs[i] / z) for i, z in enumerate(self.zs)]
         )
 
-        self.Rs_arcsec = self.mo.km2arcsec(self.Rs)
-        self.zs_arcsec = self.mo.km2arcsec(self.zs)
+        self.Rs_arcsec = self.m.km2arcsec(self.Rs)
+        self.zs_arcsec = self.m.km2arcsec(self.zs)
 
-        self.surfdenss = np.array([self.mo.surfdens(zb) for zb in self.zs])
-        self.surfdenss_gcm2 = self.mo.solMasskm2togcm2(self.surfdenss)
+        self.surfdenss = np.array([self.m.surfdens(zb) for zb in self.zs])
+        self.surfdenss_gcm2 = self.m.solMasskm2togcm2(self.surfdenss)
 
     def _calc_arrows(self):
         idx_arr = int(len(self.zs_arcsec) / self.narrows)
@@ -222,17 +222,17 @@ class BowshockModelPlot:
             showtext = rf"""
                 {self.modelname}
 
-                $v_\mathrm{{j}} = {{{self.mo.vj:.2f}}}$ km/s
-                $v_0 = {{{self.mo.v0:.2f}}}$ km/s
-                $v_a = {{{self.mo.va:.2f}}}$ km/s
-                $L_0 = {{{self.mo.L0_arcsec:.2f}}}$ arcsec
-                $z_\mathrm{{j}} = {{{self.mo.zj_arcsec:.2f}}}$ arcsec
-                $r_\mathrm{{b,f}} = {{{self.mo.rbf_arcsec:.2f}}}$ arcsec
-                $m$ = ${{{self.mo.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
-                $t_\mathrm{{j}} = {{{self.mo.tj_yr:.2f}}}$ yr
-                $\rho_a = {{{self.mo.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
-                $\dot{{m}}_0 = {{{self.mo.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-                $\dot{{m}}_{{a,f}} = {{{self.mo.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+                $v_\mathrm{{j}} = {{{self.m.vj:.2f}}}$ km/s
+                $v_0 = {{{self.m.v0:.2f}}}$ km/s
+                $v_a = {{{self.m.va:.2f}}}$ km/s
+                $L_0 = {{{self.m.L0_arcsec:.2f}}}$ arcsec
+                $z_\mathrm{{j}} = {{{self.m.zj_arcsec:.2f}}}$ arcsec
+                $r_\mathrm{{b,f}} = {{{self.m.rbf_arcsec:.2f}}}$ arcsec
+                $m$ = ${{{self.m.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
+                $t_\mathrm{{j}} = {{{self.m.tj_yr:.2f}}}$ yr
+                $\rho_a = {{{self.m.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+                $\dot{{m}}_0 = {{{self.m.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+                $\dot{{m}}_{{a,f}} = {{{self.m.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
                 """
         else:
             showtext = custom_showtext
@@ -512,7 +512,7 @@ class BowshockObsModelPlot:
         minpointsize=0.1,
         maxpointsize=10,
     ):
-        self.mo = bsmobs
+        self.o = bsmobs
         self.modelname = modelname
         self.nzs = nzs
         self.nphis = nphis
@@ -562,15 +562,15 @@ class BowshockObsModelPlot:
         # self.plot()
 
     def _calc_solutions(self):
-        self.rs = np.linspace(self.mo.rbf, 0, self.nrs)
+        self.rs = np.linspace(self.o.m.rbf, 0, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
-        self.zs = self.mo.zb_r(self.rs)
-        self.dzs = self.mo.dz_func(self.mo.zb_r(self.rs), self.dr)
+        self.zs = self.o.m.zb_r(self.rs)
+        self.dzs = self.o.m.dz_func(self.o.m.zb_r(self.rs), self.dr)
 
-        self.vs = np.array([self.mo.vtot(zb) for zb in self.zs])
-        self.Rs = np.array([self.mo.rb(zb) for zb in self.zs])
-        self.vrs = np.array([self.mo.vr(zb) for zb in self.zs])
-        self.vzs = np.array([self.mo.vz(zb) for zb in self.zs])
+        self.vs = np.array([self.o.m.vtot(zb) for zb in self.zs])
+        self.Rs = np.array([self.o.m.rb(zb) for zb in self.zs])
+        self.vrs = np.array([self.o.m.vr(zb) for zb in self.zs])
+        self.vzs = np.array([self.o.m.vz(zb) for zb in self.zs])
         self.vs = np.array(
             [np.sqrt(vrr**2 + vzz**2) for vrr, vzz in zip(self.vrs, self.vzs)]
         )
@@ -580,24 +580,24 @@ class BowshockObsModelPlot:
             [np.arctan(self.Rs[i] / z) for i, z in enumerate(self.zs)]
         )
 
-        self.Rs_arcsec = self.mo.km2arcsec(self.Rs)
-        self.zs_arcsec = self.mo.km2arcsec(self.zs)
+        self.Rs_arcsec = self.o.km2arcsec(self.Rs)
+        self.zs_arcsec = self.o.km2arcsec(self.zs)
 
-        self.surfdenss = np.array([self.mo.surfdens(zb) for zb in self.zs])
-        self.surfdenss_gcm2 = self.mo.solMasskm2togcm2(self.surfdenss)
+        self.surfdenss = np.array([self.o.m.surfdens(zb) for zb in self.zs])
+        self.surfdenss_gcm2 = self.o.solMasskm2togcm2(self.surfdenss)
 
-        self.xps_phi90 = np.array([self.mo.xp(zb, phi=np.pi / 2) for zb in self.zs])
-        self.xps_phi0 = np.array([self.mo.xp(zb, phi=0) for zb in self.zs])
-        self.xps_phi180 = np.array([self.mo.xp(zb, phi=np.pi) for zb in self.zs])
-        self.vloss_phi0 = -np.array([self.mo.vzp(zb, phi=0) for zb in self.zs])
-        self.vloss_phi90 = -np.array([self.mo.vzp(zb, phi=np.pi / 2) for zb in self.zs])
-        self.vloss_phi180 = -np.array([self.mo.vzp(zb, phi=np.pi) for zb in self.zs])
+        self.xps_phi90 = np.array([self.o.xp(zb, phi=np.pi / 2) for zb in self.zs])
+        self.xps_phi0 = np.array([self.o.xp(zb, phi=0) for zb in self.zs])
+        self.xps_phi180 = np.array([self.o.xp(zb, phi=np.pi) for zb in self.zs])
+        self.vloss_phi0 = -np.array([self.o.vzp(zb, phi=0) for zb in self.zs])
+        self.vloss_phi90 = -np.array([self.o.vzp(zb, phi=np.pi / 2) for zb in self.zs])
+        self.vloss_phi180 = -np.array([self.o.vzp(zb, phi=np.pi) for zb in self.zs])
         self.maxvlos = np.max([self.vloss_phi0, self.vloss_phi180])
         self.minvlos = np.min([self.vloss_phi0, self.vloss_phi180])
 
-        self.xps_phi0_arcsec = self.mo.km2arcsec(self.xps_phi0)
-        self.xps_phi90_arcsec = self.mo.km2arcsec(self.xps_phi90)
-        self.xps_phi180_arcsec = self.mo.km2arcsec(self.xps_phi180)
+        self.xps_phi0_arcsec = self.o.km2arcsec(self.xps_phi0)
+        self.xps_phi90_arcsec = self.o.km2arcsec(self.xps_phi90)
+        self.xps_phi180_arcsec = self.o.km2arcsec(self.xps_phi180)
 
         phi_0_1 = -np.pi / 2
         phi_f_1 = +np.pi / 2
@@ -606,13 +606,13 @@ class BowshockObsModelPlot:
         self.phis_1 = np.linspace(phi_0_1, phi_f_1, nphis_half)[:-1]
 
         self.xp_zs_phis_1 = np.array(
-            [[self.mo.xp(zb, phi) for zb in self.zs] for phi in self.phis_1]
+            [[self.o.xp(zb, phi) for zb in self.zs] for phi in self.phis_1]
         )
         self.yp_zs_phis_1 = np.array(
-            [[self.mo.yp(zb, phi) for zb in self.zs] for phi in self.phis_1]
+            [[self.o.yp(zb, phi) for zb in self.zs] for phi in self.phis_1]
         )
         self.vlos_zs_phis_1 = np.array(
-            [[-self.mo.vzp(zb, phi) for zb in self.zs] for phi in self.phis_1]
+            [[-self.o.vzp(zb, phi) for zb in self.zs] for phi in self.phis_1]
         )
 
         phi_0_2 = +np.pi / 2
@@ -621,13 +621,13 @@ class BowshockObsModelPlot:
         self.phis_2 = np.linspace(phi_0_2, phi_f_2, nphis_half)[:-1]
 
         self.xp_zs_phis_2 = np.array(
-            [[self.mo.xp(zb, phi) for zb in self.zs] for phi in self.phis_2]
+            [[self.o.xp(zb, phi) for zb in self.zs] for phi in self.phis_2]
         )
         self.yp_zs_phis_2 = np.array(
-            [[self.mo.yp(zb, phi) for zb in self.zs] for phi in self.phis_2]
+            [[self.o.yp(zb, phi) for zb in self.zs] for phi in self.phis_2]
         )
         self.vlos_zs_phis_2 = np.array(
-            [[-self.mo.vzp(zb, phi) for zb in self.zs] for phi in self.phis_2]
+            [[-self.o.vzp(zb, phi) for zb in self.zs] for phi in self.phis_2]
         )
 
         phi_0_3 = 0
@@ -637,13 +637,13 @@ class BowshockObsModelPlot:
         self.phis_3 = np.linspace(phi_0_3, phi_f_3, nphis_half)[:-1]
 
         self.xp_zs_phis_3 = np.array(
-            [[self.mo.xp(zb, phi) for zb in self.zs] for phi in self.phis_3]
+            [[self.o.xp(zb, phi) for zb in self.zs] for phi in self.phis_3]
         )
         self.zp_zs_phis_3 = np.array(
-            [[self.mo.zp(zb, phi) for zb in self.zs] for phi in self.phis_3]
+            [[self.o.zp(zb, phi) for zb in self.zs] for phi in self.phis_3]
         )
         self.vlos_zs_phis_3 = np.array(
-            [[-self.mo.vzp(zb, phi) for zb in self.zs] for phi in self.phis_3]
+            [[-self.o.vzp(zb, phi) for zb in self.zs] for phi in self.phis_3]
         )
 
     def _create_axes(self):
@@ -735,19 +735,19 @@ class BowshockObsModelPlot:
         if custom_showtext is None:
             showtext = rf"""
                 {self.modelname}
-                $i = {{{self.mo.i*180/np.pi:.2f}}}^\circ$
-                $v_\mathrm{{vsys}} = {{{self.mo.vsys:.2f}}}$ km/s
-                $v_\mathrm{{j}} = {{{self.mo.vj:.2f}}}$ km/s
-                $v_0 = {{{self.mo.v0:.2f}}}$ km/s
-                $v_a = {{{self.mo.va:.2f}}}$ km/s
-                $L_0 = {{{self.mo.L0_arcsec:.2f}}}$ arcsec
-                $z_\mathrm{{j}} = {{{self.mo.zj_arcsec:.2f}}}$ arcsec
-                $r_\mathrm{{b,f}} = {{{self.mo.rbf_arcsec:.2f}}}$ arcsec
-                $m$ = ${{{self.mo.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
-                $t_\mathrm{{j}} = {{{self.mo.tj_yr:.2f}}}$ yr
-                $\rho_a = {{{self.mo.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
-                $\dot{{m}}_0 = {{{self.mo.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-                $\dot{{m}}_{{a,f}} = {{{self.mo.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+                $i = {{{self.o.i*180/np.pi:.2f}}}^\circ$
+                $v_\mathrm{{vsys}} = {{{self.o.vsys:.2f}}}$ km/s
+                $v_\mathrm{{j}} = {{{self.o.m.vj:.2f}}}$ km/s
+                $v_0 = {{{self.o.m.v0:.2f}}}$ km/s
+                $v_a = {{{self.o.m.va:.2f}}}$ km/s
+                $L_0 = {{{self.o.m.L0_arcsec:.2f}}}$ arcsec
+                $z_\mathrm{{j}} = {{{self.o.m.zj_arcsec:.2f}}}$ arcsec
+                $r_\mathrm{{b,f}} = {{{self.o.m.rbf_arcsec:.2f}}}$ arcsec
+                $m$ = ${{{self.o.m.mass*10**4:.2f}}}\times10^{{-4}}$ M$_\odot$
+                $t_\mathrm{{j}} = {{{self.o.m.tj_yr:.2f}}}$ yr
+                $\rho_a = {{{self.o.m.rhoa_gcm3*10**20:.2f}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+                $\dot{{m}}_0 = {{{self.o.m.mp0_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+                $\dot{{m}}_{{a,f}} = {{{self.o.m.mpamb_f_solmassyr*10**6:.2f}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
                 """
         else:
             showtext = custom_showtext
@@ -765,38 +765,38 @@ class BowshockObsModelPlot:
         # Projected shell Morph. and Kin.
 
         # op controls the plotting order of the points
-        op = 1 if self.mo.i <= np.pi / 2 else -1
+        op = 1 if self.o.i <= np.pi / 2 else -1
         norm = colors.Normalize(
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
         )
 
         range_point_sizes = np.linspace(
             self.maxpointsize, self.minpointsize, len(self.zs)
         )[::op]
         point_sizes = [[i] * len(self.vlos_zs_phis_1) for i in range_point_sizes]
-        xps_arcsec_1 = self.mo.km2arcsec(self.xp_zs_phis_1.T[::op])
-        yps_arcsec_1 = self.mo.km2arcsec(self.yp_zs_phis_1.T[::op])
-        vlos_1 = self.vlos_zs_phis_1.T[::op] + self.mo.vsys
+        xps_arcsec_1 = self.o.km2arcsec(self.xp_zs_phis_1.T[::op])
+        yps_arcsec_1 = self.o.km2arcsec(self.yp_zs_phis_1.T[::op])
+        vlos_1 = self.vlos_zs_phis_1.T[::op] + self.o.vsys
         self.axs[1].scatter(
             xps_arcsec_1,
             yps_arcsec_1,
             c=vlos_1,
             cmap=self.cmap,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
             s=point_sizes,
         )
-        xps_arcsec_2 = self.mo.km2arcsec(self.xp_zs_phis_2.T[::op])
-        yps_arcsec_2 = self.mo.km2arcsec(self.yp_zs_phis_2.T[::op])
-        vlos_2 = self.vlos_zs_phis_2.T[::op] + self.mo.vsys
+        xps_arcsec_2 = self.o.km2arcsec(self.xp_zs_phis_2.T[::op])
+        yps_arcsec_2 = self.o.km2arcsec(self.yp_zs_phis_2.T[::op])
+        vlos_2 = self.vlos_zs_phis_2.T[::op] + self.o.vsys
         self.axs[1].scatter(
             xps_arcsec_2,
             yps_arcsec_2,
             c=vlos_2,
             cmap=self.cmap,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
             s=point_sizes,
         )
         self.axs[1].set_aspect("equal")
@@ -823,28 +823,28 @@ class BowshockObsModelPlot:
             self.maxpointsize, self.minpointsize, len(self.zs)
         )[::-op]
         point_sizes = [[i] * len(self.vlos_zs_phis_1) for i in range_point_sizes]
-        xps_arcsec_1 = self.mo.km2arcsec(self.xp_zs_phis_2.T[::-op])
-        yps_arcsec_1 = self.mo.km2arcsec(self.yp_zs_phis_2.T[::-op])
-        vlos_1 = self.vlos_zs_phis_2.T[::-op] + self.mo.vsys
+        xps_arcsec_1 = self.o.km2arcsec(self.xp_zs_phis_2.T[::-op])
+        yps_arcsec_1 = self.o.km2arcsec(self.yp_zs_phis_2.T[::-op])
+        vlos_1 = self.vlos_zs_phis_2.T[::-op] + self.o.vsys
         self.axs[2].scatter(
             xps_arcsec_1,
             yps_arcsec_1,
             c=vlos_1,
             cmap=self.cmap,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
             s=point_sizes,
         )
-        xps_arcsec_2 = self.mo.km2arcsec(self.xp_zs_phis_1.T[::-op])
-        yps_arcsec_2 = self.mo.km2arcsec(self.yp_zs_phis_1.T[::-op])
-        vlos_2 = self.vlos_zs_phis_1.T[::-op] + self.mo.vsys
+        xps_arcsec_2 = self.o.km2arcsec(self.xp_zs_phis_1.T[::-op])
+        yps_arcsec_2 = self.o.km2arcsec(self.yp_zs_phis_1.T[::-op])
+        vlos_2 = self.vlos_zs_phis_1.T[::-op] + self.o.vsys
         self.axs[2].scatter(
             xps_arcsec_2,
             yps_arcsec_2,
             c=vlos_2,
             cmap=self.cmap,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
             s=point_sizes,
         )
         self.axs[2].set_aspect("equal")
@@ -869,18 +869,18 @@ class BowshockObsModelPlot:
         xps = self.xp_zs_phis_3.T[::1]
         zps = self.zp_zs_phis_3.T[::1]
 
-        xps_rot = xps * np.sin(self.mo.i) + zps * np.cos(self.mo.i)
-        zps_rot = -(xps * np.cos(self.mo.i) - zps * np.sin(self.mo.i))
-        xps_rot_arcsec = self.mo.km2arcsec(xps_rot)
-        zps_rot_arcsec = self.mo.km2arcsec(zps_rot)
+        xps_rot = xps * np.sin(self.o.i) + zps * np.cos(self.o.i)
+        zps_rot = -(xps * np.cos(self.o.i) - zps * np.sin(self.o.i))
+        xps_rot_arcsec = self.o.km2arcsec(xps_rot)
+        zps_rot_arcsec = self.o.km2arcsec(zps_rot)
 
         self.axs[0].scatter(
             xps_rot_arcsec,
             zps_rot_arcsec,
-            c=self.vlos_zs_phis_3.T[::1] + self.mo.vsys,
+            c=self.vlos_zs_phis_3.T[::1] + self.o.vsys,
             cmap=self.cmap,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
             s=point_sizes,
         )
 
@@ -898,8 +898,8 @@ class BowshockObsModelPlot:
         display_coords_text = self.axs[0].transAxes.transform((0.85, 0.83))
         xtext, ytext = self.axs[0].transData.inverted().transform(display_coords_text)
 
-        zarrow_tip = larrow * np.cos(self.mo.i) + zarrow
-        Rarrow_tip = larrow * np.sin(self.mo.i) + Rarrow
+        zarrow_tip = larrow * np.cos(self.o.i) + zarrow
+        Rarrow_tip = larrow * np.sin(self.o.i) + Rarrow
 
         self.axs[0].annotate(
             "",
@@ -951,25 +951,25 @@ class BowshockObsModelPlot:
         # PV diagram: projected velocity
         self.axs[3].scatter(
             self.xps_phi180_arcsec,
-            self.vloss_phi180 + self.mo.vsys,
+            self.vloss_phi180 + self.o.vsys,
             marker="o",
-            c=self.vloss_phi180 + self.mo.vsys,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            c=self.vloss_phi180 + self.o.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
             cmap=self.cmap,
         )
         self.axs[3].scatter(
             self.xps_phi0_arcsec,
-            self.vloss_phi0 + self.mo.vsys,
+            self.vloss_phi0 + self.o.vsys,
             marker="o",
-            c=self.vloss_phi0 + self.mo.vsys,
-            vmax=self.maxvlos + self.mo.vsys,
-            vmin=self.minvlos + self.mo.vsys,
+            c=self.vloss_phi0 + self.o.vsys,
+            vmax=self.maxvlos + self.o.vsys,
+            vmin=self.minvlos + self.o.vsys,
             cmap=self.cmap,
             label="PV diagram\n along axis",
         )
         allvelsarray = np.array(
-            [self.vloss_phi0[:-1] + self.mo.vsys, self.vloss_phi180[:-1] + self.mo.vsys]
+            [self.vloss_phi0[:-1] + self.o.vsys, self.vloss_phi180[:-1] + self.o.vsys]
         ).ravel()
         argmaxvelpv = np.argmax(np.abs(allvelsarray))
         if allvelsarray[argmaxvelpv] < 0:
