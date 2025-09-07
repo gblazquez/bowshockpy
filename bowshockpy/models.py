@@ -10,7 +10,76 @@ import bowshockpy.plots as pl
 from bowshockpy.version import __version__
 
 
-class BowshockModel:
+class BaseModel:
+    """
+    Parent class of Models.
+    """
+    def stoyr(self, value):
+        """
+        Converts seconds to years
+
+        Parameters
+        ----------
+        value : float
+            Seconds to convert to years
+
+        Returns
+        -------
+        float
+            Years
+        """
+        return value * u.s.to(u.yr)
+
+    def solMasskm2togcm2(self, value):
+        """
+        Converts solar masses/km**2 to g/cm**2
+
+        Parameters
+        ----------
+        value : float
+            Solar masses per km^2 to convert to g/cm^2
+
+        Returns
+        -------
+        float
+            g/cm2
+        """
+        return value * (u.solMass / u.km**2).to(u.g / u.cm**2)
+
+    def solMasskm3togcm3(self, value):
+        """
+        Converts solar masses/km**3 to g/cm**3
+
+        Parameters
+        ----------
+        value : float
+            Solar masses per km^3 to convert to g/cm^3
+
+        Returns
+        -------
+        float
+            g/cm3
+        """
+        return value * (u.solMass / u.km**3).to(u.g / u.cm**3)
+
+    def km2arcsec(self, value):
+        """
+        Converts km to arcsec
+
+        Parameters
+        ----------
+        value : float
+            km to convert to arcsec
+
+        Returns
+        -------
+        float
+            g/cm3
+        """
+        return value * u.km.to(u.au) / self.distpc
+
+
+class BowshockModel(BaseModel):
     """
     Bowshock model for a negligible internal working surface radius.
 
@@ -99,6 +168,7 @@ class BowshockModel:
         self.mass = mass
         self.rbf_obs = rbf_obs
         self.distpc = distpc
+        # TODO remove kwargs
         for kwarg in self.default_kwargs:
             kwarg_attr = (
                 kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
@@ -122,70 +192,6 @@ class BowshockModel:
         self.L0_arcsec = self.km2arcsec(self.L0)
         self.rbf_arcsec = self.km2arcsec(self.rbf)
         self.zbf_arcsec = self.km2arcsec(self.zbf)
-
-    def stoyr(self, value):
-        """
-        Converts seconds to years
-
-        Parameters
-        ----------
-        value : float
-            Seconds to convert to years
-
-        Returns
-        -------
-        float
-            Years
-        """
-        return value * u.s.to(u.yr)
-
-    def solMasskm2togcm2(self, value):
-        """
-        Converts solar masses/km**2 to g/cm**2
-
-        Parameters
-        ----------
-        value : float
-            Solar masses per km^2 to convert to g/cm^2
-
-        Returns
-        -------
-        float
-            g/cm2
-        """
-        return value * (u.solMass / u.km**2).to(u.g / u.cm**2)
-
-    def solMasskm3togcm3(self, value):
-        """
-        Converts solar masses/km**3 to g/cm**3
-
-        Parameters
-        ----------
-        value : float
-            Solar masses per km^3 to convert to g/cm^3
-
-        Returns
-        -------
-        float
-            g/cm3
-        """
-        return value * (u.solMass / u.km**3).to(u.g / u.cm**3)
-
-    def km2arcsec(self, value):
-        """
-        Converts km to arcsec
-
-        Parameters
-        ----------
-        value : float
-            km to convert to arcsec
-
-        Returns
-        -------
-        float
-            g/cm3
-        """
-        return value * u.km.to(u.au) / self.distpc
 
     def gamma(self):
         """
