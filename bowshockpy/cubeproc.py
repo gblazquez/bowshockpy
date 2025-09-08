@@ -202,18 +202,20 @@ class CubeProcessing(MassCube):
         for att in self.attribs_to_get_from_cubes:
             setattr(self, att, modelcubes[0].__getattribute__(att))
 
-        self.ies = np.array([mc.i for mc in modelcubes])
-        self.L0s = np.array([mc.L0_arcsec for mc in modelcubes])
-        self.zjs = np.array([mc.zj_arcsec for mc in modelcubes])
-        self.vjs = np.array([mc.vj for mc in modelcubes])
-        self.vas = np.array([mc.va for mc in modelcubes])
-        self.v0s = np.array([mc.v0 for mc in modelcubes])
-        self.rbfs = np.array([mc.rbf_arcsec for mc in modelcubes])
-        self.tjs = np.array([mc.tj_yr for mc in modelcubes])
-        self.masss = np.array([mc.mass for mc in modelcubes])
-        self.rhoas = np.array([mc.rhoa_gcm3 for mc in modelcubes])
-        self.m0s = np.array([mc.mp0_solmassyr for mc in modelcubes])
-        self.mwfs = np.array([mc.mpamb_f_solmassyr for mc in modelcubes])
+        self.modelcubes = modelcubes
+
+        # self.ies = np.array([mc.i for mc in modelcubes])
+        # self.L0s = np.array([mc.L0_arcsec for mc in modelcubes])
+        # self.zjs = np.array([mc.zj_arcsec for mc in modelcubes])
+        # self.vjs = np.array([mc.vj for mc in modelcubes])
+        # self.vas = np.array([mc.va for mc in modelcubes])
+        # self.v0s = np.array([mc.v0 for mc in modelcubes])
+        # self.rbfs = np.array([mc.rbf_arcsec for mc in modelcubes])
+        # self.tjs = np.array([mc.tj_yr for mc in modelcubes])
+        # self.masss = np.array([mc.mass for mc in modelcubes])
+        # self.rhoas = np.array([mc.rhoa_gcm3 for mc in modelcubes])
+        # self.m0s = np.array([mc.mp0_solmassyr for mc in modelcubes])
+        # self.mwfs = np.array([mc.mpamb_f_solmassyr for mc in modelcubes])
 
         self.modelname = modelname
         self.J = J
@@ -2070,6 +2072,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         mom2values={v: None for v in ["vmax", "vcenter", "vmin"]},
         maxintensvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
         pvvalues={v: None for v in ["vmax", "vcenter", "vmin"]},
+        custom_showtext=None,
     ):
         """
         Computes the moments and position velocity diagram including also the
@@ -2209,24 +2212,41 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         ak = "text"
 
-        showtext = rf"""
-        {self.modelname}
-        Number of bowshocks: {self.nmodels}
-        Tex = {self.Tex.value} K
-        $i = {{{ut.list2str(self.ies*180/np.pi)}}}^\circ$
-        $v_\mathrm{{sys}} = {self.vsys}$ km/s
-        $v_\mathrm{{j}} = {{{ut.list2str(self.vjs)}}}$ km/s
-        $v_0 = {{{ut.list2str(self.v0s)}}}$ km/s
-        $v_a = {{{ut.list2str(self.vas)}}}$ km/s
-        $L_0 = {{{ut.list2str(self.L0s)}}}$ arcsec
-        $z_\mathrm{{j}} = {{{ut.list2str(self.zjs)}}}$ arcsec
-        $r_\mathrm{{b,f}} = {{{ut.list2str(self.rbfs)}}}$ arcsec
-        $t_\mathrm{{j}} = {{{ut.list2str(self.tjs)}}}$ yr
-        mass $= {{{ut.list2str(self.masss*10**4)}}}\times 10^{{-4}}$ M$_\odot$
-        $\rho_a = {{{ut.list2str(self.rhoas*10**20)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
-        $\dot{{m}}_0 = {{{ut.list2str(self.m0s*10**6)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-        $\dot{{m}}_{{a,f}} = {{{ut.list2str(self.mwfs*10**6)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
-        """
+        if custom_showtext is None:
+            ies = np.array([mc.i for mc in self.modelcubes])
+            L0s = np.array([mc.L0_arcsec for mc in self.modelcubes])
+            zjs = np.array([mc.zj_arcsec for mc in self.modelcubes])
+            vjs = np.array([mc.vj for mc in self.modelcubes])
+            vas = np.array([mc.va for mc in self.modelcubes])
+            v0s = np.array([mc.v0 for mc in self.modelcubes])
+            rbfs = np.array([mc.rbf_arcsec for mc in self.modelcubes])
+            tjs = np.array([mc.tj_yr for mc in self.modelcubes])
+            masss = np.array([mc.mass for mc in self.modelcubes])
+            rhoas = np.array([mc.rhoa_gcm3 for mc in self.modelcubes])
+            m0s = np.array([mc.mp0_solmassyr for mc in self.modelcubes])
+            mwfs = np.array([mc.mpamb_f_solmassyr for mc in self.modelcubes])
+
+            showtext = rf"""
+            {self.modelname}
+            Number of bowshocks: {self.nmodels}
+            Tex = {self.Tex.value} K
+            $i = {{{ut.list2str(ies*180/np.pi)}}}^\circ$
+            $v_\mathrm{{sys}} = {self.vsys}$ km/s
+            $v_\mathrm{{j}} = {{{ut.list2str(vjs)}}}$ km/s
+            $v_0 = {{{ut.list2str(v0s)}}}$ km/s
+            $v_a = {{{ut.list2str(vas)}}}$ km/s
+            $L_0 = {{{ut.list2str(L0s)}}}$ arcsec
+            $z_\mathrm{{j}} = {{{ut.list2str(zjs)}}}$ arcsec
+            $r_\mathrm{{b,f}} = {{{ut.list2str(rbfs)}}}$ arcsec
+            $t_\mathrm{{j}} = {{{ut.list2str(tjs)}}}$ yr
+            mass $= {{{ut.list2str(masss*10**4)}}}\times 10^{{-4}}$ M$_\odot$
+            $\rho_a = {{{ut.list2str(rhoas*10**20)}}}\times 10^{{-20}}$ g cm$^{{-3}}$
+            $\dot{{m}}_0 = {{{ut.list2str(m0s*10**6)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+            $\dot{{m}}_{{a,f}} = {{{ut.list2str(mwfs*10**6)}}}\times10^{{-6}}$ M$_\odot$ yr$^{{-1}}$
+            """
+        else:
+            showtext = custom_showtext
+
         for n, line in enumerate(showtext.split("\n")):
             axs["text"].text(
                 0,
