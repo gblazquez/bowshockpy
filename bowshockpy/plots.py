@@ -292,8 +292,12 @@ class BowshockModelPlot:
                 arrowprops={"arrowstyle": "->"},
             )
 
-        xmax_plot = np.max([self.zs_arrows_tip, self.zs_arrows, self.zs_arcsec])
-        xmin_plot = np.min([self.zs_arrows_tip, self.zs_arrows, self.zs_arcsec])
+        xmax_plot = np.max(
+            [np.max(self.zs_arrows_tip), np.max(self.zs_arrows), np.max(self.zs_arcsec)]
+        )
+        xmin_plot = np.min(
+            [np.min(self.zs_arrows_tip), np.min(self.zs_arrows), np.min(self.zs_arcsec)]
+        )
         xlims = [xmin_plot, xmax_plot * 1.1]
         ymax_plot = np.max(self.Rs_arcsec)
         ymin_plot = - np.max(self.Rs_arcsec)
