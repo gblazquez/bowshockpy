@@ -159,7 +159,8 @@ class BowshockModelPlot:
 
     def _calc_arrows(self):
         idx_arr = int(len(self.zs_arcsec) / self.narrows)
-        self.larrow = 1 / np.max([np.max(self.vrs), np.max(self.vzs)])
+        # self.larrow = 1 / np.max([np.max(self.vrs), np.max(self.vzs)])
+        self.larrow = 1 / self.maxvs
 
         self.zs_arrows = self.zs_arcsec[::idx_arr]
         self.Rs_arrows = self.Rs_arcsec[::idx_arr]
@@ -291,8 +292,12 @@ class BowshockModelPlot:
                 arrowprops={"arrowstyle": "->"},
             )
 
-        xlims = [np.min(self.zs_arcsec), np.max(np.max(self.zs_arrows_tip)) * 1.1]
-        ylims = [-np.max(self.Rs_arcsec) * 1.3, np.max(self.Rs_arcsec) * 1.3]
+        xmax_plot = np.max([self.zs_arrows_tip, self.zs_arrows, self.zs_arcsec])
+        xmin_plot = np.min([self.zs_arrows_tip, self.zs_arrows, self.zs_arcsec])
+        xlims = [xmin_plot, xmax_plot * 1.1]
+        ymax_plot = np.max(self.Rs_arcsec)
+        ymin_plot = - np.max(self.Rs_arcsec)
+        ylims = [ymin_plot * 1.3, ymax_plot * 1.3]
         self.axs[0].set_xlim(xlims)
         self.axs[0].set_ylim(ylims)
         larrow_scaled = self.larrow * self.v_arrow_ref
