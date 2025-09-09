@@ -12,8 +12,11 @@ from bowshockpy.version import __version__
 
 class BaseModel:
     """
-    Parent class of Models.
+    Parent Class of Models.
     """
+    def __init__(self, distpc):
+        self.distpc = distpc
+
     def stoyr(self, value):
         """
         Converts seconds to years
@@ -160,6 +163,7 @@ class BowshockModel(BaseModel):
     def __init__(self, L0, zj, vj, va, v0, mass, distpc, rbf_obs=None, **kwargs):
         # for param in ps:
         #     setattr(self, param, ps[param])
+        super().__init__(distpc)
         self.L0 = L0
         self.zj = zj
         self.vj = vj
@@ -167,7 +171,6 @@ class BowshockModel(BaseModel):
         self.v0 = v0
         self.mass = mass
         self.rbf_obs = rbf_obs
-        self.distpc = distpc
         # TODO remove kwargs
         for kwarg in self.default_kwargs:
             kwarg_attr = (
