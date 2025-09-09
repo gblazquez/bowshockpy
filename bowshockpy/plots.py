@@ -99,8 +99,10 @@ class BowshockModelPlot:
         self.Rs = np.array([])
 
         self.vrs = np.array([])
+        self.velangles = np.array([])
         self.vzs = np.array([])
         self.vs = np.array([])
+
         self.thetas = np.array([])
         self.Rs_arcsec = np.array([])
         self.zs_arcsec = np.array([])
@@ -140,11 +142,10 @@ class BowshockModelPlot:
 
         self.vs = np.array([self.m.vtot(zb) for zb in self.zs])
         self.Rs = np.array([self.m.rb(zb) for zb in self.zs])
-        self.vrs = np.array([self.m.vr(zb) for zb in self.zs])
-        self.vzs = np.array([self.m.vz(zb) for zb in self.zs])
-        self.vs = np.array(
-            [np.sqrt(vrr**2 + vzz**2) for vrr, vzz in zip(self.vrs, self.vzs)]
-        )
+        self.velangles = np.array([self.m.velangle(zb) for zb in self.zs])
+        self.vrs = self.vs * np.sin(self.velangles)
+        self.vzs = self.vs * np.cos(self.velangles)
+
         self.maxvs = np.max(self.vs)
         self.minvs = np.min(self.vs)
         self.thetas = np.array(
@@ -618,14 +619,10 @@ class BowshockObsModelPlot:
 
         self.vs = np.array([self.o.m.vtot(zb) for zb in self.zs])
         self.Rs = np.array([self.o.m.rb(zb) for zb in self.zs])
-        # self.vrs = np.array([self.o.m.vr(zb) for zb in self.zs])
-        # self.vzs = np.array([self.o.m.vz(zb) for zb in self.zs])
         self.velangles = np.array([self.o.m.velangle(zb) for zb in self.zs])
         self.vrs = self.vs * np.sin(self.velangles)
         self.vzs = self.vs * np.cos(self.velangles)
-        # self.vs = np.array(
-        #     [np.sqrt(vrr**2 + vzz**2) for vrr, vzz in zip(self.vrs, self.vzs)]
-        # )
+
         self.maxvs = np.max(self.vs)
         self.minvs = np.min(self.vs)
         self.thetas = np.array(
