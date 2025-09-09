@@ -315,6 +315,29 @@ parameters).
         em = dmass * np.exp(-((diffv / self.vt) ** 2)) * normfactor
         return em
 
+    def _calc_dmass(self, iz, z):
+        """
+        Computes the differential of mass for index iz and z-coordinate z
+        """
+        if iz == 0:
+            # Treat boundary of the outer parts of the bowshock wings
+            if hasattr(self.o.m, "intmass_analytical"):
+                intmass = self.o.m.intmass_analytical(self.o.m.rbf)
+                intmass_halfdr = self.o.m.intmass_analytical(self.o.m.rbf - self.dr / 2)
+                dmass = (intmass - intmass_halfdr) / self.nphis
+            else:
+                dmass = self.o.m.dmass_func(self.zs[1], self.dzs[0] / 2, self.dphi)
+        elif iz == len(self.zs) - 1:
+            # Treat head boundary
+            if hasattr(self.o.m, "intmass_analytical"):
+                dmass = self.o.m.intmass_analytical(self.dr / 2) / self.nphis
+            else:
+                dmass = self.o.m.dmass_func(self.zs[-2], self.dzs[-2] / 2, self.dphi)
+        else:
+            # Treat the rest of the bowshock
+            dmass = self.o.m.dmass_func(z, self.dzs[iz], self.dphi)
+        return dmass
+
     def _docic(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
         """Cloud In Cell method"""
         em = self._wvzp(diffv, dmass)
@@ -351,9 +374,9 @@ parameters).
         total mass of the cube"""
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
-        intmass_model = self.mass + self._fromcube_mass
+        intmass_model = self.o.m.mass + self._fromcube_mass
         mass_consistent = np.isclose(intmass_cube, intmass_model)
-        massloss = (intmass_model - intmass_cube) / self.mass * 100
+        massloss = (intmass_model - intmass_cube) / self.o.m.mass * 100
         if mass_consistent:
             print(
                 r"""
@@ -435,17 +458,7 @@ coincides with the total mass of the cube.
             if self.verbose:
                 t0 = datetime.now()
 
-            if iz == 0:
-                # Treat boundary of the outer parts of the bowshock wings
-                intmass = self.o.m.intmass_analytical(self.o.m.rbf)
-                intmass_halfdr = self.o.m.intmass_analytical(self.o.m.rbf - self.dr / 2)
-                dmass = (intmass - intmass_halfdr) / self.nphis
-            elif iz == len(self.zs) - 1:
-                # Treat head boundary
-                dmass = self.o.m.intmass_analytical(self.dr / 2) / self.nphis
-            else:
-                # Treat the rest of the bowshock
-                dmass = self.o.m.dmass_func(z, self.dzs[iz], self.dphi)
+            dmass = self._calc_dmass(iz, z)
 
             for phi in self.phis:
                 # for phi in self.phis+self.dphi*np.random.rand():
@@ -485,7 +498,8 @@ coincides with the total mass of the cube.
                 ut.progressbar_bowshock(
                     iz + 1, self.nzs, np.sum(ts), intervaltime, length=50
                 )
-        _ = self._check_mass_consistency()
+        if hasattr(self.o.m, "mass"):
+            _ = self._check_mass_consistency()
         self._check_sampling()
 
     def plot_channel(

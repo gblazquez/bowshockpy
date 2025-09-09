@@ -214,7 +214,15 @@ class BowshockModelPlot:
         self.cbaxs[1] = plt.subplot(gss[1][0, 0])
         self.axs["text"].set_axis_off()
 
-    def plot(self, custom_showtext=None):
+    def plot(
+        self,
+        custom_showtext=None,
+        min_plotvel=None,
+        max_plotvel=None,
+        min_plotdens=None,
+        max_plotdens=None,
+        normdens="log",
+    ):
         """
         Plots the 2D bowshock model
         """
@@ -251,9 +259,11 @@ class BowshockModelPlot:
         # Deprojected shell Morph. and Kin., color velocity
 
         cmap = "turbo_r"
+        max_plotvel = max_plotvel if max_plotvel is not None else self.maxvs
+        min_plotvel = min_plotvel if min_plotvel is not None else self.minvs
         for i, zarcsec in enumerate(self.zs_arcsec):
             c = ut.get_color(
-                [self.minvs, self.maxvs],
+                [min_plotvel, max_plotvel],
                 self.vs[i],
                 cmap,
             )
@@ -271,7 +281,7 @@ class BowshockModelPlot:
             )
         _ = plt.colorbar(
             cm.ScalarMappable(
-                norm=colors.Normalize(vmax=self.maxvs, vmin=self.minvs),
+                norm=colors.Normalize(vmax=max_plotvel, vmin=min_plotvel),
                 cmap=cmap,
             ),
             cax=self.cbaxs[0],
@@ -336,13 +346,33 @@ class BowshockModelPlot:
 
         # Deprojected shell Morph. and Kin., color density
 
-        self.minsurfdens_plot = np.percentile(self.surfdenss_gcm2[:-1], 0)
-        self.maxsurfdens_plot = np.percentile(self.surfdenss_gcm2[:-1], 70)
-        norm = colors.LogNorm(
-            vmax=self.maxsurfdens_plot,
-            vmin=self.minsurfdens_plot,
-            #           linthresh=self.maxsurfdens*0.99,
+        # self.minsurfdens_plot = np.percentile(self.surfdenss_gcm2[:-1], 0)
+        # self.maxsurfdens_plot = np.percentile(self.surfdenss_gcm2[:-1], 70)
+        self.maxsurfdens_plot = (
+            max_plotdens if max_plotdens is not None else np.max(self.surfdenss_gcm2)
         )
+        self.minsurfdens_plot = (
+            min_plotdens
+            if min_plotdens is not None
+            else np.min(self.surfdenss_gcm2[self.surfdenss_gcm2 != 0])
+        )
+        if normdens == "log":
+            norm = colors.LogNorm(
+                vmax=self.maxsurfdens_plot,
+                vmin=self.minsurfdens_plot,
+            )
+        else:
+            norm = colors.Normalize(
+                vmax=self.maxsurfdens_plot,
+                vmin=self.minsurfdens_plot,
+            )
+
+        # norm = colors.SymLogNorm(
+        #     vmax=self.maxsurfdens_plot,
+        #     vmin=self.minsurfdens_plot,
+        #                linthresh=self.maxsurfdens_plot*0.00001,
+        # )
+
         cmap = "viridis"
         # we skip the point at the tip, there is a discontinuity and the surface
         # density is 0
