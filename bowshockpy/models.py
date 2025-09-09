@@ -272,7 +272,7 @@ class BowshockModel(BaseModel):
         """
         return np.sqrt(self.vr(zb) ** 2 + self.vz(zb) ** 2)
 
-    def alpha(self, zb):
+    def velangle(self, zb):
         """
         Computes the angle between the bowshock axis and the velocity
 
@@ -288,10 +288,12 @@ class BowshockModel(BaseModel):
         """
         return np.arctan(self.vr(zb) / self.vz(zb))
 
-    def alpha2(self, zb):
+    def tangent_angle(self, zb):
         """
         Computes the angle between the bowshock axis and the local tangent to
-        the shell surface at the z-coordinate of the bowshock zb
+        the shell surface at the z-coordinate of the bowshock zb. The angle is
+        measured with respect to the symmetry axis of the bowshock towards the
+        negative z-coordinate, so the angle is <90.
 
         Parameters
         ----------
@@ -306,7 +308,7 @@ class BowshockModel(BaseModel):
         """
         return np.arcsin((1 + 9 * self.rb(zb) ** 4 / self.L0**4) ** (-0.5))
 
-    def alpha2_rb(self, rb):
+    def tangent_angle_rb(self, rb):
         """
         Computes the angle between the bowshock axis and the local tangent to
         the shell surface at the z-coordinate of the bowshock zb
@@ -410,7 +412,7 @@ class BowshockModel(BaseModel):
 
     # def surfdens(self, rr):
     #     return rhoa/2/rb * (ps["L0"]**2*gamma(ps)/3 + rb**2)**2 \
-    #        / (rb**2*np.cos(alpha2(rb,ps)) + (ps["L0"]**2/3)*np.sin(alpha2(rb,ps)))
+    #        / (rb**2*np.cos(tangent_angle(rb,ps)) + (ps["L0"]**2/3)*np.sin(tangent_angle(rb,ps)))
 
     def surfdens(self, zb):
         """
@@ -426,8 +428,8 @@ class BowshockModel(BaseModel):
         float
             surface density at zb [solmass/km^2]
         """
-        cosa = np.cos(self.alpha2(zb))
-        tana = np.tan(self.alpha2(zb))
+        cosa = np.cos(self.tangent_angle(zb))
+        tana = np.tan(self.tangent_angle(zb))
         sd = 0.5 * self.rhoa * cosa * (self.gamma() * tana + 1) ** 2 * self.rb(zb)
         return sd
 
@@ -486,7 +488,7 @@ class BowshockModel(BaseModel):
         float
             differential of surface [Msun/km^2]
         """
-        # sina = np.sin(self.alpha2(zb))
+        # sina = np.sin(self.tangent_angle(zb))
         sina = (1 + 9 * self.rb(zb) ** 4 / self.L0**4) ** (-0.5)
         dr = self.dr_func(zb, dz)
         return self.rb(zb) * dr * dphi / sina
@@ -555,7 +557,7 @@ class BowshockModel(BaseModel):
         """
 
         def integrand(rb):
-            tana = np.tan(self.alpha2_rb(rb))
+            tana = np.tan(self.tangent_angle_rb(rb))
             return (self.gamma() * tana + 1) ** 2 / tana * rb**2
 
         integ = quad(integrand, r0, rbf)
@@ -611,7 +613,7 @@ class BowshockModel(BaseModel):
         """
 
         def integrand(rb):
-            tana = np.tan(self.alpha2_rb(rb))
+            tana = np.tan(self.tangent_angle_rb(rb))
             return (self.gamma() * tana + 1) ** 2 / tana * rb**2
 
         integ = quad(integrand, R0, Rb)

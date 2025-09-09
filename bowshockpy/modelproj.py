@@ -57,7 +57,7 @@ class ObsModel(BaseModel):
         float
             Line-of-sight velocity [km/s]
         """
-        a = self.m.alpha(zb)
+        a = self.m.velangle(zb)
         return self.m.vtot(zb) * (
             np.cos(a) * np.cos(self.i) - np.sin(a) * np.cos(phi) * np.sin(self.i)
         )
