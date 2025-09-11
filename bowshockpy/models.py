@@ -975,6 +975,6 @@ class IWSModel(BaseModel):
         Returns
         -------
         float
-            Differential of mass
+            Differential of mass [Msun]
         """
         return self.surfdens(zb) * self.dsurf_func(zb, dz, dphi)

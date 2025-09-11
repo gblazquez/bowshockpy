@@ -48,7 +48,7 @@ class BowshockModelPlot:
         Array of the z-coordinates of the model.
     dzs : numpy.ndarray
         Increment of z-coordinates between the points.
-    Rs : numpy.ndarray
+    rs : numpy.ndarray
         Array with the radii of the model at each z-coordinate [km].
     thetas : numpy.ndarray
         Array of the polar angle of the position vector at each point of the
@@ -96,7 +96,7 @@ class BowshockModelPlot:
 
         self.zs = np.array([])
         self.dzs = np.array([])
-        self.Rs = np.array([])
+        self.rs = np.array([])
 
         self.vrs = np.array([])
         self.velangles = np.array([])
@@ -104,16 +104,16 @@ class BowshockModelPlot:
         self.vs = np.array([])
 
         self.thetas = np.array([])
-        self.Rs_arcsec = np.array([])
+        self.rs_arcsec = np.array([])
         self.zs_arcsec = np.array([])
 
         self.surfdenss = np.array([])
         self.surfdenss_gcm2 = np.array([])
 
         self.zs_arrows = np.array([])
-        self.Rs_arrows = np.array([])
+        self.rs_arrows = np.array([])
         self.zs_arrows_tip = np.array([])
-        self.Rs_arrows_tip = np.array([])
+        self.rs_arrows_tip = np.array([])
         self.z_arrow_ref = None
         self.R_arrow_ref = None
         self.z_arrow_ref_tip = None
@@ -141,7 +141,6 @@ class BowshockModelPlot:
         self.dzs = self.m.dz_func(self.m.zb_r(self.rs), self.dr)
 
         self.vs = np.array([self.m.vtot(zb) for zb in self.zs])
-        self.Rs = np.array([self.m.rb(zb) for zb in self.zs])
         self.velangles = np.array([self.m.velangle(zb) for zb in self.zs])
         self.vrs = self.vs * np.sin(self.velangles)
         self.vzs = self.vs * np.cos(self.velangles)
@@ -149,10 +148,10 @@ class BowshockModelPlot:
         self.maxvs = np.max(self.vs)
         self.minvs = np.min(self.vs)
         self.thetas = np.array(
-            [np.arctan(self.Rs[i] / z) for i, z in enumerate(self.zs)]
+            [np.arctan(self.rs[i] / z) for i, z in enumerate(self.zs)]
         )
 
-        self.Rs_arcsec = self.m.km2arcsec(self.Rs)
+        self.rs_arcsec = self.m.km2arcsec(self.rs)
         self.zs_arcsec = self.m.km2arcsec(self.zs)
 
         self.surfdenss = np.array([self.m.surfdens(zb) for zb in self.zs])
@@ -164,10 +163,10 @@ class BowshockModelPlot:
         self.larrow = 1 / self.maxvs
 
         self.zs_arrows = self.zs_arcsec[::idx_arr]
-        self.Rs_arrows = self.Rs_arcsec[::idx_arr]
+        self.rs_arrows = self.rs_arcsec[::idx_arr]
 
         self.zs_arrows_tip = self.zs_arrows + self.larrow * self.vzs[::idx_arr]
-        self.Rs_arrows_tip = self.Rs_arrows + self.larrow * self.vrs[::idx_arr]
+        self.rs_arrows_tip = self.rs_arrows + self.larrow * self.vrs[::idx_arr]
 
     def _create_axes(self):
         nrow = 1
@@ -270,13 +269,13 @@ class BowshockModelPlot:
             )
             self.axs[0].plot(
                 zarcsec,
-                self.Rs_arcsec[i],
+                self.rs_arcsec[i],
                 color=c,
                 marker="o",
             )
             self.axs[0].plot(
                 zarcsec,
-                -self.Rs_arcsec[i],
+                -self.rs_arcsec[i],
                 color=c,
                 marker="o",
             )
@@ -292,14 +291,14 @@ class BowshockModelPlot:
         for i, z_arrow in enumerate(self.zs_arrows):
             self.axs[0].annotate(
                 "",
-                xy=(self.zs_arrows_tip[i], self.Rs_arrows_tip[i]),
-                xytext=(z_arrow, self.Rs_arrows[i]),
+                xy=(self.zs_arrows_tip[i], self.rs_arrows_tip[i]),
+                xytext=(z_arrow, self.rs_arrows[i]),
                 arrowprops={"arrowstyle": "->"},
             )
             self.axs[0].annotate(
                 "",
-                xy=(self.zs_arrows_tip[i], -self.Rs_arrows_tip[i]),
-                xytext=(z_arrow, -self.Rs_arrows[i]),
+                xy=(self.zs_arrows_tip[i], -self.rs_arrows_tip[i]),
+                xytext=(z_arrow, -self.rs_arrows[i]),
                 arrowprops={"arrowstyle": "->"},
             )
 
@@ -310,8 +309,8 @@ class BowshockModelPlot:
             [np.min(self.zs_arrows_tip), np.min(self.zs_arrows), np.min(self.zs_arcsec)]
         )
         xlims = [xmin_plot, xmax_plot * 1.1]
-        ymax_plot = np.max(self.Rs_arcsec)
-        ymin_plot = - np.max(self.Rs_arcsec)
+        ymax_plot = np.max(self.rs_arcsec)
+        ymin_plot = -np.max(self.rs_arcsec)
         ylims = [ymin_plot * 1.3, ymax_plot * 1.3]
         self.axs[0].set_xlim(xlims)
         self.axs[0].set_ylim(ylims)
@@ -386,13 +385,13 @@ class BowshockModelPlot:
             )
             self.axs[1].plot(
                 zarcsec,
-                self.Rs_arcsec[i],
+                self.rs_arcsec[i],
                 color=c,
                 marker="o",
             )
             self.axs[1].plot(
                 zarcsec,
-                -self.Rs_arcsec[i],
+                -self.rs_arcsec[i],
                 color=c,
                 marker="o",
             )
@@ -410,14 +409,14 @@ class BowshockModelPlot:
         for i, zs_arrow in enumerate(self.zs_arrows):
             self.axs[1].annotate(
                 "",
-                xy=(self.zs_arrows_tip[i], self.Rs_arrows_tip[i]),
-                xytext=(zs_arrow, self.Rs_arrows[i]),
+                xy=(self.zs_arrows_tip[i], self.rs_arrows_tip[i]),
+                xytext=(zs_arrow, self.rs_arrows[i]),
                 arrowprops={"arrowstyle": "->"},
             )
             self.axs[1].annotate(
                 "",
-                xy=(self.zs_arrows_tip[i], -self.Rs_arrows_tip[i]),
-                xytext=(zs_arrow, -self.Rs_arrows[i]),
+                xy=(self.zs_arrows_tip[i], -self.rs_arrows_tip[i]),
+                xytext=(zs_arrow, -self.rs_arrows[i]),
                 arrowprops={"arrowstyle": "->"},
             )
 
@@ -428,8 +427,8 @@ class BowshockModelPlot:
             [np.min(self.zs_arrows_tip), np.min(self.zs_arrows), np.min(self.zs_arcsec)]
         )
         xlims = [xmin_plot, xmax_plot * 1.1]
-        ymax_plot = np.max(self.Rs_arcsec)
-        ymin_plot = - np.max(self.Rs_arcsec)
+        ymax_plot = np.max(self.rs_arcsec)
+        ymin_plot = -np.max(self.rs_arcsec)
         ylims = [ymin_plot * 1.3, ymax_plot * 1.3]
         self.axs[1].set_xlim(xlims)
         self.axs[1].set_ylim(ylims)
@@ -514,6 +513,10 @@ class BowshockObsModelPlot:
         Minsize of the points to plot
     maxpointsize : float, optional
         Minsize of the points to plot
+    x_obs_arrow : float, optional
+        x-axis coordinate of the reference observer arrow
+    y_obs_arrow : float, optional
+        y-axis coordinate of the reference observer arrow
 
     Attributes:
     -----------
@@ -523,7 +526,7 @@ class BowshockObsModelPlot:
         Array of the z-coordinates of the model.
     dzs : numpy.ndarray
         Increment of z-coordinates between the points.
-    Rs : numpy.ndarray
+    rs : numpy.ndarray
         Array with the radii of the model at each z-coordinate [km].
     thetas : numpy.ndarray
         Array of the polar angle of the position vector at each point of the
@@ -559,6 +562,8 @@ class BowshockObsModelPlot:
         cmap="turbo",
         minpointsize=0.1,
         maxpointsize=10,
+        x_obs_arrow=0.98,
+        y_obs_arrow=0.95,
     ):
         self.o = bsmobs
         self.modelname = modelname
@@ -572,7 +577,7 @@ class BowshockObsModelPlot:
 
         self.zs = np.array([])
         self.dzs = np.array([])
-        self.Rs = np.array([])
+        self.rs = np.array([])
 
         self.vs = np.array([])
         self.velangles = np.array([])
@@ -580,7 +585,7 @@ class BowshockObsModelPlot:
         self.vzs = np.array([])
 
         self.thetas = np.array([])
-        self.Rs_arcsec = np.array([])
+        self.rs_arcsec = np.array([])
         self.zs_arcsec = np.array([])
 
         self.surfdenss = np.array([])
@@ -606,6 +611,8 @@ class BowshockObsModelPlot:
         self.maxpointsize = maxpointsize
         self.minsurfdens_plot = None
         self.maxsurfdens_plot = None
+        self.x_obs_arrow = x_obs_arrow
+        self.y_obs_arrow = y_obs_arrow
 
         self._calc_solutions()
         # self._create_axes()
@@ -618,7 +625,6 @@ class BowshockObsModelPlot:
         self.dzs = self.o.m.dz_func(self.o.m.zb_r(self.rs), self.dr)
 
         self.vs = np.array([self.o.m.vtot(zb) for zb in self.zs])
-        self.Rs = np.array([self.o.m.rb(zb) for zb in self.zs])
         self.velangles = np.array([self.o.m.velangle(zb) for zb in self.zs])
         self.vrs = self.vs * np.sin(self.velangles)
         self.vzs = self.vs * np.cos(self.velangles)
@@ -626,10 +632,10 @@ class BowshockObsModelPlot:
         self.maxvs = np.max(self.vs)
         self.minvs = np.min(self.vs)
         self.thetas = np.array(
-            [np.arctan(self.Rs[i] / z) for i, z in enumerate(self.zs)]
+            [np.arctan(self.rs[i] / z) for i, z in enumerate(self.zs)]
         )
 
-        self.Rs_arcsec = self.o.km2arcsec(self.Rs)
+        self.rs_arcsec = self.o.km2arcsec(self.rs)
         self.zs_arcsec = self.o.km2arcsec(self.zs)
 
         self.surfdenss = np.array([self.o.m.surfdens(zb) for zb in self.zs])
@@ -857,14 +863,6 @@ class BowshockObsModelPlot:
             0.64, 0.75, "Observer's\n view", transform=self.axs[1].transAxes
         )
 
-        # text_obj = self.axs[1].text(
-        #     0.75, 0.83, "Observer\n view", transform=self.axs[1].transAxes)
-        # display_text_f = text_obj.get_window_extent().get_points()[-1]
-        # xtext_f, ytext_f = \
-        #     self.axs[1].transData.inverted().transform(display_text_f)
-        # oxlim = self.axs[1].get_xlim()
-        # self.axs[1].set_xlim([oxlim[0], np.max([xtext_f+1, oxlim[1]])])
-
         self.axs[1].set_xlabel("Projected length [arcsec]")
         self.axs[1].set_ylabel("Proj. radius [arcsec]")
 
@@ -902,11 +900,6 @@ class BowshockObsModelPlot:
         self.axs[2].set_xlim([oxlim[0], oxlim[1] + 0.6])
         self.axs[2].set_ylim([oylim[0], oylim[1] + 0.3])
         text_obj = self.axs[2].text(0.8, 0.85, "Back", transform=self.axs[2].transAxes)
-        # display_text_f = text_obj.get_window_extent().get_points()[-1]
-        # xtext_f, ytext_f = \
-        #     self.axs[2].transData.inverted().transform(display_text_f)
-        # oxlim = self.axs[2].get_xlim()
-        # self.axs[2].set_xlim([oxlim[0], np.max([xtext_f+1, oxlim[1]])])
 
         self.axs[2].set_xlabel("Projected length [arcsec]")
 
@@ -940,25 +933,29 @@ class BowshockObsModelPlot:
         # Necessary to transform from display to physical coordinates
         self.axs[0].set_xlim(self.axs[0].get_xlim())
         self.axs[0].set_ylim(self.axs[0].get_ylim())
-        display_coords_arrow = self.axs[0].transAxes.transform((0.98, 0.95))
-        zarrow, Rarrow = (
+        display_coords_arrow = self.axs[0].transAxes.transform(
+            (self.x_obs_arrow, self.y_obs_arrow)
+        )
+        zarrow, rarrow = (
             self.axs[0].transData.inverted().transform(display_coords_arrow)
         )
-        display_coords_text = self.axs[0].transAxes.transform((0.85, 0.83))
+        x_obs_text = self.x_obs_arrow - 0.13
+        y_obs_text = self.y_obs_arrow - 0.12
+        display_coords_text = self.axs[0].transAxes.transform((x_obs_text, y_obs_text))
         xtext, ytext = self.axs[0].transData.inverted().transform(display_coords_text)
 
         zarrow_tip = larrow * np.cos(self.o.i) + zarrow
-        Rarrow_tip = larrow * np.sin(self.o.i) + Rarrow
+        rarrow_tip = larrow * np.sin(self.o.i) + rarrow
 
         self.axs[0].annotate(
             "",
             xy=(
                 zarrow_tip,
-                Rarrow_tip,
+                rarrow_tip,
             ),
             xytext=(
                 zarrow,
-                Rarrow,
+                rarrow,
             ),
             arrowprops={"arrowstyle": "->"},
         )
@@ -971,7 +968,7 @@ class BowshockObsModelPlot:
         oylim = self.axs[0].get_ylim()
 
         x_newlim = np.max([zarrow, zarrow_tip, oxlim[1], xtext_f])
-        y_newlim = np.max([Rarrow, Rarrow_tip, oylim[1]])
+        y_newlim = np.max([rarrow, rarrow_tip, oylim[1]])
 
         self.axs[0].set_xlim([oxlim[0], x_newlim * 1.1])
         self.axs[0].set_ylim([oylim[0], y_newlim * 1.1])
