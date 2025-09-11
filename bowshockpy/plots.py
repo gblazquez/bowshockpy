@@ -39,6 +39,10 @@ class BowshockModelPlot:
         Spacing between the text lines
     textbox_widthratio : float, optional
         Width ratio of the text ax to pass to GridSpec
+    gs_wspace : float, optional
+        wspace passed to GridSpec
+    gs_hspace : float, optional
+        hspace passed to GridSpec
 
     Attributes:
     -----------
@@ -83,6 +87,8 @@ class BowshockModelPlot:
         v_arrow_ref=100,
         linespacing=0.08,
         textbox_widthratio=0.7,
+        gs_wspace=0.2,
+        gs_hspace=0.4,
     ):
         self.m = bsm
         self.modelname = modelname
@@ -93,6 +99,8 @@ class BowshockModelPlot:
         self.v_arrow_ref = v_arrow_ref
         self.linespacing = linespacing
         self.textbox_widthratio = textbox_widthratio
+        self.gs_wspace = gs_wspace
+        self.gs_hspace = gs_hspace
 
         self.zs = np.array([])
         self.dzs = np.array([])
@@ -171,8 +179,8 @@ class BowshockModelPlot:
     def _create_axes(self):
         nrow = 1
         ncol = 3
-        wspace = 0.2
-        hspace = 0.4
+        wspace = self.gs_wspace
+        hspace = self.gs_hspace
         width_ratios = [self.textbox_widthratio, 1, 1]
         height_ratios = [1] * nrow
 
