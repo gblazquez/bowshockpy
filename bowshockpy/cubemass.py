@@ -326,7 +326,7 @@ parameters).
                 intmass_halfdr = self.o.m.intmass_analytical(self.o.m.rbf - self.dr / 2)
                 dmass = (intmass - intmass_halfdr) / self.nphis
             else:
-                dmass = self.o.m.dmass_func(self.zs[1], self.dzs[0] / 2, self.dphi)
+                dmass = self.o.m.dmass_func(self.zs[0], self.dzs[0] / 2, self.dphi)
         elif iz == len(self.zs) - 1:
             # Treat head boundary
             if hasattr(self.o.m, "intmass_analytical"):

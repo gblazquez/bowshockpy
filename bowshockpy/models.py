@@ -13,7 +13,13 @@ from bowshockpy.version import __version__
 class BaseModel:
     """
     Parent Class of Models.
+
+    Parameters
+    ----------
+    distpc : float
+        Distance from the observer to the source in pc
     """
+
     def __init__(self, distpc):
         self.distpc = distpc
 
@@ -717,3 +723,258 @@ class BowshockModel(BaseModel):
             **kwargs,
         )
         return modelplot
+
+
+class IWSModel(BaseModel):
+    """
+    Geometrical model of an internal working surface
+
+    Parameters
+    ----------
+    a : float
+        Constant that controls the collimation of the paraboloid
+    z0 : float
+        z-coordinate (symmetry axis) of the apex of the paraboloid [km]
+    zf : float
+        z-coordinate (symmetry axis) of the edge of the paraboloid [km]
+    vj : float
+        velocity of the jet (z-component of the velocity of the paraboloid at
+        the apex) [km/s]
+    sigma_max : float
+        Maximum density at the apex
+    distpc : float
+        Distance to the source from the observer in pc
+
+    References:
+    -----------
+    [1] Tafalla M., Su Y.-N., Shang H., Johnstone D., Zhang Q., Santiago-García
+    J., Lee C.-F., et al., 2017, A&A, 597, A119.
+
+    """
+
+    def __init__(self, a, z0, zf, vf, vj, sigma_max, distpc):
+
+        super().__init__(distpc)
+        self.a = a  # constant that controls the collimation of the paraboloid
+        self.z0 = z0  # z-coordinate of the apex of the paraboloid
+        self.zf = zf  # z-coordinate of the edge of the paraboloid
+        self.vf = vf  # speed at the edge
+        self.vj = vj  # velocity of the jet
+        self.sigma_max = sigma_max  # maximum density at the apex
+        self.rbf = self.rb(zf)
+
+    def rb(self, zb):
+        """
+        Radius of the model for a given z coordinate
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate [km]
+
+        Returns
+        -------
+        float
+            Shell radius at zb [km]
+        """
+        return np.sqrt(self.a**2 * self.z0 * (self.z0 - zb))
+
+    def v_tan(self, zb):
+        """
+        Computes the magnitude of the velocities tangent to the shell surface
+        in the reference frame comoving with the jet
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate [km]
+
+        Returns
+        -------
+        float
+            Tangent velocity [km/s]
+        """
+        return self.vf / (self.z0 - self.zf) * (self.z0 - zb)
+
+    def tangent_angle(self, zb):
+        """
+        Angle between the (z0-z) axis and the tangent to the shell surface
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate [km]
+
+        Returns
+        -------
+        float
+            Angle of the tangent to the shell surface [radians]
+        """
+        tanangle = np.arctan(0.5 * self.a**2 * self.z0 / self.rb(zb))
+        return tanangle
+
+    def vz(self, zb):
+        """
+        Computes the longitudinal component of the velocity (along z-axis, the
+        symmetry axis of the model)
+
+        Parameters
+        ----------
+        zb : float
+            z coordinate of the model [km]
+
+        Returns
+        -------
+        float
+            Longitudinal component of the velocity [km/s]
+        """
+        return self.vj - self.v_tan(zb) * np.cos(self.tangent_angle(zb))
+
+    def vr(self, zb):
+        """
+        Computes the radial component of the velocity (along r-axis,
+        perpendicular symmetry axis of the model)
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate of the model [km]
+
+        Returns
+        -------
+        float
+            Transversal component of the velocity [km/s]
+        """
+        return self.v_tan(zb) * np.sin(self.tangent_angle(zb))
+
+    def velangle(self, zb):
+        """
+        Computes the angle between the velocity vector and the z-axis (symmetry
+        axis)
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate of the model [km]
+
+        Returns
+        -------
+        float
+            Angle between the velocity vector and the z-axis
+        """
+        return np.arctan(self.vr(zb) / self.vz(zb))
+
+    def vtot(self, zb):
+        """
+        Computes the total speed of the velocity
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate of the model [km]
+
+        Returns
+        -------
+        float
+            Speed of the model at zb [km/s]
+        """
+        return np.sqrt(self.vr(zb) ** 2 + self.vz(zb) ** 2)
+
+    def zb_r(self, rr):
+        """
+        z-coordinate for a given radius of the model shell
+
+        Parameters
+        ----------
+        rr : float
+            radius of the model shell [km]
+
+        Returns
+        -------
+        float
+            z coordinate of the model shell [km]
+        """
+        return self.z0 - rr**2 / self.a**2 / self.z0
+
+    def surfdens(self, zb):
+        """
+        Surface density of the shell as a function of z-coordinate
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate [km]
+
+        Returns
+        -------
+        float
+            Surface density of the shell at zb
+        """
+        rr = self.rb(zb)
+        if rr < self.rbf / 2:
+            sigma = self.sigma_max
+        elif rr >= self.rbf / 2:
+            sigma = self.sigma_max * (2 * (self.rbf - rr) / self.rbf) ** (1 / 2)
+        return sigma
+
+    def dz_func(self, zb, dr):
+        """
+        Differential dz at zb
+
+        Parameters
+        ----------
+        zb : float
+            z-coordinate [km]
+        dr : float
+            Differential or radius [km]
+
+        Returns
+        -------
+        float
+            Differential of z [km]
+        """
+        return 2 * self.rb(zb) / self.a**2 / self.z0 * dr
+        # return self.zb_r(self.rb(zb)-dr/2) - self.zb_r(self.rb(zb)+dr/2)
+
+    def dsurf_func(self, zb, dz, dphi):
+        """
+        Differential of surface given a differential in z and phi
+
+        Parameters
+        ----------
+        zb : float
+            z coordinate [km]
+        dz : float
+            Differential of z [km]
+        dphi : phi
+            Differential of azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            Differential surface density
+
+        """
+        tana = self.a**2 * self.z0 / 2
+        rr = self.rb(zb)
+        return np.sqrt(rr**2 + tana**2) * dz * dphi
+
+    def dmass_func(self, zb, dz, dphi):
+        """
+        Differential of mass given a differential in z and phi
+
+        Parameters
+        ----------
+        zb : float
+            z coordinate [km]
+        dz : float
+            Differential of z [km]
+        dphi : phi
+            Differential of azimuthal angle [radians]
+
+        Returns
+        -------
+        float
+            Differential of mass
+        """
+        return self.surfdens(zb) * self.dsurf_func(zb, dz, dphi)
