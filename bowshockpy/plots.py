@@ -1112,6 +1112,7 @@ def plot_channel(
     vmax=None,
     vmin=None,
     cmap="inferno",
+    interpolation="bilinear",
     units="Mass [Msun]",
     refpix=[0, 0],
     markorigin=True,
@@ -1142,6 +1143,8 @@ def plot_channel(
         the channel is chosen.
     cmap : str, optional
         Label of the colormap, by default "inferno".
+    interpolation : str, optional
+        Interpolation to pass to matplotlib.pyplot.imshow
     units : str, optional
         Units of the values of the cube, by default "Mass [Msun]"
     refpix : list, optional
@@ -1202,6 +1205,7 @@ def plot_channel(
         norm=norm,
         cmap=cmap,
         extent=extent,
+        interpolation=interpolation,
     )
     if markorigin:
         ax.plot(0, 0, "w+")
@@ -1257,6 +1261,7 @@ def plot_channels(
     vcenter=None,
     vmin=None,
     cmap="inferno",
+    interpolation="bilinear",
     units="Mass [Msun]",
     xmajor_locator=1,
     xminor_locator=0.2,
@@ -1303,6 +1308,8 @@ def plot_channels(
         the channel is chosen.
     cmap : str, optional
         Label of the colormap, by default "inferno".
+    interpolation : str, optional
+        Interpolation to pass to matplotlib.pyplot.imshow
     units : str, optional
         Units of the values of the cube, by default "Mass [Msun]"
     xmajor_locator : float, optional
@@ -1388,6 +1395,7 @@ def plot_channels(
             extent=extent,
             norm=norm,
             cmap="inferno",
+            interpolation=interpolation,
         )
         if markorigin:
             axs[chan].plot(0, 0, "w+")

@@ -77,14 +77,14 @@ def test_channel_consistency_chanwidth():
     assert np.isclose(bsc1.chanwidth, np.diff(bsc1.velchans)[0])
 
 def test_cube_mass_consistency():
-    massconsistent = bsc1._check_mass_consistency()
+    massconsistent = bsc1._check_mass_consistency(tol=None)
     assert massconsistent, "Mass consistency check failed"
 
 
 def test_makecube_fromcube():
     ones = np.ones_like(bsc1.cube)
     bsc2.makecube(fromcube=ones)
-    massconsistent = bsc2._check_mass_consistency()
+    massconsistent = bsc2._check_mass_consistency(tol=None)
     assert (
         massconsistent
     ), "Mass consistency test failed while creating cube from an intial cube"

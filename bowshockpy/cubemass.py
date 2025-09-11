@@ -67,6 +67,9 @@ class MassCube(ObsModel):
         will be the code, but the total mass will be underestimated. If vt is
         not None, compare the total mass of the output cube with the mass
         parameter that the user has defined
+    massdiff_tol : float, optional
+        Tolerance of the percentage of the difference between the input and
+        total output mass of the model due to numerical errors.
     verbose : bolean, optional
         Set True to verbose messages about the computation
     kwargs : optional
@@ -119,6 +122,7 @@ class MassCube(ObsModel):
         cic=True,
         vt="2xchannel",
         tolfactor_vt=None,
+        massdiff_tol=0.1,
         verbose=True,
         **kwargs,
     ):
@@ -137,6 +141,7 @@ class MassCube(ObsModel):
         self.cic = cic
         self.vt = vt
         self.tolfactor_vt = tolfactor_vt
+        self.massdiff_tol = massdiff_tol
         self.verbose = verbose
         self._calc_params_init()
         # for kwarg in self.default_kwargs:
@@ -369,14 +374,17 @@ parameters).
             if diffv < self.abschanwidth / 2:
                 self._sampling(chan, xpix, ypix)
 
-    def _check_mass_consistency(self):
+    def _check_mass_consistency(self, tol=None):
         """Checks that the input total mass of the bowshock coincides with the
         total mass of the cube"""
         print("Checking total mass consistency...")
         intmass_cube = np.sum(self.cube)
         intmass_model = self.o.m.mass + self._fromcube_mass
-        mass_consistent = np.isclose(intmass_cube, intmass_model)
         massloss = (intmass_model - intmass_cube) / self.o.m.mass * 100
+        if tol is None:
+            mass_consistent = np.isclose(intmass_cube, intmass_model)
+        else:
+            mass_consistent = np.abs(massloss) < tol
         if mass_consistent:
             print(
                 r"""
@@ -499,7 +507,7 @@ coincides with the total mass of the cube.
                     iz + 1, self.nzs, np.sum(ts), intervaltime, length=50
                 )
         if hasattr(self.o.m, "mass"):
-            _ = self._check_mass_consistency()
+            _ = self._check_mass_consistency(self.massdiff_tol)
         self._check_sampling()
 
     def plot_channel(
@@ -508,6 +516,7 @@ coincides with the total mass of the cube.
         vmax=None,
         vmin=None,
         cmap="inferno",
+        interpolation="bilinear",
         savefig=None,
         return_fig_axs=False,
     ):
@@ -526,6 +535,8 @@ coincides with the total mass of the cube.
             of the channel is chosen.
         cmap : str, optional
             Label of the colormap, by default "inferno".
+        interpolation : str, optional
+            Interpolation to pass to matplotlib.pyplot.imshow
         savefig : str, optional String of the full path to save the figure. If
             None, no figure is saved. By default, None.
         return_fig_axs : bool, optional
@@ -550,7 +561,8 @@ coincides with the total mass of the cube.
             vmax=vmax,
             vmin=vmin,
             cmap=cmap,
-            units=r"Mass / (pixel $\times$ channel) [Msun]",
+            interpolation=interpolation,
+            units=r"M$_\odot$ / pixel / channel",
             refpix=self.refpix,
             return_fig_axs=True,
         )
@@ -586,6 +598,8 @@ coincides with the total mass of the cube.
             of the channel is chosen.
         cmap : str, optional
             Label of the colormap, by default "inferno".
+        interpolation : str, optional
+            Interpolation to pass to matplotlib.pyplot.imshow
         units : str, optional
             Units of the values of the cube, by default "Mass [Msun]"
         xmajor_locator : float, optional
@@ -605,7 +619,7 @@ coincides with the total mass of the cube.
             cube=self.cube,
             arcsecpix=self.arcsecpix,
             velchans=self.velchans,
-            units=r"Mass / (pixel $\times$ channel) [Msun]",
+            units=r"M$_\odot$ / pixel / channel",
             refpix=self.refpix,
             return_fig_axs=True,
             **kwargs,

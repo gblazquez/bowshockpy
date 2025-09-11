@@ -129,10 +129,10 @@ class CubeProcessing(MassCube):
         "tau": "Opacity",
     }
     btypes_colorbar = {
-        "m": r"mass / (pixel $\times$ channel)",
-        "I": "Intensity",
-        "Ntot": "Total column density / channel",
-        "Nmol": "Emitting molecule col. dens. / channel",
+        "m": r"M$_\odot$ / pixel / channel",
+        "I": "Jy/beam",
+        "Ntot": r"cm$^{-2}$ / channel",
+        "Nmol": r"cm$^{-2}$ / channel",
         "tau": "Opacity",
     }
     bunits_default = {
@@ -276,10 +276,7 @@ class CubeProcessing(MassCube):
         return ck.split("_")[0] if "_" in ck else ck
 
     def _getunitlabel(self, ck):
-        if self.bunits[self._q(ck)] == "-":
-            unitlabel = f"{self.btypes_colorbar[self._q(ck)]}"
-        else:
-            unitlabel = f"{self.btypes_colorbar[self._q(ck)]} [{self.bunits[self._q(ck)]}]"
+        unitlabel = f"{self.btypes_colorbar[self._q(ck)]}"
         return unitlabel
 
     def _calc_beamarea_sr(self):
@@ -1531,7 +1528,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         pvimage : numpy.ndarray
             Position velocity diagram
         """
-        ckpv = ck + "R"
+        ckpv = self._newck(ck, "R")
         if ckpv not in self.cubes:
             self.rotate(ck, forpv=True)
 
@@ -1637,17 +1634,18 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
             * self.arcsecpix
         )
+        qua = self.btypes[self._q(ck)]
+        unitlabel = self._getunitlabel(ck)
         fig, axs, cbax = pl.plotsumint(
             sumint,
             extent=extent,
-            interpolation=None,
             ax=ax,
             cbax=cbax,
             add_beam=add_beam,
             bmin=self.bmin,
             bmaj=self.bmaj,
             pabeam=self.pabeam,
-            cbarlabel="Integrated " + self._getunitlabel(ck).rstrip("]") + " km/s]",
+            cbarlabel=f"Integrated {qua} [{unitlabel} km/s]",
             return_fig_axs=True,
             **kwargs,
         )
@@ -1732,17 +1730,18 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
             * self.arcsecpix
         )
+        qua = self.btypes[self._q(ck)]
+        unitlabel = self._getunitlabel(ck)
         fig, axs, cbax = pl.plotmom0(
             mom0,
             extent=extent,
-            interpolation=None,
             ax=ax,
             cbax=cbax,
             add_beam=add_beam,
             bmin=self.bmin,
             bmaj=self.bmaj,
             pabeam=self.pabeam,
-            cbarlabel="Integrated " + self._getunitlabel(ck).rstrip("]") + " km/s]",
+            cbarlabel=f"Integrated {qua} [{unitlabel} km/s]",
             return_fig_axs=True,
             **kwargs,
         )
@@ -1840,7 +1839,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         fig, axs, cbax, velcmap = pl.plotmom1(
             mom1,
             extent=extent,
-            interpolation=None,
             ax=ax,
             cbax=cbax,
             add_beam=add_beam,
@@ -1945,7 +1943,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         fig, axs, cbax, velcmap = pl.plotmom2(
             mom2,
             extent=extent,
-            interpolation=None,
             ax=ax,
             cbax=cbax,
             add_beam=add_beam,
@@ -2037,6 +2034,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
             * self.arcsecpix
         )
+        qua = self.btypes[self._q(ck)]
+        unitlabel = self._getunitlabel(ck)
         fig, axs, cbax = pl.plotmaxintens(
             maxintens,
             extent=extent,
@@ -2046,7 +2045,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             bmin=self.bmin,
             bmaj=self.bmaj,
             pabeam=self.pabeam,
-            cbarlabel="Peak " + self._getunitlabel(ck),
+            cbarlabel=f"Peak {qua} [{unitlabel}]",
             return_fig_axs=True,
             **kwargs,
         )
