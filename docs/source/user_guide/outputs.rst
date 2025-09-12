@@ -56,7 +56,7 @@ For example, the cube I_nc.fits, is a cube of the intensities (I) with Gaussian 
 Plots of the morphology and kinematics of the bowshock
 ------------------------------------------------------
 
-For each bowshock, a plot named *bowshock_model_<n>.pdf* will be generated with the morphology and kinematics of the bowshock model. At the left, the first six parameters are the input parameters of the bowshock are shown: v_j is the velocity of the internal working surface, v_0 is the velocity at which the jet material is ejected sideways from the internal working surface, va is the velocity of the ambient, L_0 is the characteristic scale, z_j is the position of the internal working surface from the origin, r_b,f is the final radius of the bowshock, and m is the mass of the bowshock shell. In addition, four parameters has been derived: t_j is the dynamical time of the bowshock, rho_a is the ambient density, mdot_0 is the rate of jet material ejected sideways from the internal working surface, and mdot_a,f is the rate of ambient material incorporated into the bowshock shell. 
+For each bowshock, a plot named *bowshock_model_<n>.pdf* will be generated with the morphology and kinematics of the bowshock model. At the left, the input parameters of the bowshock are shown: v_j is the velocity of the internal working surface, v_0 is the velocity at which the jet material is ejected sideways from the internal working surface, va is the velocity of the ambient, L_0 is the characteristic scale, z_j is the position of the internal working surface from the origin, r_b,f is the final radius of the bowshock, and m is the mass of the bowshock shell. In addition, four parameters has been derived: t_j is the dynamical time of the bowshock, rho_a is the ambient density, mdot_0 is the rate of jet material ejected sideways from the internal working surface, and mdot_a,f is the rate of ambient material incorporated into the bowshock shell. 
 
 .. figure:: images/bowshock_model_1.jpg
 
@@ -97,7 +97,7 @@ If specified in the input parameter **outcubes** (see :doc:`input file parameter
 Fits files
 ----------
 
-The cubes in fits files format will be saved in ``models/<modelname>/fits``. It can be open with ``casaviewer``, ``CARTA``, or ``ds9``.
+The cubes in fits files format will be saved in ``models/<modelname>/fits``, and they can be open with ``casaviewer``, ``CARTA``, or ``ds9``.
 
 .. figure:: images/channel_casaviewer.png
 

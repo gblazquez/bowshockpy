@@ -4,7 +4,7 @@
 Examples of input file
 =======================
 
-The quickest way to use ``bowshockpy`` is to run it from the terminal and specify an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
+The quickest way to use ``BowshockPy`` is to run it from the terminal and specify an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
 
 - `Example 1: A redshifted bowshock <Example 1: A redshifted bowshock>`_
 - `Example 2: A blueshifted bowshock <Example 2: A blueshifted bowshock>`_
@@ -16,7 +16,7 @@ You can either copy and paste these examples to your local machine, download the
 
 .. code-block:: console
 
-  $ bowshockpy --print-example 1
+  $ bowshockpy --print example1.py 
 
 This will copy example 1 (example1.py) to your working directory. Then, you can modify the example file according to your needs and run ``bowshockpy``
 

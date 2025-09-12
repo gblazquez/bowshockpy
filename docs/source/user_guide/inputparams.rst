@@ -10,7 +10,7 @@ The quickest and easiest way to :doc:`use <usage>` ``BowshockPy`` is to run it f
 
   $ bowshockpy --read inputfile.py 
 
-In the following there is a description of each parameter that should be included in the input file. For a comfortable usage, we encourage to download one of the :doc:`examples of input files <../examples/examples_inputfile>` and check this page as a reference, so the user can modify the parameters according to their scientific goals.
+In the following there is a description of each parameter that should be included in the input file. We suggest to download one of the :doc:`examples of input files <../examples/examples_inputfile>` and check this page as a reference, so the user can modify the parameters according to their scientific goals.
 
 
 Specification of the desired outputs
@@ -36,7 +36,7 @@ These parameters define the desired outputs:
     - "add_source": Add a source at the reference pixel, just for spatial reference purposes.
     - "add_noise": Add Gaussian noise, defined by maxcube2noise parameter.
     - "convolve": Convolve with a Gaussian defined by the parameters bmaj, bmin, and pabeam.
-    - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum intensity and the PV diagram.
+    - "moments_and_pv": Computes the moments 0, 1, 2, the maximum intensity, and the PV diagram.
 
     The operations will be performed following the order of the strings in the list (from left to right). The list can be left empty if no operations are desired.
     
@@ -47,11 +47,11 @@ These parameters define the desired outputs:
         outcubes = {
             "intensity": ["add_noise", "convolve", "moments_and_pv"],
             "opacity": [],
-            "emitting_molecule_column_density": ["convolve"],
+            "total_column_density": ["convolve"],
             "mass": [],
         }
 
-    will save 4 spectral cubes in fits format. The first one are the intensities with Gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the emitting_molecule_column_density, which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third Nmol_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
+    will save 4 spectral cubes in fits format. The first one are the intensities with Gaussian noise added, it will be convolved, and the moments and PV diagrams will be computed; the second cube will be the opacity; the third will be the total_column_density (column density of molecular hydrogen), which will be convolved; and the forth cube will be the masses. The first spectral cube will be named I_nc.fits, the second tau.fits, the third Ntot_c.fits, and the fourth m.fits. See :doc:`outputs<outputs>` section for a full description of the outputs and the abbreviations used in the filenames of each fits file.
 
 *verbose* (bolean)
     Set True to verbose messages about the computation.
@@ -60,7 +60,7 @@ These parameters define the desired outputs:
 Observer parameters
 -------------------
 
-These parameters define the observer properties:
+The following parameters define the observer properties:
 
 *distpc* (float)
     Source distance to the observer [pc].
@@ -104,7 +104,7 @@ The next parameters are common to all the bowshocks that are going to be generat
 *Tbg* (float)
     Background temperature [K].
 
-``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, substituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, one should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
+``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, substituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, the user should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
 
 *i_n* (float)
     Inclination angle of the bowshock symmetry axis with respect to the line of
@@ -141,7 +141,7 @@ The next parameters are common to all the bowshocks that are going to be generat
 Spectral cube parameters
 -------------------------
 
-These parameters will define the properties of the spectral cube of the bowshock(s) model
+The following parameters define the properties of the spectral cube of the bowshock(s) model
 
 *nzs* (int)
     Number of points to model along the direction of the symmetry axis (z-axis).
@@ -189,12 +189,12 @@ These parameters will define the properties of the spectral cube of the bowshock
     Thermal+turbulent line-of-sight velocity dispersion [km/s] If thermal+turbulent line-of-sight velocity dispersion is smaller than the instrumental spectral resolution, **vt** should be the spectral resolution. It can be also set to a integer times the channel width (e.g., "2xchannel").
 
 *tolfactor_vt* (float)
-    The masses corresponding to a channel map are spread along the whole cube in
-    the velocity axis following a Gaussian distribution, being **vt** parameter the
-    standard deviation of the Gaussian. **tolfactor_vt** parameter truncates the
-    Gaussian distribution at **vt** * **tolfactor_vt** in order to make the computation
-    substantially faster. A low **tolfactor_vt** can result in a warning reporting an
-    underestimation of the total mass of the model.
+    The masses corresponding to a channel map are spread along the cube in the
+    velocity axis following a Gaussian distribution, being **vt** parameter the
+    standard deviation of the Gaussian. **tolfactor_vt** parameter truncates
+    the Gaussian distribution at **vt** * **tolfactor_vt** in order to make the
+    computation substantially faster. A low **tolfactor_vt** can result in a
+    warning reporting an underestimation of the total mass of the model.
 
 *cic* (bolean)
     Set to True to perform 2D Cloud in Cell interpolation along the spatial
@@ -216,7 +216,7 @@ These parameters will define the properties of the spectral cube of the bowshock
 Moments and PV parameters
 -------------------------
 
-This parameters control the properties of the moments and the position-velocity diagrams. 
+The next parameters control the properties of the moments and the position-velocity diagrams. 
 
 *savefits* (bolean)
     Set to True in order save the moments and the PV in fits format.

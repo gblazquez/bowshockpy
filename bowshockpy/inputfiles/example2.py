@@ -111,8 +111,9 @@ Tbg = 2.7
 # You can model several bowshocks in the same spectral cube. The number of
 # bowshocks are given by **nbowshocks** parameter. The following parameters
 # should be defined for each bowshock, subtituting "n" with the bowshock index
-# (e.g., if 4 bowshocks are included in the model, one should define **vj_1**,
-# **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
+# (e.g., if 4 bowshocks are included in the model, the user should define
+# **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of
+# parameters).
 
 """
 bowshock 1 [redshifted]
