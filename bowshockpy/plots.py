@@ -251,6 +251,94 @@ class BowshockModelPlot:
                 transform=self.axs["text"].transAxes,
             )
 
+        # Deprojected shell Morph. and Kin., color velocity
+
+        cmap = "turbo_r"
+        max_plotvel = max_plotvel if max_plotvel is not None else self.maxvs
+        min_plotvel = min_plotvel if min_plotvel is not None else self.minvs
+        for i, zarcsec in enumerate(self.zs_arcsec):
+            c = ut.get_color(
+                [min_plotvel, max_plotvel],
+                self.vs[i],
+                cmap,
+            )
+            self.axs[0].plot(
+                zarcsec,
+                self.rs_arcsec[i],
+                color=c,
+                marker="o",
+            )
+            self.axs[0].plot(
+                zarcsec,
+                -self.rs_arcsec[i],
+                color=c,
+                marker="o",
+            )
+        _ = plt.colorbar(
+            cm.ScalarMappable(
+                norm=colors.Normalize(vmax=max_plotvel, vmin=min_plotvel),
+                cmap=cmap,
+            ),
+            cax=self.cbaxs[0],
+            orientation="horizontal",
+        )
+        for i, z_arrow in enumerate(self.zs_arrows):
+            self.axs[0].annotate(
+                "",
+                xy=(self.zs_arrows_tip[i], self.rs_arrows_tip[i]),
+                xytext=(z_arrow, self.rs_arrows[i]),
+                arrowprops={"arrowstyle": "->"},
+            )
+            self.axs[0].annotate(
+                "",
+                xy=(self.zs_arrows_tip[i], -self.rs_arrows_tip[i]),
+                xytext=(z_arrow, -self.rs_arrows[i]),
+                arrowprops={"arrowstyle": "->"},
+            )
+
+        xmax_plot = np.max(
+            [np.max(self.zs_arrows_tip), np.max(self.zs_arrows), np.max(self.zs_arcsec)]
+        )
+        xmin_plot = np.min(
+            [np.min(self.zs_arrows_tip), np.min(self.zs_arrows), np.min(self.zs_arcsec)]
+        )
+        xlims = [xmin_plot, xmax_plot * 1.1]
+        ymax_plot = np.max(self.rs_arcsec)
+        ymin_plot = -np.max(self.rs_arcsec)
+        ylims = [ymin_plot * 1.3, ymax_plot * 1.3]
+        self.axs[0].set_xlim(xlims)
+        self.axs[0].set_ylim(ylims)
+        larrow_scaled = self.larrow * self.v_arrow_ref
+        self.z_arrow_ref = xlims[1] * 0.97 - larrow_scaled
+        self.R_arrow_ref = ylims[0] + np.diff(ylims) * 0.05
+        self.z_arrow_ref_tip = self.z_arrow_ref + larrow_scaled
+        self.R_arrow_ref_tip = self.R_arrow_ref + self.larrow * 0
+        self.axs[0].annotate(
+            "",
+            xy=(self.z_arrow_ref_tip, self.R_arrow_ref_tip),
+            xytext=(self.z_arrow_ref, self.R_arrow_ref),
+            arrowprops=dict(arrowstyle="->"),
+        )
+
+        self.axs[0].text(
+            self.z_arrow_ref + 0.0,
+            self.R_arrow_ref + 0.05,
+            f"{self.v_arrow_ref:d} km/s",
+        )
+
+        self.axs[0].set_aspect("equal")
+        self.axs[0].set_xlabel("Distance [arcsec]")
+        self.axs[0].set_ylabel("Radius [arcsec]")
+
+        self.cbaxs[0].tick_params(
+            bottom=False, labelbottom=False, top=True, labeltop=True
+        )
+        self.cbaxs[0].set_xlabel(
+            r"Speed [km/s]",
+        )
+        self.cbaxs[0].xaxis.set_label_position("top")
+
+
         # Deprojected shell Morph. and Kin., color density
 
         # self.minsurfdens_plot = np.percentile(self.surfdenss_gcm2[:-1], 0)
