@@ -87,7 +87,6 @@ Parameters read from {p.filename}
             "nzs": p.nzs,
             "refpix": p.refpix,
             "xpmax": p.xpmax,
-            "parot": p.parot,
             "papv": p.papv,
             "bmaj": p.bmaj,
             "bmin": p.bmin,
@@ -228,7 +227,6 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         bmaj=pscube["bmaj"],
         pabeam=pscube["pabeam"],
         papv=pscube["papv"],
-        parot=pscube["parot"],
         sigma_beforeconv=pscube["sigma_beforeconv"],
         maxcube2noise=pscube["maxcube2noise"],
     )

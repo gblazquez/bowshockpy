@@ -34,8 +34,6 @@ modelname = f"example3"
 #
 #  - "add_source": Add a source at the reference pixel, just for spatial
 #  reference purposes.
-#  - "rotate": Rotate the whole spectral cube by an angle
-#  given by parot parameter.
 #  - "add_noise": Add Gaussian noise, defined by maxcube2noise parameter.
 #  - "convolve": Convolve with a Gaussian defined by the parameters bmaj, bmin,
 #  and pabeam.
@@ -223,9 +221,6 @@ refpix = [100, 0]
 # Set to "sky" in order to set the cube headers in sky coordinates, or "offset"
 # if you prefer them in offsets relative to the origin (the source).
 coordcube = "sky"
-
-# Angle to rotate the image [degrees]
-parot = 0
 
 # Standard deviation of the noise of the map, before convolution. Set to None if
 # maxcube2noise is used.

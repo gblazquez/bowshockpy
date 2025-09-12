@@ -58,7 +58,6 @@ bscp = CubeProcessing(
     bmaj=0.10,
     pabeam=-20.0,
     papv=bsc1.pa,
-    parot=0,
     sigma_beforeconv=0.02,
     maxcube2noise=0,
 )

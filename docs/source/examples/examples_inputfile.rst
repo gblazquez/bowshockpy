@@ -144,8 +144,6 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   coordcube = "sky"
   
-  parot = 0
-  
   sigma_beforeconv = 0.05
   
   maxcube2noise = 0.07
@@ -306,9 +304,6 @@ This example of input file generates one blueshifted bowshock. As defined by out
   refpix = [125, 75]
   
   coordcube = "sky"
-  
-  parot = 0
-  
   
   sigma_beforeconv = 0.03
   
@@ -471,8 +466,6 @@ This example of input file generates a bowhsock that is side-on; that is, in nea
   refpix = [100, 0]
   
   coordcube = "sky"
-  
-  parot = 0
   
   sigma_beforeconv = 0.15
   
@@ -658,8 +651,6 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   coordcube = "sky"
   
-  parot = 0
-  
   sigma_beforeconv = 0.05
   
   maxcube2noise = 0.07
@@ -821,8 +812,6 @@ This example of input file generates one redshifted. A custom model for the tran
   refpix = [80, 30]
   
   coordcube = "sky"
-  
-  parot = 0
   
   sigma_beforeconv = 0.05
   
