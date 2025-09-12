@@ -347,7 +347,7 @@ class CubeProcessing(MassCube):
         self.noisychans["Ntot"] = self.noisychans["m"]
         self.sigma_noises["Ntot"] = self.sigma_noises["m"]
         if self.verbose:
-            print("column densities has been calculated (Ntot cube)\n")
+            print("The column densities have been calculated (Ntot cube)\n")
 
     def calc_Nmol(self):
         """
@@ -398,7 +398,7 @@ class CubeProcessing(MassCube):
         self.noisychans["tau"] = self.noisychans["m"]
         self.sigma_noises["tau"] = self.sigma_noises["m"]
         if self.verbose:
-            print("Opacities has been calculated (tau cube)\n")
+            print("The opacities have been calculated (tau cube)\n")
 
     def calc_I(self):
         """
@@ -422,7 +422,7 @@ class CubeProcessing(MassCube):
         self.noisychans["I"] = self.noisychans["m"]
         self.sigma_noises["I"] = self.sigma_noises["m"]
         if self.verbose:
-            print("Intensities has been calculated (I cube)\n")
+            print("The intensities have been calculated (I cube)\n")
 
     def add_source(self, ck="m", value=None):
         """
