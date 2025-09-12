@@ -16,7 +16,7 @@ You can either copy and paste these examples to your local machine, download the
 
 .. code-block:: console
 
-  $ bowshockpy --print example1.py 
+  $ bowshockpy --print example1.py
 
 This will copy example 1 (example1.py) to your working directory. Then, you can modify the example file according to your needs and run ``bowshockpy``
 
@@ -701,7 +701,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
 Example 5: Custom model for the molecular transition
 ----------------------------------------------------------------
 
-This example of input file generates one redshifted. A custom model for the transition is added at the end. As specified by the parameter outcube, the output will be a cube of the intensities, with Gaussian noise, and convolved (its filename is 'I_nc.fits'). The moment images and the PV diagram along the jet axis will also be computed. The opacity, masses, and column densities of the emitting molecule will also be saved.
+This example of input file generates one redshifted bowshock. A custom model for the transition is added at the end. As specified by the parameter outcube, the output will be a cube of the intensities, with Gaussian noise, and convolved (its filename is 'I_nc.fits'). The moment images and the PV diagram along the jet axis will also be computed. The opacity, masses, and column densities of the emitting molecule will also be saved.
 
 .. code-block:: python
   
