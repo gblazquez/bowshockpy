@@ -167,8 +167,6 @@ class BowshockModel(BaseModel):
     }
 
     def __init__(self, L0, zj, vj, va, v0, mass, distpc, rbf_obs=None, **kwargs):
-        # for param in ps:
-        #     setattr(self, param, ps[param])
         super().__init__(distpc)
         self.L0 = L0
         self.zj = zj
@@ -177,12 +175,6 @@ class BowshockModel(BaseModel):
         self.v0 = v0
         self.mass = mass
         self.rbf_obs = rbf_obs
-        # TODO remove kwargs
-        for kwarg in self.default_kwargs:
-            kwarg_attr = (
-                kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
-            )
-            setattr(self, kwarg, kwarg_attr)
         if self.rbf_obs is None:
             self.rbf = self.rbf_calc()
         else:
@@ -418,10 +410,6 @@ class BowshockModel(BaseModel):
         """
 
         return self.zj - rr**3 / self.L0**2
-
-    # def surfdens(self, rr):
-    #     return rhoa/2/rb * (ps["L0"]**2*gamma(ps)/3 + rb**2)**2 \
-    #        / (rb**2*np.cos(tangent_angle(rb,ps)) + (ps["L0"]**2/3)*np.sin(tangent_angle(rb,ps)))
 
     def surfdens(self, zb):
         """
@@ -755,12 +743,12 @@ class IWSModel(BaseModel):
     def __init__(self, a, z0, zf, vf, vj, sigma_max, distpc):
 
         super().__init__(distpc)
-        self.a = a  # constant that controls the collimation of the paraboloid
-        self.z0 = z0  # z-coordinate of the apex of the paraboloid
-        self.zf = zf  # z-coordinate of the edge of the paraboloid
-        self.vf = vf  # speed at the edge
-        self.vj = vj  # velocity of the jet
-        self.sigma_max = sigma_max  # maximum density at the apex
+        self.a = a
+        self.z0 = z0
+        self.zf = zf
+        self.vf = vf
+        self.vj = vj
+        self.sigma_max = sigma_max
         self.rbf = self.rb(zf)
 
     def rb(self, zb):
@@ -898,7 +886,9 @@ class IWSModel(BaseModel):
 
     def surfdens(self, zb):
         """
-        Surface density of the shell as a function of z-coordinate
+        Surface density of the shell as a function of z-coordinate. The surface
+        density follows a square-root law when r>rf/2, and is constant for
+        r<=rf/2.
 
         Parameters
         ----------
@@ -934,6 +924,7 @@ class IWSModel(BaseModel):
             Differential of z [km]
         """
         return 2 * self.rb(zb) / self.a**2 / self.z0 * dr
+        # Alternative, you can use central diferentiation
         # return self.zb_r(self.rb(zb)-dr/2) - self.zb_r(self.rb(zb)+dr/2)
 
     def dsurf_func(self, zb, dz, dphi):

@@ -204,19 +204,6 @@ class CubeProcessing(MassCube):
 
         self.modelcubes = modelcubes
 
-        # self.ies = np.array([mc.i for mc in modelcubes])
-        # self.L0s = np.array([mc.L0_arcsec for mc in modelcubes])
-        # self.zjs = np.array([mc.zj_arcsec for mc in modelcubes])
-        # self.vjs = np.array([mc.vj for mc in modelcubes])
-        # self.vas = np.array([mc.va for mc in modelcubes])
-        # self.v0s = np.array([mc.v0 for mc in modelcubes])
-        # self.rbfs = np.array([mc.rbf_arcsec for mc in modelcubes])
-        # self.tjs = np.array([mc.tj_yr for mc in modelcubes])
-        # self.masss = np.array([mc.mass for mc in modelcubes])
-        # self.rhoas = np.array([mc.rhoa_gcm3 for mc in modelcubes])
-        # self.m0s = np.array([mc.mp0_solmassyr for mc in modelcubes])
-        # self.mwfs = np.array([mc.mpamb_f_solmassyr for mc in modelcubes])
-
         self.modelname = modelname
         self.J = J
         self.nu = ut.make_astropy_units(nu, u.GHz)
@@ -485,9 +472,6 @@ class CubeProcessing(MassCube):
                 print(f"\nRotatng {ck} in order to compute the PV diagram...")
             else:
                 print(f"\nRotating {ck}...")
-        # before allowing rotation of the model and not the cube
-        # angle = -self.pa-90 if not forpv else self.pa+90
-        # after allowing the model to be rotated
         angle = -self.parot if not forpv else self.papv + 90
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
@@ -622,7 +606,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                     )
 
     def _useroutputcube2dostr(self, userdic):
-        # TODO: Move to utils or a function above the class?
         dictrad = {
             "mass": "m",
             "intensity": "I",
@@ -1104,7 +1087,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(sumintimage)
             hdul = fits.HDUList([hdu])
@@ -1187,7 +1169,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(mom0)
             hdul = fits.HDUList([hdu])
@@ -1276,7 +1257,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(mom1)
             hdul = fits.HDUList([hdu])
@@ -1367,7 +1347,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(mom2)
             hdul = fits.HDUList([hdu])
@@ -1408,7 +1387,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         """
         chan_range = chan_range if chan_range is not None else [0, self.nc]
-        # chan_vels = self.velchans[chan_range[0]:chan_range[-1]]
         cube_clipped = np.copy(self.cubes[ck])
         clipping = (
             clipping if clipping != 0 else self.momtol_clipping * np.max(self.cubes[ck])
@@ -1460,7 +1438,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdr["CDELT2"] = cdelt2
             hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
             hdr["CUNIT2"] = cunit2
-            # hdr["RESTFRQ"] = self.nu.to(u.Hz).value
 
             hdu = fits.PrimaryHDU(maxintens)
             hdul = fits.HDUList([hdu])
@@ -2139,7 +2116,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         gs = GridSpec(
             2,
             3,
-            width_ratios=[1] * 3,  # + [0.85]*2,
+            width_ratios=[1] * 3,
             height_ratios=[1] * 2,
             hspace=0.3,
             wspace=0.25,

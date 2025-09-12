@@ -32,13 +32,6 @@ class ObsModel(BaseModel):
         self.pa_deg = pa_deg
         self.pa = pa_deg * np.pi / 180
         self.vsys = vsys
-        # for param in model.__dict__:
-        #     setattr(self, param, getattr(model, param))
-        # for kwarg in self.default_kwargs:
-        #     kwarg_attr = (
-        #         kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
-        #     )
-        #     setattr(self, kwarg, kwarg_attr)
 
     def vzp(self, zb, phi):
         """

@@ -135,14 +135,8 @@ class BowshockModelPlot:
 
         self._calc_solutions()
         self._calc_arrows()
-        # self._create_axes()
-        # self.plot()
 
     def _calc_solutions(self):
-        # self.zsextended = self.zb_r(
-        #     np.linspace(self.rbf, self.rj, self.nzs)
-        # )
-        # self.nrs = self.nzs
         self.rs = np.linspace(self.m.rbf, 0, self.nrs)
         self.dr = self.rs[0] - self.rs[1]
         self.zs = self.m.zb_r(self.rs)
@@ -167,7 +161,6 @@ class BowshockModelPlot:
 
     def _calc_arrows(self):
         idx_arr = int(len(self.zs_arcsec) / self.narrows)
-        # self.larrow = 1 / np.max([np.max(self.vrs), np.max(self.vzs)])
         self.larrow = 1 / self.maxvs
 
         self.zs_arrows = self.zs_arcsec[::idx_arr]
@@ -208,12 +201,6 @@ class BowshockModelPlot:
             width_ratios=[1],
             hspace=0.05,
         )
-        # gss[2] = gs[1, 1].subgridspec(
-        #     2, 1,
-        #     height_ratios=[0.05, 1],
-        #     width_ratios=[1],
-        #     hspace=0.05,
-        # )
 
         self.axs["text"] = plt.subplot(gs[:, 0])
         self.axs[0] = plt.subplot(gss[0][1, 0])
@@ -263,94 +250,6 @@ class BowshockModelPlot:
                 fontsize=10,
                 transform=self.axs["text"].transAxes,
             )
-
-        # Deprojected shell Morph. and Kin., color velocity
-
-        cmap = "turbo_r"
-        max_plotvel = max_plotvel if max_plotvel is not None else self.maxvs
-        min_plotvel = min_plotvel if min_plotvel is not None else self.minvs
-        for i, zarcsec in enumerate(self.zs_arcsec):
-            c = ut.get_color(
-                [min_plotvel, max_plotvel],
-                self.vs[i],
-                cmap,
-            )
-            self.axs[0].plot(
-                zarcsec,
-                self.rs_arcsec[i],
-                color=c,
-                marker="o",
-            )
-            self.axs[0].plot(
-                zarcsec,
-                -self.rs_arcsec[i],
-                color=c,
-                marker="o",
-            )
-        _ = plt.colorbar(
-            cm.ScalarMappable(
-                norm=colors.Normalize(vmax=max_plotvel, vmin=min_plotvel),
-                cmap=cmap,
-            ),
-            cax=self.cbaxs[0],
-            orientation="horizontal",
-        )
-
-        for i, z_arrow in enumerate(self.zs_arrows):
-            self.axs[0].annotate(
-                "",
-                xy=(self.zs_arrows_tip[i], self.rs_arrows_tip[i]),
-                xytext=(z_arrow, self.rs_arrows[i]),
-                arrowprops={"arrowstyle": "->"},
-            )
-            self.axs[0].annotate(
-                "",
-                xy=(self.zs_arrows_tip[i], -self.rs_arrows_tip[i]),
-                xytext=(z_arrow, -self.rs_arrows[i]),
-                arrowprops={"arrowstyle": "->"},
-            )
-
-        xmax_plot = np.max(
-            [np.max(self.zs_arrows_tip), np.max(self.zs_arrows), np.max(self.zs_arcsec)]
-        )
-        xmin_plot = np.min(
-            [np.min(self.zs_arrows_tip), np.min(self.zs_arrows), np.min(self.zs_arcsec)]
-        )
-        xlims = [xmin_plot, xmax_plot * 1.1]
-        ymax_plot = np.max(self.rs_arcsec)
-        ymin_plot = -np.max(self.rs_arcsec)
-        ylims = [ymin_plot * 1.3, ymax_plot * 1.3]
-        self.axs[0].set_xlim(xlims)
-        self.axs[0].set_ylim(ylims)
-        larrow_scaled = self.larrow * self.v_arrow_ref
-        self.z_arrow_ref = xlims[1] * 0.97 - larrow_scaled
-        self.R_arrow_ref = ylims[0] + np.diff(ylims) * 0.05
-        self.z_arrow_ref_tip = self.z_arrow_ref + larrow_scaled
-        self.R_arrow_ref_tip = self.R_arrow_ref + self.larrow * 0
-        self.axs[0].annotate(
-            "",
-            xy=(self.z_arrow_ref_tip, self.R_arrow_ref_tip),
-            xytext=(self.z_arrow_ref, self.R_arrow_ref),
-            arrowprops=dict(arrowstyle="->"),
-        )
-
-        self.axs[0].text(
-            self.z_arrow_ref + 0.0,
-            self.R_arrow_ref + 0.05,
-            f"{self.v_arrow_ref:d} km/s",
-        )
-
-        self.axs[0].set_aspect("equal")
-        self.axs[0].set_xlabel("Distance [arcsec]")
-        self.axs[0].set_ylabel("Radius [arcsec]")
-
-        self.cbaxs[0].tick_params(
-            bottom=False, labelbottom=False, top=True, labeltop=True
-        )
-        self.cbaxs[0].set_xlabel(
-            r"Speed [km/s]",
-        )
-        self.cbaxs[0].xaxis.set_label_position("top")
 
         # Deprojected shell Morph. and Kin., color density
 
@@ -623,8 +522,6 @@ class BowshockObsModelPlot:
         self.y_obs_arrow = y_obs_arrow
 
         self._calc_solutions()
-        # self._create_axes()
-        # self.plot()
 
     def _calc_solutions(self):
         self.rs = np.linspace(self.o.m.rbf, 0, self.nrs)
@@ -1034,9 +931,6 @@ class BowshockObsModelPlot:
         self.axs[3].set_box_aspect(1)
         self.axs[3].set_xlabel("Projected length [arcsec]")
         self.axs[3].set_ylabel("Line-of-sight velocity [km/s]")
-        # self.axs[3].text(0.1, 0.8, "PV diagram\n along axis",
-        #                 transform=self.axs[3].transAxes)
-
         self.axs[3].legend(frameon=False, markerscale=0)
 
     def savefig(self, figname=None, **kwargs):

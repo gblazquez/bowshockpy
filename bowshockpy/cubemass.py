@@ -144,11 +144,6 @@ class MassCube(ObsModel):
         self.massdiff_tol = massdiff_tol
         self.verbose = verbose
         self._calc_params_init()
-        # for kwarg in self.default_kwargs:
-        #     kwarg_attr = (
-        #         kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
-        #     )
-        #     setattr(self, kwarg, kwarg_attr)
 
         self.nrs = 0
         self.rs = np.array([])
@@ -469,7 +464,6 @@ coincides with the total mass of the cube.
             dmass = self._calc_dmass(iz, z)
 
             for phi in self.phis:
-                # for phi in self.phis+self.dphi*np.random.rand():
                 _xp = self.rs[iz] * np.sin(phi)
                 _yp = self.rs[iz] * np.cos(phi) * ci + z * si
                 xp = _xp * cpa - _yp * spa
