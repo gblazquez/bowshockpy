@@ -1554,6 +1554,16 @@ def plotpv(
     )
     cbax.set_xlabel(cbarlabel)
     cbax.xaxis.set_label_position("top")
+
+    veledges = np.array(
+        [chan_vels[0] - chanwidth / 2, chan_vels[-1] + chanwidth / 2]
+    )
+    argmaxvelpv = np.argmax(np.abs(veledges))
+    if veledges[argmaxvelpv] < 0:
+        ax.invert_yaxis()
+    else:
+        pass
+
     if return_fig_axs:
         return fig, ax, cbax
 

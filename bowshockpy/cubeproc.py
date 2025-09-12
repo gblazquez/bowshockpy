@@ -116,8 +116,8 @@ class CubeProcessing(MassCube):
         will be None, and all the intensities will be expressed in Jy/arcsec^2
     listmompvs : list
         List of cubes to which the moments and the position velocity diagrams
-        are going to performed when the method self.momentsandpv_all and
-        self.momentsandpv_and_params_all are called
+        are going to performed when the method self.momentsandpv_and_params_all
+        is called
     """
 
     default_kwargs = {}
@@ -243,6 +243,7 @@ class CubeProcessing(MassCube):
         self.refpixs["m"] = self.refpix
         self.hdrs = {}
         self.listmompvs = []
+        self._dostrs = []
 
         self.areapix_cm = None
         self.x_FWHM = None
@@ -497,7 +498,7 @@ class CubeProcessing(MassCube):
         if self.verbose:
             print(f"""
 {nck} cube has been created by rotating {ck} cube an angle {angle} deg to
-compute the PV diagram
+compute the PV-diagram
 """)
 
     def add_noise(self, ck="m"):
@@ -644,7 +645,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                     dostrs += [f"{q}_{ss}"]
                 else:
                     dostrs += [f"{q}"]
-        return dostrs
+        self._dostrs = dostrs
 
     def calc(self, userdic):
         """
@@ -675,7 +676,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             - "convolve": Convolve with a Gaussian defined by the parameters
               bmaj, bmin, and pabeam.
             - "moments_and_pv": Computes the moments 0, 1, and 2, the maximum
-              intensity and the PV diagram.
+              intensity and the PV-diagram.
 
             The operations will be performed folowing the order of the strings
             in the list (from left to right). The list can be left empty if no
@@ -694,14 +695,14 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         will save 4 spectral cubes in fits format. The first one are the
         intensities with Gaussian noise added, it will be convolved, and the
-        moments and PV diagrams will be computed; the second cube will be the
+        moments and PV-diagrams will be computed; the second cube will be the
         opacity; the third will be the mol_column_density, which will be
         convolved; and the forth cube will be the masses. The first spectral
         cube will be named I_nc.fits, the second tau.fits, the third
         Nmol_c.fits, and the fourth m.fits.
         """
-        dostrs = self._useroutputcube2dostr(userdic)
-        for ds in dostrs:
+        self._useroutputcube2dostr(userdic)
+        for ds in self._dostrs:
             _split = ds.split("_")
             q = _split[0]
             if q not in self.cubes:
@@ -785,36 +786,17 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         if self.verbose:
             print(f"{fitsname} saved")
 
-    def savecubes(self, userdic):
+    def savecubes(self, cks=None):
         """
         Saves the cubes specified by userdic
 
         Parameters
         -----------
-        userdic : dict
-            Dictionary indicating the desired output spectral cubes and the
-            operations performed over them.
-
-        Example:
-        --------
-        >>> cp = CubeProcessing(...)
-        >>> outcubes = {
-        >>>    "intensity": ["add_noise", "convolve", "moments_and_pv"],
-        >>>    "opacity": [],
-        >>>    "mol_column_density": ["convolve"],
-        >>>    "mass": [],
-        >>> }
-        >>> cp.savecubes(outputcubes)
-
-        will save 4 spectral cubes in fits format. The first one are the
-        intensities with Gaussian noise added, it will be convolved, and the
-        moments and PV diagrams will be computed; the second cube will be the
-        opacity; the third will be the mol_column_density, which will be
-        convolved; and the forth cube will be the masses. The first spectral
-        cube will be named I_nc.fits, the second tau.fits, the third
-        Nmol_c.fits, and the fourth m.fits.
+        cks : list
+            List of keys of the cube to save. Default is None. If None, all
+            calculated cubes will be saved.
         """
-        cks = self._useroutputcube2dostr(userdic)
+        cks = cks if cks is not None else self._dostrs
         for ck in cks:
             self.savecube(ck)
 
@@ -1353,7 +1335,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdr
             if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                fitsname = f"models/{self.modelname}/fits/{ck}_mom1.fits"
+                fitsname = f"models/{self.modelname}/fits/{ck}_mom2.fits"
             hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_mom2.fits saved")
@@ -1444,7 +1426,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdr
             if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                fitsname = f"models/{self.modelname}/fits/{ck}_mom1.fits"
+                fitsname = f"models/{self.modelname}/fits/{ck}_maxintens.fits"
             hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
                 print(f"models/{self.modelname}/fits/{ck}_maxintens.fits saved")
@@ -1468,7 +1450,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         Parameters
         -----------
         ck : str
-            Key of the cube to which the PV diagram will be computed.
+            Key of the cube to which the PV-diagram will be computed.
         halfwidth : int, optional
             Number of pixels around xpv that will be taking into account to
             compute the PV-diagram.

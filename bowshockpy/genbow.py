@@ -196,7 +196,7 @@ The masses have been computed!
 
 The cubes are going to be processed in order to get the desired outputs
 specified in {p.filename}. The outputs will be saved in fits format. The
-filename of each cube indicate its quantity and the operations applied to the
+filename of each cube indicates its quantity and the operations applied to the
 cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
 name of the fits files:
 
@@ -231,13 +231,13 @@ Abbreviations for quantities are:             Abbreviations for the operations a
         maxcube2noise=pscube["maxcube2noise"],
     )
     bscp.calc(p.outcubes)
-    bscp.savecubes(p.outcubes)
-    for ck in bscp.listmompvs:
-        bscp.plot_channels(
-            ck,
-            savefig=f"models/{p.modelname}/bowshock_cube_{ck}.pdf",
-            add_beam=True,
-        )
+    bscp.savecubes()
+    # for ck in bscp.listmompvs:
+    #     bscp.plot_channels(
+    #         ck,
+    #         savefig=f"models/{p.modelname}/bowshock_cube_{ck}.pdf",
+    #         add_beam=True,
+    #     )
 
     bscp.momentsandpv_and_params_all(
         savefits=p.savefits,
