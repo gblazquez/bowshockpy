@@ -33,7 +33,7 @@ These parameters define the desired outputs:
 
     The values of the dictionary are lists of strings indicating the operations to be performed over the cube. These are the available operations:
 
-    - "add_source": Add a source at the reference pixel, just for spatial reference purposes.
+    - "add_source": Add a point source at the reference pixel.
     - "add_noise": Add Gaussian noise, defined by maxcube2noise parameter.
     - "convolve": Convolve with a Gaussian defined by the parameters bmaj, bmin, and pabeam.
     - "moments_and_pv": Computes the moments 0, 1, 2, the maximum intensity, and the PV diagram.
@@ -104,7 +104,7 @@ The next parameters are common to all the bowshocks that are going to be generat
 *Tbg* (float)
     Background temperature [K].
 
-``bowhsockpy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, substituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, the user should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
+``BowshockPy`` allows to model several bowshocks in the same spectral cube. The number of bowshocks are given by **nbowshocks** parameter. The following parameters should be defined for each bowshock, substituting "n" with the bowshock index (e.g., if 4 bowshocks are included in the model, the user should define **vj_1**, **vj_2**, **vj_3**, and **vj_4**, and similarly with the rest of parameters).
 
 *i_n* (float)
     Inclination angle of the bowshock symmetry axis with respect to the line of
@@ -160,7 +160,7 @@ The following parameters define the properties of the spectral cube of the bowsh
     Central velocity of the last channel map [km/s]. Set to None if chanwidth
     is used.
 
-*chanwidth* (float) = None
+*chanwidth* (float)
     Width of the velocity channel [km/s]. If chanwidth>0, then vch0<vchf, if
     chanwidth<0, then vch0>vchf. Set to None if vchf is used.
 

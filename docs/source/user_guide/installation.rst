@@ -9,7 +9,7 @@ We recommend to use a clean Python environment in order to install ``BowshockPy`
 
    $ python3 -m venv env
 
-You should activate the environment in order to install ``BowshockPy`` and its dependencies, and every time you would like to use the package. You can activate the Python environment by
+You should activate the environment in order to install ``BowshockPy`` and its dependencies, and every time you would like to use the package. You can activate the Python environment by executing
 
 .. code-block:: console
 

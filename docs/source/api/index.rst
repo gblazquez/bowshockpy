@@ -38,7 +38,7 @@ The API reference guide contains detailed descriptions of the functions and clas
    :member-order: bysource
 
 ``bowshockpy.modelproj``
----------------------
+------------------------
 
 .. automodule:: bowshockpy.modelproj
    :noindex:

@@ -32,8 +32,7 @@ modelname = f"example3"
 # The values of the dictionary are lists of strings indicating the operations to
 # be performed over the cube. These are the available operations:
 #
-#  - "add_source": Add a source at the reference pixel, just for spatial
-#  reference purposes.
+#  - "add_source": Add a point source at the reference pixel.
 #  - "add_noise": Add Gaussian noise, defined by maxcube2noise parameter.
 #  - "convolve": Convolve with a Gaussian defined by the parameters bmaj, bmin,
 #  and pabeam.

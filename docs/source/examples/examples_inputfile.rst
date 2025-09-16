@@ -4,7 +4,7 @@
 Examples of input file
 =======================
 
-``BowshockPy`` can be run from the terminal specifying an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
+The quickest way to use ``BowshockPy`` is to run it from the terminal and specify an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
 
 - `Example 1: A redshifted bowshock <Example 1: A redshifted bowshock>`_
 - `Example 2: A blueshifted bowshock <Example 2: A blueshifted bowshock>`_
@@ -146,7 +146,7 @@ This example of input file generates one redshifted bowshock. As specified by th
   
   sigma_beforeconv = 0.05
   
-  maxcube2noise = 0.07
+  maxcube2noise = None
   
   
   """
@@ -307,7 +307,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   sigma_beforeconv = 0.03
   
-  maxcube2noise = 0.07
+  maxcube2noise = None
   
   
   """
@@ -653,7 +653,7 @@ This example of input file generates two redshifted bowshocks in the same cube. 
   
   sigma_beforeconv = 0.05
   
-  maxcube2noise = 0.07
+  maxcube2noise = None
   
   
   """
@@ -815,7 +815,7 @@ This example of input file generates one redshifted bowshock. A custom model for
   
   sigma_beforeconv = 0.05
   
-  maxcube2noise = 0.07
+  maxcube2noise = None
   
   
   """

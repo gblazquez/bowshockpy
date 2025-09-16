@@ -32,8 +32,7 @@ modelname = f"example2"
 # The values of the dictionary are lists of strings indicating the operations to
 # be performed over the cube. These are the available operations:
 #
-#  - "add_source": Add a source at the reference pixel, just for spatial
-#  reference purposes.
+#  - "add_source": Add a point source at the reference pixel.
 #  - "add_noise": Add Gaussian noise, defined by maxcube2noise parameter.
 #  - "convolve": Convolve with a Gaussian defined by the parameters bmaj, bmin,
 #  and pabeam.
@@ -229,7 +228,7 @@ sigma_beforeconv = 0.03
 # Standard deviation of the noise of the map, before convolution, relative to
 # the maximum pixel in the cube. The actual noise will be computed after
 # convolving. This parameter would not be used if sigma_beforeconve is not None.
-maxcube2noise = 0.07
+maxcube2noise = None
 
 
 """

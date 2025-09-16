@@ -4,7 +4,7 @@ Output files
 When ``BowshockPy`` is run from the terminal :doc:`using an input file <../examples/examples_inputfile>`, it will create the path ``models/<modelname>`` if it does not exist already. Then, it will save there several files:
 
 - *<modelname>.py*: A copy of the input file used to generate the model.
-- *bowshock_model_<n>.pdf*: A plot of the morphology and kinematics of the bowshock *n*, being *n* the index of the bowshock; i.e., if three bowshocks are included in the model, there will be three plots, one for each bowshock: *bowshock_model_1.pdf*, *bowshock_model_2.pdf*, and *bowshock_model_3.pdf*.
+- *bowshock_model_<n>.pdf*: A plot depicting the morphology and kinematics of the bowshock *n*, being *n* the index of the bowshock; i.e., if three bowshocks are included in the model, there will be three plots, one for each bowshock: *bowshock_model_1.pdf*, *bowshock_model_2.pdf*, and *bowshock_model_3.pdf*.
 - *bowshock_projected_<n>.jpg*: A plot depicting the projected morphology and kinematics of the bowshock with index *n*.
 - *bowshock_cube_<cubename>.pdf*: A plot with the channel maps of the spectra cube named *cubename*. 
 - *momentsandpv_and_params_<cubename>.pdf*: If specified in **outcubes** parameter, ``BowshockPy`` will also compute the moments and position-velocity diagram from the spectral cubes.
