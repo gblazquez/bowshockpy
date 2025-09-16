@@ -12,7 +12,7 @@ The bowshock model
 Workflow
 --------
 
-.. figure:: scheme_bowshockpy_text.png
+.. figure:: images/scheme_bowshockpy_text.png
 
 
     Workflow diagram of ``BowshockPy`` for computation of the bowshock model spectral cubes.
