@@ -4,7 +4,7 @@
 Examples of input file
 =======================
 
-The quickest way to use ``BowshockPy`` is to run it from the terminal and specify an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
+``BowshockPy`` can be run from the terminal specifying an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
 
 - `Example 1: A redshifted bowshock <Example 1: A redshifted bowshock>`_
 - `Example 2: A blueshifted bowshock <Example 2: A blueshifted bowshock>`_

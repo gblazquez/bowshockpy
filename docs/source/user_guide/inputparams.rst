@@ -4,7 +4,7 @@ Input file parameters
 ..
   In this section, the input parameters that ``BowshockPy`` needs are described. You can either define these parameters in an input file (the easiest way, see :doc:`input file examples<../examples/examples_inputfile>`), or import ``BowshockPy`` as a python package and define the parameters in a dictionary that would be needed as an input in order instatiate the clases (the most flexibe way, see :doc:`modular usage examples<../examples/notebook_tutorial>`).
 
-The quickest and easiest way to :doc:`use <usage>` ``BowshockPy`` is to run it from the terminal, specifying with the ``--read`` flag an input file that contains all the parameters needed to perform the modeling of the bowshock(s): 
+As described in :doc:`How to use section <usage>`, ``BowshockPy`` can be run from the terminal, specifying with the ``--read`` flag an input file that contains all the parameters needed to perform the modeling of the bowshock(s): 
 
 .. code-block:: console
 

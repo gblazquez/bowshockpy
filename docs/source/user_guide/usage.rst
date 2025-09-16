@@ -3,8 +3,8 @@ How to use
 
 There are two ways to use ``BowshockPy``:
 
-1. *The quick way*: running it from the command-line, using an input file that contains all the input parameters. 
-2. *The flexible way*: Importing ``BowshockPy`` as a package in your Python code.
+1. Running it from the command-line, using an input file that contains all the input parameters (see :doc:`examples of input files<../examples/examples_inputfile>`). 
+2. Importing ``BowshockPy`` as a package in your Python code (see :doc:`notebook tutorial <../examples/notebook_tutorial>`).
 
 
 From the command-line using an input file
