@@ -1,4 +1,5 @@
 astropy
 matplotlib
 numpy
+photutils
 scipy
