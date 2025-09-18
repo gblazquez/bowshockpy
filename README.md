@@ -5,6 +5,7 @@ _A Python package for generating spectral channel maps of a jet-driven bowshock 
 [![PyPI - Version](https://img.shields.io/pypi/v/bowshockpy)](https://pypi.org/project/bowshockpy/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bowshockpy)](https://pypi.org/project/bowshockpy/)
 [![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://github.com/gblazquez/bowshockpy/blob/main/LICENSE)
+[![codecov](https://codecov.io/gh/gblazquez/bowshockpy/graph/badge.svg?token=EGA6WEJCYR)](https://codecov.io/gh/gblazquez/bowshockpy)
 [![Documentation Status](https://app.readthedocs.org/projects/bowshockpy/badge/?version=latest)](https://app.readthedocs.org/projects/bowshockpy/badge/?version=latest)
 
 `BowshockPy` is a Python package that generates synthetic spectral cubes, position-velocity diagrams, and moment images for a simple analytical jet-driven bowshock model, using the prescription for protostellar jets presented in [Ostriker et al. (2001)](https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract) and [Tabone et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract). The software computes column density and is able to calculate the intensities of low-J rotational transitions of a linear molecule such as CO, providing mock observations of the emission that radio interferometers as ALMA are able to detect at millimeter wavelengths.

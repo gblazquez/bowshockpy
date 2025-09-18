@@ -31,7 +31,7 @@ jobs:
         pip install pytest pytest-cov
 
     - name: Test with pytest
-      run: pytest --cov=bowshockpy --cov-report=xml
+      run: pytest --cov --cov-report=xml
 
     - name: Upload results to Codecov
       uses: codecov/codecov-action@v5
