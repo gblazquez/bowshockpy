@@ -11,8 +11,8 @@ def get_version():
     return locals()["__version__"]
 
 
-with open("README.md", "r") as f:
-    long_description = f.read()
+# with open("README.md", "r") as f:
+#     long_description = f.read()
 
 setup(
     name="bowshockpy",
@@ -32,6 +32,6 @@ setup(
     },
     author="Guillermo Blazquez-Calero",
     maintainer="Guillermo Blazquez-Calero",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
+    # long_description=long_description,
+    # long_description_content_type="text/markdown",
 )
