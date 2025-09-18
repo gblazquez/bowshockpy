@@ -20,7 +20,8 @@ jobs:
       - name: Test with pytest
         run: |
           pip install pytest pytest-cov
-          pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+          run: pytest --cov --cov-branch --cov-report=xml
+          # pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
       
 #       - name: Checkout
 #         uses: actions/checkout@v4
