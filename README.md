@@ -4,7 +4,6 @@ _A Python package for generating spectral channel maps of a jet-driven bowshock 
 
 [![PyPI - Version](https://badge.fury.io/py/bowshockpy.svg)](https://badge.fury.io/py/bowshockpy)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bowshockpy)](https://pypi.org/project/bowshockpy/)
-[![PyPI - Python Version](https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/gblazquez/bowshockpy/main/pyproject.toml)](https://pypi.org/project/bowshockpy/)
 [![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://github.com/gblazquez/bowshockpy/blob/main/LICENSE)
 [![Tests](https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml/badge.svg)](https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/gblazquez/bowshockpy/graph/badge.svg?token=EGA6WEJCYR)](https://codecov.io/gh/gblazquez/bowshockpy)

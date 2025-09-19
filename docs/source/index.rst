@@ -4,6 +4,14 @@
 BowshockPy
 ==========
 
+[![PyPI - Version](https://badge.fury.io/py/bowshockpy.svg)](https://badge.fury.io/py/bowshockpy)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bowshockpy)](https://pypi.org/project/bowshockpy/)
+[![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://github.com/gblazquez/bowshockpy/blob/main/LICENSE)
+[![Tests](https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml/badge.svg)](https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/gblazquez/bowshockpy/graph/badge.svg?token=EGA6WEJCYR)](https://codecov.io/gh/gblazquez/bowshockpy)
+[![Documentation Status](https://app.readthedocs.org/projects/bowshockpy/badge/?version=latest)](https://bowshockpy.readthedocs.io/en/latest/)
+
+
 ``BowshockPy`` is an open-source Python package for generating synthetic spectral cubes, position-velocity diagrams, and moment images of an analytical momentum-conserving bowshock model driven by a protostellar jet. The software computes the column densities of the bowshock shell and is capable of estimating the intensities of low-J rotational transitions of linear molecules (such as CO), providing mock observations of the emission that radio interferometers as ALMA are able to detect at millimeter wavelengths.
 
 ..
