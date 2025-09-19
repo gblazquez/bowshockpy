@@ -1,12 +1,11 @@
 """This module contains all the workflow of BowshockPy when it is run from the
 terminal"""
 
+import argparse
 import os
+import runpy
 
 import astropy.units as u
-
-import argparse
-import runpy
 
 from bowshockpy import utils as ut
 from bowshockpy.cubemass import MassCube
@@ -14,6 +13,70 @@ from bowshockpy.cubeproc import CubeProcessing
 from bowshockpy.modelproj import ObsModel
 from bowshockpy.models import BowshockModel
 from bowshockpy.version import __version__
+
+
+def _print_start(filename):
+    print(
+        f"""
+
+--------------------------------------------
+BowshockPy v{__version__}
+
+https://bowshockpy.readthedocs.io/en/latest/
+--------------------------------------------
+
+Parameters read from {filename}
+    """
+    )
+
+
+def _print_generating_bowshock(ibs, nbs):
+    print(
+        f"""
+
+Generating bowshock {ibs}/{nbs}
+"""
+    )
+
+
+def _print_info_cube(vch0, vchf, chanwidth, arcsecpix):
+    print(
+        f"""
+Central velocity of the first channel: {vch0:.2f} km/s
+Central velocity of the last channel: {vchf:.2f} km/s
+Channel width: {chanwidth:.3f} km/s
+Pixel size: {arcsecpix:.5f} arcsec/pix
+    """
+    )
+
+
+def _print_masses_computed(filename):
+    print(
+        f"""
+The masses have been computed!
+
+The cubes are going to be processed in order to get the desired outputs
+specified in {filename}. The outputs will be saved in fits format. The
+filename of each cube indicates its quantity and the operations applied to the
+cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
+name of the fits files:
+
+Abbreviations for quantities are:             Abbreviations for the operations are:
+   m: mass [SolarMass]                             s: add_source
+   I: Intensity [Jy/beam]                          r: rotate
+   Ntot: Total column density [cm-2]               n: add_noise
+   Nmol: Column density emitting molecule [cm-2]   c: convolve
+   tau: Opacity
+   """
+    )
+
+
+def _print_end(modelname):
+    print(
+        f"""
+Done! All outputs have been saved in models/{modelname}
+    """
+    )
 
 
 def generate_bowshock(p):
@@ -25,48 +88,32 @@ def generate_bowshock(p):
     p : dict
         Dictionary with all the parameters from the input file
     """
-    print(
-        f"""
+    _print_start(filename=p.filename)
 
---------------------------------------------
-BowshockPy v{__version__}
-
-https://bowshockpy.readthedocs.io/en/latest/
---------------------------------------------
-
-Parameters read from {p.filename}
-    """
-    )
     pss = []
     psobss = []
     for i in range(p.nbowshocks):
         pss += [
             {
                 "modelname": p.modelname,
-                "L0": (p.__getattribute__(f"L0_{i+1}") * p.distpc * u.au)
-                .to(u.km)
-                .value,
-                "zj": (p.__getattribute__(f"zj_{i+1}") * p.distpc * u.au)
-                .to(u.km)
-                .value,
-                "vj": p.__getattribute__(f"vj_{i+1}"),
-                "va": p.__getattribute__(f"va_{i+1}"),
-                "v0": p.__getattribute__(f"v0_{i+1}"),
+                "L0": (getattr(p, f"L0_{i+1}") * p.distpc * u.au).to(u.km).value,
+                "zj": (getattr(p, f"zj_{i+1}") * p.distpc * u.au).to(u.km).value,
+                "vj": getattr(p, f"vj_{i+1}"),
+                "va": getattr(p, f"va_{i+1}"),
+                "v0": getattr(p, f"v0_{i+1}"),
                 "rbf_obs": (
-                    (p.__getattribute__(f"rbf_obs_{i+1}") * p.distpc * u.au)
-                    .to(u.km)
-                    .value
-                    if p.__getattribute__(f"rbf_obs_{i+1}") is not None
-                    else p.__getattribute__(f"rbf_obs_{i+1}")
+                    (getattr(p, f"rbf_obs_{i+1}") * p.distpc * u.au).to(u.km).value
+                    if getattr(p, f"rbf_obs_{i+1}") is not None
+                    else getattr(p, f"rbf_obs_{i+1}")
                 ),
-                "mass": p.__getattribute__(f"mass_{i+1}"),
+                "mass": getattr(p, f"mass_{i+1}"),
             }
         ]
 
         psobss += [
             {
-                "i_deg": p.__getattribute__(f"i_{i+1}"),
-                "pa_deg": p.__getattribute__(f"pa_{i+1}"),
+                "i_deg": getattr(p, f"i_{i+1}"),
+                "pa_deg": getattr(p, f"pa_{i+1}"),
                 "vsys": p.vsys,
                 "distpc": p.distpc,
             }
@@ -155,12 +202,7 @@ Parameters read from {p.filename}
             dpi=300,
         )
         if make_output_cubes:
-            print(
-                f"""
-
-Generating bowshock {i+1}/{p.nbowshocks}
-                  """
-            )
+            _print_generating_bowshock(i + 1, p.nbowshocks)
             bscs += [
                 MassCube(
                     obsmodel=bsmobs,
@@ -181,79 +223,54 @@ Generating bowshock {i+1}/{p.nbowshocks}
                 )
             ]
             bscs[i].makecube()
-            print(
-                f"""
-Central velocity of the first channel: {bscs[i].vch0:.2f} km/s
-Central velocity of the last channel: {bscs[i].vchf:.2f} km/s
-Channel width: {bscs[i].chanwidth:.3f} km/s
-Pixel size: {bscs[i].arcsecpix:.5f} arcsec/pix
-     """
+            _print_info_cube(
+                bscs[i].vch0, bscs[i].vchf, bscs[i].chanwidth, bscs[i].arcsecpix
             )
 
-    print(
-        f"""
-The masses have been computed!
+    if make_output_cubes:
+        _print_masses_computed(p.filename)
 
-The cubes are going to be processed in order to get the desired outputs
-specified in {p.filename}. The outputs will be saved in fits format. The
-filename of each cube indicates its quantity and the operations applied to the
-cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
-name of the fits files:
+        bscp = CubeProcessing(
+            bscs,
+            modelname=p.modelname,
+            J=mpars["J"],
+            nu=mpars["nu"],
+            abund=mpars["abund"],
+            meanmolmass=mpars["meanmolmass"],
+            mu=mpars["mu"],
+            Tex=mpars["Tex"],
+            Tbg=mpars["Tbg"],
+            tau_custom_function=mpars["tau_custom_function"],
+            Inu_custom_function=mpars["Inu_custom_function"],
+            coordcube=mpars["coordcube"],
+            ra_source_deg=mpars["ra_source_deg"],
+            dec_source_deg=mpars["dec_source_deg"],
+            bmin=pscube["bmin"],
+            bmaj=pscube["bmaj"],
+            pabeam=pscube["pabeam"],
+            papv=pscube["papv"],
+            sigma_beforeconv=pscube["sigma_beforeconv"],
+            maxcube2noise=pscube["maxcube2noise"],
+        )
+        bscp.calc(p.outcubes)
+        bscp.savecubes()
 
-Abbreviations for quantities are:             Abbreviations for the operations are:
-   m: mass [SolarMass]                             s: add_source
-   I: Intensity [Jy/beam]                          r: rotate
-   Ntot: Total column density [cm-2]               n: add_noise
-   Nmol: Column density emitting molecule [cm-2]   c: convolve
-   tau: Opacity
-"""
-    )
-    bscp = CubeProcessing(
-        bscs,
-        modelname=p.modelname,
-        J=mpars["J"],
-        nu=mpars["nu"],
-        abund=mpars["abund"],
-        meanmolmass=mpars["meanmolmass"],
-        mu=mpars["mu"],
-        Tex=mpars["Tex"],
-        Tbg=mpars["Tbg"],
-        tau_custom_function=mpars["tau_custom_function"],
-        Inu_custom_function=mpars["Inu_custom_function"],
-        coordcube=mpars["coordcube"],
-        ra_source_deg=mpars["ra_source_deg"],
-        dec_source_deg=mpars["dec_source_deg"],
-        bmin=pscube["bmin"],
-        bmaj=pscube["bmaj"],
-        pabeam=pscube["pabeam"],
-        papv=pscube["papv"],
-        sigma_beforeconv=pscube["sigma_beforeconv"],
-        maxcube2noise=pscube["maxcube2noise"],
-    )
-    bscp.calc(p.outcubes)
-    bscp.savecubes()
-    # for ck in bscp.listmompvs:
-    #     bscp.plot_channels(
-    #         ck,
-    #         savefig=f"models/{p.modelname}/bowshock_cube_{ck}.pdf",
-    #         add_beam=True,
-    #     )
-
-    bscp.momentsandpv_and_params_all(
-        savefits=p.savefits,
-        saveplot=p.saveplot,
-        mom1clipping=p.mom1clipping,
-        mom2clipping=p.mom2clipping,
-        mom0values=p.mom0values,
-        mom1values=p.mom1values,
-        mom2values=p.mom2values,
-        maxintensvalues=p.maxintensvalues,
-        pvvalues=p.pvvalues,
-        add_beam=True,
-    )
+        bscp.momentsandpv_and_params_all(
+            savefits=p.savefits,
+            saveplot=p.saveplot,
+            mom1clipping=p.mom1clipping,
+            mom2clipping=p.mom2clipping,
+            mom0values=p.mom0values,
+            mom1values=p.mom1values,
+            mom2values=p.mom2values,
+            maxintensvalues=p.maxintensvalues,
+            pvvalues=p.pvvalues,
+            add_beam=True,
+        )
 
     # Save the file with all the parameters used to generate the bowshocks
     os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")
+    _print_end(p.modelname)
 
 
 def main():
@@ -288,11 +305,14 @@ https://bowshockpy.readthedocs.io/en/latest/
         type=str,
         help="""
         Prints an example of input file. Write the number of the corresponding
-        example that is closer to your needs. There are 3 examples: write 1 to
+        example that is closer to your needs. There are 5 examples: write 1 to
         print an example of input file of a redshifted bowshock model, write 2
-        for a model including two redshifted bowshocks, write 3 for a
-        blueshifted bowshock. See https://bowshockpy.readthedocs.io/en/latest/
-        for a detailed documentation of the examples.  """,
+        for a model of a blueshifted bowshock, write 3 for a side-on bowshock,
+        write 4 for a model including two redshifted bowshocks, write 5 for a
+        an input file including an implementation of a custom model for the
+        computation of opacities and intensities.
+        See https://bowshockpy.readthedocs.io/en/latest/ for a detailed
+        documentation of the examples.  """,
         default="None",
     )
 
