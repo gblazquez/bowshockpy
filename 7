@@ -11,12 +11,12 @@ maintainers = [{name = "Guillermo Blazquez-Calero", email = "gblazquez@iaa.es"}]
 description = "A Python package for generating spectral channel maps of a jet-driven bowshock model"
 readme = "README.md"
 license = "MIT"
-# dynamic = [
-#     # "version",
-#     # "maintainers",
-#     # "scripts", 
-#     #"dependencies"
-#     ]
+dynamic = [
+    # "version",
+    # "maintainers",
+    # "scripts", 
+    #"dependencies"
+    ]
 dependencies = [
     "numpy",
     "matplotlib",
@@ -29,13 +29,10 @@ dependencies = [
 bowshockpy = "bowshockpy.genbow:main"
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov"]
+dev = ["pytest"]
 doc = ["sphinx", "sphinx-book-theme"]
 
 [project.urls]
 Homepage = "https://github.com/gblazquez/bowshockpy"
 Documentation = "https://bowshockpy.readthedocs.io/en/latest/"
 Repository = "https://github.com/gblazquez/bowshockpy"
-
-[tool.setuptools.packages]
-find = {}
