@@ -60,7 +60,7 @@ If you use ``BowshockPy`` in your research work, please cite it as
     title     = {{BowshockPy}: A Python package for the generation of synthetic spectral channel maps of a jet-driven
   bowshock model},
     year      = {2025},
-    version   = {0.3.0},
+    version   = {0.3.1},
     url       = {https://github.com/gblazquez/bowshockpy}
   }
 
