@@ -3,26 +3,23 @@
 ==========
 BowshockPy
 ==========
-.. image:: https://badge.fury.io/py/bowshockpy.svg
-   :alt: PyPI - Version
+
+|PyPI - Version| |Python - Version| |PyPI - Python license| |Tests| |codecov|
+|Documentation Status| 
+
+.. |PyPI - Version| image:: https://badge.fury.io/py/bowshockpy.svg
    :target: https://pypi.org/project/bowshockpy/
-.. image:: https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/gblazquez/bowshockpy/main/pyproject.toml
-   :alt: PyPI - Python Version
+.. |Python - Version| image:: https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/gblazquez/bowshockpy/main/pyproject.toml
    :target: https://pypi.org/project/bowshockpy/
-.. image:: https://img.shields.io/pypi/l/ansicolortags.svg
-   :alt: PyPI - Python license 
+.. |PyPI - Python license| image:: https://img.shields.io/pypi/l/ansicolortags.svg
    :target: https://github.com/gblazquez/bowshockpy/blob/main/LICENSE
-.. image:: https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml/badge.svg
-   :alt: Tests
+.. |Tests| image:: https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml/badge.svg
    :target: https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml
-.. image:: https://codecov.io/gh/gblazquez/bowshockpy/graph/badge.svg?token=EGA6WEJCYR
-   :alt: codecov
+.. |codecov| image:: https://codecov.io/gh/gblazquez/bowshockpy/graph/badge.svg?token=EGA6WEJCYR
    :target: https://codecov.io/gh/gblazquez/bowshockpy
-.. image:: https://app.readthedocs.org/projects/bowshockpy/badge/?version=latest
-   :alt: Documentation Status
+.. |Documentation Status| image:: https://app.readthedocs.org/projects/bowshockpy/badge/?version=latest
    :target: https://bowshockpy.readthedocs.io/en/latest/
 
-|
 
 ``BowshockPy`` is an open-source Python package for generating synthetic spectral cubes, position-velocity diagrams, and moment images of an analytical momentum-conserving bowshock model driven by a protostellar jet. The software computes the column densities of the bowshock shell and is capable of estimating the intensities of low-J rotational transitions of linear molecules (such as CO), providing mock observations of the emission that radio interferometers as ALMA are able to detect at millimeter wavelengths.
 
@@ -102,7 +99,7 @@ Table of contents
    user_guide/background
 
 .. toctree::
-   :caption: Examples
+   :caption: Tutorials and Examples
    :maxdepth: 2
    
    examples/notebook_tutorial
