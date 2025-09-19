@@ -3,14 +3,26 @@
 ==========
 BowshockPy
 ==========
+.. image:: https://badge.fury.io/py/bowshockpy.svg
+   :alt: PyPI - Version
+   :target: https://pypi.org/project/bowshockpy/
+.. image:: https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/gblazquez/bowshockpy/main/pyproject.toml
+   :alt: PyPI - Python Version
+   :target: https://pypi.org/project/bowshockpy/
+.. image:: https://img.shields.io/pypi/l/ansicolortags.svg
+   :alt: PyPI - Python license 
+   :target: https://github.com/gblazquez/bowshockpy/blob/main/LICENSE
+.. image:: https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml/badge.svg
+   :alt: Tests
+   :target: https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml
+.. image:: https://codecov.io/gh/gblazquez/bowshockpy/graph/badge.svg?token=EGA6WEJCYR
+   :alt: codecov
+   :target: https://codecov.io/gh/gblazquez/bowshockpy
+.. image:: https://app.readthedocs.org/projects/bowshockpy/badge/?version=latest
+   :alt: Documentation Status
+   :target: https://bowshockpy.readthedocs.io/en/latest/
 
-[![PyPI - Version](https://badge.fury.io/py/bowshockpy.svg)](https://badge.fury.io/py/bowshockpy)
-[![PyPI - Python Version](https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/gblazquez/bowshockpy/main/pyproject.toml)](https://pypi.org/project/bowshockpy/)
-[![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://github.com/gblazquez/bowshockpy/blob/main/LICENSE)
-[![Tests](https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml/badge.svg)](https://github.com/gblazquez/bowshockpy/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/gblazquez/bowshockpy/graph/badge.svg?token=EGA6WEJCYR)](https://codecov.io/gh/gblazquez/bowshockpy)
-[![Documentation Status](https://app.readthedocs.org/projects/bowshockpy/badge/?version=latest)](https://bowshockpy.readthedocs.io/en/latest/)
-
+|
 
 ``BowshockPy`` is an open-source Python package for generating synthetic spectral cubes, position-velocity diagrams, and moment images of an analytical momentum-conserving bowshock model driven by a protostellar jet. The software computes the column densities of the bowshock shell and is capable of estimating the intensities of low-J rotational transitions of linear molecules (such as CO), providing mock observations of the emission that radio interferometers as ALMA are able to detect at millimeter wavelengths.
 
