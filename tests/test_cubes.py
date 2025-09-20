@@ -17,7 +17,14 @@ v0 = 22.9
 mass = 0.000231
 rbf_obs = (0.75 * distpc * u.au).to(u.km).value
 bsm = BowshockModel(
-    L0=L0, zj=zj, vj=vj, va=va, v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
+    L0=L0,
+    zj=zj,
+    vj=vj,
+    va=va,
+    v0=v0,
+    mass=mass,
+    distpc=distpc,
+    rbf_obs=rbf_obs,
 )
 bso = ObsModel(
     bsm,
@@ -68,6 +75,7 @@ mom0 = bscp.mom0(ck="I")
 mom1 = bscp.mom1(ck="I")
 mom2 = bscp.mom2(ck="I")
 maxintens = bscp.maxintens(ck="I")
+pv = bscp.pvalongz(ck="I", halfwidth=3)
 
 
 def test_channel_consistency_vchf():
@@ -146,4 +154,11 @@ def test_maxintens():
     maxintens_xy = maxintens[26, 25]
     assert np.isclose(
         maxintens_xy, 0.06893409211230457
-    ), "Fail to obtain the expected values of moment 8"
+    ), "Fail to obtain the expected values of the max. intensity moment"
+
+
+def test_pv():
+    pv_xy = pv[13, 26]
+    assert np.isclose(
+        pv_xy, 0.03828409594116648
+    ), "Fail to obtain the expected values of position-velocity diagram"

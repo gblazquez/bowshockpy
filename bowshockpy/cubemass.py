@@ -62,14 +62,15 @@ class MassCube(ObsModel):
         It can be also set to an integer times the channel width using a string
         (e.g., "2xchannel")
     tolfactor_vt : float, optional
-        Neighbour channel maps around a given channel map with vch will stop
-        being populated when their difference in velocity with respect to vch
-        is higher than this factor times vt. The lower the factor, the quicker
-        will be the code, but the total mass will be underestimated. If vt is
-        not None, compare the total mass of the output cube with the mass
-        parameter that the user has defined
+        The masses corresponding to a channel map are spread along the cube in
+        the velocity axis following a Gaussian distribution, being vt parameter
+        the standard deviation of the Gaussian. tolfactor_vt parameter
+        truncates the Gaussian distribution at vt * tolfactor_vt in order to
+        make the computation substantially faster. A low tolfactor_vt can
+        result in a warning reporting an underestimation of the total mass of
+        the model.
     massdiff_tol : float, optional
-        Tolerance of the percentage of the difference between the input and
+        Percentage tolerance of the difference between the input and
         total output mass of the model due to numerical errors.
     verbose : bolean, optional
         Set True to verbose messages about the computation

@@ -30,7 +30,7 @@ class CubeProcessing(MassCube):
 
     Parameters
     ----------
-    bscube :  class instance
+    modelcubes :  class instance
         Instance of MassCube
     modelname : str, optional
         Name of the folder in /models where the outputs will be saved
@@ -75,8 +75,6 @@ class CubeProcessing(MassCube):
         Beam position angle [degrees]
     papv : float
         Position angle used to calculate the PV [degrees]
-    parot : float
-        Angle to rotate the image [degrees]
     sigma_beforeconv : float
         Standard deviation of the noise of the map, before convolution. Set to
         None if maxcube2noise is used.
@@ -92,14 +90,6 @@ class CubeProcessing(MassCube):
 
     Attributes
     ----------
-    x_FWHM : float | None
-        Full width half maximum of the Gaussian beam for the x direction
-        [pixel]
-    y_FWHM : float | None
-        Full width half maximum of the Gaussian beam for the y direction
-        [pixel]
-    beamarea : float | None
-        Area of the beam [pixel^2]
     cubes : dict
         Dictionary of the processed cubes. Keys are abbreviations of the
         quantity of the cube and the operations performed to it
@@ -111,6 +101,14 @@ class CubeProcessing(MassCube):
         The headers are generated when savecube method is used.
     areapix_cm : float
         Area of a pixel in cm.
+    x_FWHM : float | None
+        Full width half maximum of the Gaussian beam for the x direction
+        [pixel]
+    y_FWHM : float | None
+        Full width half maximum of the Gaussian beam for the y direction
+        [pixel]
+    beamarea : float | None
+        Area of the beam [pixel^2]
     beamarea_sr : `astropy.units.Quantity` | None
         Area of the beam in stereoradians. If no beam is provided, beamarea_sr
         will be None, and all the intensities will be expressed in Jy/arcsec^2
@@ -144,7 +142,6 @@ class CubeProcessing(MassCube):
     }
     dos = {
         "s": "add_source",
-        "r": "rotate",
         "n": "add_noise",
         "c": "convolve",
     }
@@ -185,7 +182,6 @@ class CubeProcessing(MassCube):
         bmaj=None,
         pabeam=0,
         papv=0.0,
-        parot=0.0,
         sigma_beforeconv=None,
         maxcube2noise=None,
         verbose=True,
@@ -222,7 +218,6 @@ class CubeProcessing(MassCube):
         self.bmaj = bmaj
         self.pabeam = pabeam
         self.papv = papv
-        self.parot = parot
         self.sigma_beforeconv = sigma_beforeconv
         self.maxcube2noise = maxcube2noise
         self.verbose = verbose
@@ -465,12 +460,14 @@ class CubeProcessing(MassCube):
 """
             )
 
-    def rotate(self, ck="m", forpv=False):
+    def _rotate(self, angle, ck="m", forpv=False):
         """
-        Rotates the cube an angle self.parot
+        Rotates the cube an angle
 
         Parameters
         -----------
+        angle : float
+            Angle to rotate the cube [deg]
         ck : str, optional
             Key of the cube to rotate
         forpv : bool, optional
@@ -478,13 +475,12 @@ class CubeProcessing(MassCube):
             bowshock axis
         """
 
-        nck = self._newck(ck, "r") if not forpv else self._newck(ck, "R")
+        nck = self._newck(ck, "r")
         if self.verbose:
             if forpv:
                 print(f"\nRotatng {ck} in order to compute the PV diagram...")
             else:
                 print(f"\nRotating {ck}...")
-        angle = -self.parot if not forpv else self.papv + 90
         self.cubes[nck] = np.zeros_like(self.cubes[ck])
         for chan in range(np.shape(self.cubes[ck])[0]):
             self.cubes[nck][chan] = rotate(
@@ -628,7 +624,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             "total_column_density": "Ntot",
             "opacity": "tau",
             "add_source": "s",
-            "rotate": "r",
             "add_noise": "n",
             "convolve": "c",
         }
@@ -981,24 +976,29 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         pvimage : numpy.ndarray
             Position velocity diagram
         """
+
+        ckpv = self._newck(ck, "r")
+        if ckpv not in self.cubes:
+            self._rotate(angle=self.papv+90, ck=ck, forpv=True)
+
         pvimage = moments.pv(
-            self.cubes[ck],
-            int(self.refpixs[ck][1]),
+            self.cubes[ckpv],
+            int(self.refpixs[ckpv][1]),
             halfwidth=halfwidth,
             axis=1,
         )
         if savefits:
             hdrpv = ut.get_default_hdr(naxis=2, beam=False, pv=True)
             hdrpv["NAXIS"] = 2
-            hdrpv["NAXIS1"] = np.shape(self.cubes[ck])[1]
-            hdrpv["NAXIS2"] = np.shape(self.cubes[ck])[0]
-            hdrpv["BTYPE"] = self.btypes[self._q(ck)]
+            hdrpv["NAXIS1"] = np.shape(self.cubes[ckpv])[1]
+            hdrpv["NAXIS2"] = np.shape(self.cubes[ckpv])[0]
+            hdrpv["BTYPE"] = self.btypes[self._q(ckpv)]
             hdrpv["OBJECT"] = f"{self.modelname}"
-            hdrpv["BUNIT"] = self.bunits[self._q(ck)]
+            hdrpv["BUNIT"] = self.bunits[self._q(ckpv)]
             hdrpv["CTYPE1"] = "OFFSET"
             hdrpv["CRVAL1"] = 0.0
             hdrpv["CDELT1"] = self.arcsecpix
-            hdrpv["CRPIX1"] = self.refpixs[ck][0] + 1.0
+            hdrpv["CRPIX1"] = self.refpixs[ckpv][0] + 1.0
             hdrpv["CUNIT1"] = "arcsec"
             hdrpv["CTYPE2"] = "VRAD"
             hdrpv["CRVAL2"] = self.velchans[0]
@@ -1012,10 +1012,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             hdu.header = hdrpv
             if fitsname is None:
                 ut.make_folder(foldername=f"models/{self.modelname}/fits")
-                fitsname = f"models/{self.modelname}/fits/{ck}_pv.fits"
+                fitsname = f"models/{self.modelname}/fits/{ckpv}_pv.fits"
             hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
-                print(f"models/{self.modelname}/fits/{ck}_pv.fits saved")
+                print(f"models/{self.modelname}/fits/{ckpv}_pv.fits saved")
         return pvimage
 
     def sumint(self, ck, chan_range=None, savefits=False, fitsname=None):
@@ -1391,8 +1391,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             If True, save the moment in fits format.
         fitsname : str, optional
             Full path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}_maxintens.fits. If the path does not
-            exist, it will be created.
+            models/{self.modelname}/fits/{ck}_maxintens.fits. If the path does
+            not exist, it will be created.
 
         Returns
         --------
@@ -1521,16 +1521,18 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         pvimage : numpy.ndarray
             Position velocity diagram
         """
-        ckpv = self._newck(ck, "R")
-        if ckpv not in self.cubes:
-            self.rotate(ck, forpv=True)
+        # ckpv = self._newck(ck, "r")
+        # if ckpv not in self.cubes:
+        #     self._rotate(angle=self.papv+90, ck=ck, forpv=True)
 
         pvimage = self.pvalongz(
-            ckpv,
+            ck,
             halfwidth=halfwidth,
             savefits=savefits,
             fitsname=fitsname,
         )
+
+        ckpv = self._newck(ck, "r")
         rangex = (
             np.array(
                 [
