@@ -23,7 +23,7 @@ bso = ObsModel(
 
 
 def test_BowshockModel():
-    # Test that BowshockModel produce the expected values
+    """Test that BowshockModel produce the expected values"""
     assert np.isclose(
         bsm.mp0_solmassyr, 1.4013290507098549e-06
     ), "BowshockModel failed to produce the expected value for mp0"
@@ -36,8 +36,8 @@ def test_BowshockModel():
 
 
 def test_numerical_vs_analytical():
-    # Test that BowshockModel produces the same values when some quantities are
-    # computed analytically and numerically
+    """Test that BowshockModel produces the same values when some quantities
+    are computed analytically and numerically"""
     rhoa_num = bsm.rhoa_fromintmass_sigma_simple(0, bsm.rbf, bsm.mass)
     assert np.isclose(
         rhoa_num, bsm.rhoa

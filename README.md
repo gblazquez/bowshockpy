@@ -19,7 +19,6 @@ An extensive documentation on `BowshockPy` can be found [here](https://bowshockp
 
 `BowshockPy` requires:
 
-- Python3
 - astropy
 - matplotlib
 - numpy

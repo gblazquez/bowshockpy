@@ -31,15 +31,16 @@ class MassCube(ObsModel):
     vch0 : float
         Central velocity of the first channel map [km/s]
     vchf : float | None
-        Central velocity of the last channel map [km/s]. If None, you should
-        provide instead the channel width with chanwidth parameter. If a float
-        is provided, chanwidth should be None, since chanwidth would be
-        computed internally. Default is None.
+        Central velocity of the last channel map [km/s]. If a float is
+        provided, chanwidth input argument should be None, since chanwidth
+        would be computed internally. If vchf is None, you should provide
+        instead the channel width using chanwidth argument. Default is None.
     chanwidth : float | None
-        Channel width of the spectral cube [km/s]. If positive, vch0<vchf,
-        negative, vch0>vchf. If None, you should provide instead the central
-        velocity of the last channel map. If a float is provided, vchf should
-        be None, since vchf would be computed internally. Default is None.
+        Channel width of the spectral cube [km/s]. If a float is provided, vchf
+        input argument should be None, since vchf would be computed internally.
+        If chanwidth>0 then vch0<vchf, if chanwidth<0 then vch0>vchf. If None,
+        you should provide instead the central velocity of the last channel
+        map using vchf argument. Default is None.
     nzs : int, optional
         Number of points used to compute the model solutions
     nc : int, optional
@@ -55,11 +56,11 @@ class MassCube(ObsModel):
     cic : bolean, optional
         Set to True to perform Cloud in Cell interpolation [1].
     vt : float | str, optional
-        Thermal+turbulent line-of-sight velocity dispersion [km/s] If
+        Thermal+turbulent line-of-sight velocity dispersion [km/s]. If
         thermal+turbulent line-of-sight velocity dispersion is smaller than the
         instrumental spectral resolution, vt should be the spectral resolution.
-        It can be also set to a integer times the channel width (e.g.,
-        "2xchannel")
+        It can be also set to an integer times the channel width using a string
+        (e.g., "2xchannel")
     tolfactor_vt : float, optional
         Neighbour channel maps around a given channel map with vch will stop
         being populated when their difference in velocity with respect to vch
@@ -98,6 +99,9 @@ class MassCube(ObsModel):
         cube.
     cube : numpy.ndarray
         Spectral cube of the masses of the bowshock model.
+    cube_sampling : numpy.ndarray
+        Cube where the values are the number of model points used to sample
+        each pixel at each channel.
 
     References:
     -----------
@@ -124,7 +128,6 @@ class MassCube(ObsModel):
         tolfactor_vt=None,
         massdiff_tol=0.1,
         verbose=True,
-        **kwargs,
     ):
         self.__dict__ = obsmodel.__dict__
         self.o = obsmodel
@@ -186,7 +189,17 @@ float to one of them.
             message="""
 Ambiguous input. The user provided values to both chanwidth and vchf. Only one
 of them should be a float, the other should be None.
- """,
+""",
+            category=ut.UserError,
+        )
+
+    def _wrong_format_vt_error(self):
+        warnings.warn(
+            message="""
+Wrong format for vt parameter. It should be a float or string. If a string, it
+will be an integer N times the channel width specified as "Nxchannel" (e.g.,
+"2xchannel")
+""",
             category=ut.UserError,
         )
 
@@ -273,20 +286,21 @@ parameters).
             self._required_parameter_absent_error()
         elif self.chanwidth is not None and self.vchf is not None:
             self._ambiguous_input_error()
-        else:
-            pass
-
-        if self.chanwidth is None:
+        elif self.chanwidth is None:
             self.chanwidth = (self.vchf - self.vch0) / (self.nc - 1)
         elif self.vchf is None:
             self.vchf = self.chanwidth * (self.nc - 1) + self.vch0
+
         self.abschanwidth = np.abs(self.chanwidth)
 
-        self.vt = (
-            self.vt
-            if not isinstance(self.vt, str)
-            else float(self.vt.split("x")[0]) * self.chanwidth
-        )
+        if isinstance(self.vt, (float, int)):
+            self.vt = self.vt
+        else:
+            try:
+                self.vt = float(self.vt.split("x")[0]) * self.chanwidth
+            except (TypeError, ValueError):
+                self._wrong_format_vt_error()
+
         self.arcsecpix = self.xpmax / float(self.nxs)
         if self.refpix is None:
             if self.nxs % 2 == 0:
@@ -300,7 +314,7 @@ parameters).
             self.refpix = [xref, yref]
 
     def _cond_populatechan(self, diffv):
-        """Truncates the Gaussian distribution of the emission along the
+        """Truncates the Gaussian distribution of the masses along the
         velocity axis"""
         if self.tolfactor_vt is not None:
             return diffv < np.abs(self.vt) * self.tolfactor_vt

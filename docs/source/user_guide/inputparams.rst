@@ -157,12 +157,17 @@ The following parameters define the properties of the spectral cube of the bowsh
     Central velocity of the first channel map [km/s].
 
 *vchf* (float)
-    Central velocity of the last channel map [km/s]. Set to None if chanwidth
-    is used.
+   Central velocity of the last channel map [km/s]. If a float is provided,
+   chanwidth input parameter should be None, since chanwidth would be computed
+   internally. If vchf is None, you should provide instead the channel width
+   using chanwidth parameter.
 
 *chanwidth* (float)
-    Width of the velocity channel [km/s]. If chanwidth>0, then vch0<vchf, if
-    chanwidth<0, then vch0>vchf. Set to None if vchf is used.
+    Channel width of the spectral cube [km/s]. If a float is provided, vchf
+    input parameter should be None, since vchf would be computed internally. If
+    chanwidth>0 then vch0<vchf, if chanwidth<0 then vch0>vchf. If None, you
+    should provide instead the central velocity of the last channel map using
+    vchf parameter.
 
 *nxs* (int)
     Number of pixels in the right ascension axis.

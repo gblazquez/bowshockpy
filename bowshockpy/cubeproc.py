@@ -200,7 +200,7 @@ class CubeProcessing(MassCube):
             modelcubes = [modelcubes]
 
         for att in self.attribs_to_get_from_cubes:
-            setattr(self, att, modelcubes[0].__getattribute__(att))
+            setattr(self, att, getattr(modelcubes[0], att))
 
         self.modelcubes = modelcubes
 
@@ -274,7 +274,7 @@ class CubeProcessing(MassCube):
             self.beamarea = np.pi * self.y_FWHM * self.x_FWHM / (4 * np.log(2))
             self.beamarea_sr = ut.mb_sa_gaussian_f(
                 self.bmaj * u.arcsec, self.bmin * u.arcsec
-        )
+            )
             self.bunits["I"] = "Jy/beam"
         else:
             self.x_FWHM = None
@@ -288,7 +288,7 @@ class CubeProcessing(MassCube):
 
     def _check_combine_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
-            if not ut.allequal([mc.__getattribute__(att) for mc in modelcubes]):
+            if not ut.allequal([getattr(mc, att) for mc in modelcubes]):
                 raise ValueError(f"Trying to combine cubes with different {att}")
 
     def combine_cubes(self, modelcubes):
@@ -448,7 +448,8 @@ class CubeProcessing(MassCube):
         self.noisychans[nck] = self.noisychans[ck]
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
-            print(f"""
+            print(
+                f"""
 {nck} cube has been created by adding a point source to {ck}, in pix
 [{self.refpixs[nck][0]:.2f}, {self.refpixs[nck][1]:.2f}] pix\n
 """
@@ -496,10 +497,12 @@ class CubeProcessing(MassCube):
         )
         self.sigma_noises[nck] = self.sigma_noises[ck]
         if self.verbose:
-            print(f"""
+            print(
+                f"""
 {nck} cube has been created by rotating {ck} cube an angle {angle} deg to
 compute the PV-diagram
-""")
+"""
+            )
 
     def add_noise(self, ck="m"):
         """
@@ -530,10 +533,11 @@ compute the PV-diagram
         self.noisychans[nck] = noise_matrix
         self.sigma_noises[nck] = sigma_noise
         if self.verbose:
-            print(f"""
+            print(
+                f"""
 {nck} cube has been created by adding Gaussian noise to {ck} cube
 """
-                  )
+            )
 
     def convolve(self, ck="m"):
         """
@@ -705,13 +709,13 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             _split = ds.split("_")
             q = _split[0]
             if q not in self.cubes:
-                self.__getattribute__(f"calc_{q}")()
+                getattr(self, f"calc_{q}")()
             if len(_split) > 1:
                 ss = _split[1]
                 for i, s in enumerate(ss):
                     ck = q if i == 0 else f"{q}_{ss[:i]}"
                     if self._newck(ck, s) not in self.cubes:
-                        self.__getattribute__(self.dos[s])(ck=ck)
+                        getattr(self, self.dos[s])(ck)
 
     def savecube(self, ck, fitsname=None):
         """
@@ -2009,7 +2013,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             return fig, axs, cbax, maxintens
         if savefig is not None:
             fig.savefig(savefig, bbox_inches="tight")
-
 
     def momentsandpv_and_params(
         self,

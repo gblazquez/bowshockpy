@@ -9,6 +9,9 @@ examples2docs.py
 notebook2docs.py
 makedocs.sh
 
+.pylintrc
+pyrightconfig.json
+
 # ignore files in folder
 todo.ignore
 models/*

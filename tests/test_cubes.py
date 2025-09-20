@@ -69,11 +69,14 @@ mom1 = bscp.mom1(ck="I")
 mom2 = bscp.mom2(ck="I")
 maxintens = bscp.maxintens(ck="I")
 
+
 def test_channel_consistency_vchf():
     assert np.isclose(bsc1.vchf, bsc1.velchans[-1])
 
+
 def test_channel_consistency_chanwidth():
     assert np.isclose(bsc1.chanwidth, np.diff(bsc1.velchans)[0])
+
 
 def test_cube_mass_consistency():
     massconsistent = bsc1._check_mass_consistency(tol=None)
@@ -117,11 +120,13 @@ def test_convolution():
         np.sum(bscp.cubes["I"]), np.sum(bscp.cubes["I_c"])
     ), "Convolution failed: flux is not conserved"
 
+
 def test_mom0():
     mom0_xy = mom0[26, 25]
     assert np.isclose(
         mom0_xy, 1.715026191836612
     ), "Failed to obtain the expected values of the moment 0"
+
 
 def test_mom1():
     mom1_xy = mom1[26, 25]
@@ -129,11 +134,13 @@ def test_mom1():
         mom1_xy, -86.69768758752018
     ), "Failed to obtain the expected values of the moment 1"
 
+
 def test_mom2():
     mom2_xy = mom2[26, 25]
     assert np.isclose(
         mom2_xy, 27.87445981444194
     ), "Fail to obtain the expected vaules of moment 2"
+
 
 def test_maxintens():
     maxintens_xy = maxintens[26, 25]
