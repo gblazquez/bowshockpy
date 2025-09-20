@@ -50,7 +50,7 @@ def column_density_mol(Ntot, abund):
     astropy.units.Quantity
         Column density of the molecule
     """
-    Ntot = ut.make_astropy_units(Ntot, u.cm**(-2))
+    Ntot = ut.make_astropy_units(Ntot, u.cm ** (-2))
     return Ntot * abund
 
 
@@ -120,7 +120,7 @@ def column_density_mol_i(Nmol, Tex, i, Ei, gi, Ei_args=(), gi_args=()):
         Column density of the molecule at energy level i
 
     """
-    Nmol = ut.make_astropy_units(Nmol, u.cm**(-2))
+    Nmol = ut.make_astropy_units(Nmol, u.cm ** (-2))
     Tex = ut.make_astropy_units(Tex, u.K)
     if not isinstance(Ei_args, tuple):
         Ei_args = (Ei_args,)
@@ -156,7 +156,7 @@ def A_ul(nu, mu_ul):
         / (3 * const.h.cgs.value * const.c.cgs.value**3)
         * (mu_ul.to(u.Debye).value * 10 ** (-18)) ** 2
     )
-    return acoeff * u.s**(-1)
+    return acoeff * u.s ** (-1)
 
 
 def tau_func(
@@ -207,11 +207,23 @@ def tau_func(
     mu_ul = ut.make_astropy_units(mu_ul, u.Debye)
 
     dNmolidv = column_density_mol_i(
-        Nmol=dNmoldv, Tex=Tex, i=i, Ei=Ei, gi=gi, Ei_args=Ei_args, gi_args=gi_args
+        Nmol=dNmoldv,
+        Tex=Tex,
+        i=i,
+        Ei=Ei,
+        gi=gi,
+        Ei_args=Ei_args,
+        gi_args=gi_args,
     )
 
     A = A_ul(nu, mu_ul)
-    tau = const.c**3 * A / (8 * np.pi * nu**3) * (exp_hnkt(nu, Tex) - 1) * dNmolidv
+    tau = (
+        const.c**3
+        * A
+        / (8 * np.pi * nu**3)
+        * (exp_hnkt(nu, Tex) - 1)
+        * dNmolidv
+    )
     return tau
 
 

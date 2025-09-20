@@ -61,13 +61,13 @@ filename of each cube indicates its quantity and the operations applied to the
 cube ("<quantity>_<operations>.fits"). Some abbreviations will be used in the
 name of the fits files:
 
-Abbreviations for quantities are:             Abbreviations for the operations are:
-   m: mass [SolarMass]                             s: add_source
-   I: Intensity [Jy/beam]                          r: rotate
-   Ntot: Total column density [cm-2]               n: add_noise
-   Nmol: Column density emitting molecule [cm-2]   c: convolve
-   tau: Opacity
-   """
+Abbreviations for quantities:                Abbreviations for the operations:
+  m: mass [SolarMass]                          s: add_source
+  I: Intensity [Jy/beam]                       r: rotate
+  Ntot: Total column density [cm-2]            n: add_noise
+  Nmol: Col. dens. emitting molecule [cm-2]    c: convolve
+  tau: Opacity
+"""
     )
 
 
@@ -96,13 +96,19 @@ def generate_bowshock(p):
         pss += [
             {
                 "modelname": p.modelname,
-                "L0": (getattr(p, f"L0_{i+1}") * p.distpc * u.au).to(u.km).value,
-                "zj": (getattr(p, f"zj_{i+1}") * p.distpc * u.au).to(u.km).value,
+                "L0": (getattr(p, f"L0_{i+1}") * p.distpc * u.au)
+                .to(u.km)
+                .value,
+                "zj": (getattr(p, f"zj_{i+1}") * p.distpc * u.au)
+                .to(u.km)
+                .value,
                 "vj": getattr(p, f"vj_{i+1}"),
                 "va": getattr(p, f"va_{i+1}"),
                 "v0": getattr(p, f"v0_{i+1}"),
                 "rbf_obs": (
-                    (getattr(p, f"rbf_obs_{i+1}") * p.distpc * u.au).to(u.km).value
+                    (getattr(p, f"rbf_obs_{i+1}") * p.distpc * u.au)
+                    .to(u.km)
+                    .value
                     if getattr(p, f"rbf_obs_{i+1}") is not None
                     else getattr(p, f"rbf_obs_{i+1}")
                 ),
@@ -153,10 +159,14 @@ def generate_bowshock(p):
             "Tex": p.Tex * u.K,
             "Tbg": p.Tbg * u.K,
             "tau_custom_function": (
-                p.tau_custom_function if "tau_custom_function" in p.__dict__ else None
+                p.tau_custom_function
+                if "tau_custom_function" in p.__dict__
+                else None
             ),
             "Inu_custom_function": (
-                p.Inu_custom_function if "Inu_custom_function" in p.__dict__ else None
+                p.Inu_custom_function
+                if "Inu_custom_function" in p.__dict__
+                else None
             ),
             "ra_source_deg": p.ra_source_deg,
             "dec_source_deg": p.dec_source_deg,
@@ -224,7 +234,10 @@ def generate_bowshock(p):
             ]
             bscs[i].makecube()
             _print_info_cube(
-                bscs[i].vch0, bscs[i].vchf, bscs[i].chanwidth, bscs[i].arcsecpix
+                bscs[i].vch0,
+                bscs[i].vchf,
+                bscs[i].chanwidth,
+                bscs[i].arcsecpix,
             )
 
     if make_output_cubes:
@@ -280,10 +293,10 @@ def main():
 
     description = """
 BowshockPy is a Python package that generates synthetic spectral cubes,
-position-velocity diagrams, and moment images for a simple analytical jet-driven
-bowshock model, using the prescription for protostellar jets presented in
-Ostriker et al. (2001) and Tabone et al. (2018). Please, see the documentation
-at:
+position-velocity diagrams, and moment images for a simple analytical
+jet-driven bowshock model, using the prescription for protostellar jets
+presented in Ostriker et al. (2001) and Tabone et al. (2018). Please, see the
+documentation at:
 
 https://bowshockpy.readthedocs.io/en/latest/
 

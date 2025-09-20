@@ -53,9 +53,9 @@ def mom0(cube, chan_vels, chan_range):
     return mom0_im
 
 
-def sumIixvi(cube, chan_vels, chan_range, exp=1):
+def summixvi(cube, chan_vels, chan_range, exp=1):
     """
-    Computes the summation: sum (I_i * v_i)**exp
+    Computes the summation: sum (m_i * v_i)**exp
 
     Parameters
     ----------
@@ -73,13 +73,13 @@ def sumIixvi(cube, chan_vels, chan_range, exp=1):
     _type_
         _description_
     """
-    Iixvi = np.array(
+    mixvi = np.array(
         [
             cube[i, :, :] * chan_vels[i] ** exp
             for i in np.arange(chan_range[0], chan_range[1])
         ]
     )
-    return np.sum(Iixvi, axis=0)
+    return np.sum(mixvi, axis=0)
 
 
 def mom1(cube, chan_vels, chan_range):
@@ -108,10 +108,12 @@ def mom1(cube, chan_vels, chan_range):
 
     But note that the equation for the moment 1 is wrong in this reference
     (units should be km/s, and not an adimensional value). The moment1 is  the
-    intensity intensity weighted mean velocity = Sigma I_i v_i/Sigma I_i
+    intensity intensity weighted mean velocity = Sigma m_i v_i/Sigma m_i
     """
     with np.errstate(divide="ignore", invalid="ignore"):
-        mom1_im = sumIixvi(cube, chan_vels, chan_range) / sumint(cube, chan_range)
+        mom1_im = summixvi(cube, chan_vels, chan_range) / sumint(
+            cube, chan_range
+        )
     return mom1_im
 
 
@@ -141,13 +143,14 @@ def mom2(cube, chan_vels, chan_range):
 
     But note that the equation for the moment 2 is wrong in this reference
     (units should be km/s, no sqrt(km/s)). The moment2 is intensity weighted
-    dispersion = [Sigma I_i v^2_i/Sigma I_i]**(1/2)
+    dispersion = [Sigma m_i v^2_i/Sigma m_i]**(1/2)
 
     """
 
     with np.errstate(divide="ignore", invalid="ignore"):
         disp = np.sqrt(
-            sumIixvi(cube, chan_vels, chan_range, exp=2) / sumint(cube, chan_range)
+            summixvi(cube, chan_vels, chan_range, exp=2)
+            / sumint(cube, chan_range)
             - mom1(cube, chan_vels, chan_range) ** 2
         )
     return disp

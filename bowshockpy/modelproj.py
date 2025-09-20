@@ -51,9 +51,11 @@ class ObsModel(BaseModel):
             Line-of-sight velocity [km/s]
         """
         a = self.m.velangle(zb)
-        return self.m.vtot(zb) * (
-            np.cos(a) * np.cos(self.i) - np.sin(a) * np.cos(phi) * np.sin(self.i)
+        vzp = self.m.vtot(zb) * (
+            np.cos(a) * np.cos(self.i)
+            - np.sin(a) * np.cos(phi) * np.sin(self.i)
         )
+        return vzp
 
     def xp(self, zb, phi):
         """
@@ -72,7 +74,8 @@ class ObsModel(BaseModel):
         float
             xp coordinate in the plane-of-sky [km]
         """
-        return self.m.rb(zb) * np.cos(phi) * np.cos(self.i) + zb * np.sin(self.i)
+        xp = self.m.rb(zb) * np.cos(phi) * np.cos(self.i) + zb * np.sin(self.i)
+        return xp
 
     def yp(self, zb, phi):
         """
@@ -110,7 +113,10 @@ class ObsModel(BaseModel):
         float
             zp coordinate, along the line-of-sight direction [km]
         """
-        return -self.m.rb(zb) * np.cos(phi) * np.sin(self.i) + zb * np.cos(self.i)
+        zp = -self.m.rb(zb) * np.cos(phi) * np.sin(self.i) + zb * np.cos(
+            self.i
+        )
+        return zp
 
     def get_obsmodelplot(
         self,
@@ -138,8 +144,8 @@ class ObsModel(BaseModel):
         nphis : int, optional
             Number of phi coordinates used to compute the model solutions
         figsize: tuple, optional
-            Tuple passed to `matplotib.pyplot.figure` to define the dimensions of
-            the figure
+            Tuple passed to `matplotib.pyplot.figure` to define the dimensions
+            of the figure
         linespacing : float, optional
             Spacing between the text lines
         textbox_widthratio : float, optional

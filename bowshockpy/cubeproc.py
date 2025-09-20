@@ -229,7 +229,9 @@ class CubeProcessing(MassCube):
 
         for kwarg in self.default_kwargs:
             kwarg_attr = (
-                kwargs[kwarg] if kwarg in kwargs else self.default_kwargs[kwarg]
+                kwargs[kwarg]
+                if kwarg in kwargs
+                else self.default_kwargs[kwarg]
             )
             setattr(self, kwarg, kwarg_attr)
 
@@ -284,12 +286,16 @@ class CubeProcessing(MassCube):
             self.bunits["I"] = "Jy arcsec-2"
 
     def _calc_areapix_cm(self):
-        self.areapix_cm = ((self.arcsecpix * self.distpc * u.au) ** 2).to(u.cm**2)
+        self.areapix_cm = ((self.arcsecpix * self.distpc * u.au) ** 2).to(
+            u.cm**2
+        )
 
     def _check_combine_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
             if not ut.allequal([getattr(mc, att) for mc in modelcubes]):
-                raise ValueError(f"Trying to combine cubes with different {att}")
+                raise ValueError(
+                    f"Trying to combine cubes with different {att}"
+                )
 
     def combine_cubes(self, modelcubes):
         """
@@ -301,7 +307,9 @@ class CubeProcessing(MassCube):
             List of cubes to combine
         """
         self._check_combine_possibility(modelcubes)
-        self.cube = np.sum([modelcube.cube for modelcube in modelcubes], axis=0)
+        self.cube = np.sum(
+            [modelcube.cube for modelcube in modelcubes], axis=0
+        )
 
     def tau_f(self, dNmoldv):
         if self.tau_custom_function is not None:
@@ -412,7 +420,9 @@ class CubeProcessing(MassCube):
 
         if self.beamarea_sr is not None:
             self.cubes["I"] = (
-                (self.I_f(tau=self.cubes["tau"]) * self.beamarea_sr).to(u.Jy).value
+                (self.I_f(tau=self.cubes["tau"]) * self.beamarea_sr)
+                .to(u.Jy)
+                .value
             )
         else:
             self.cubes["I"] = (
@@ -645,7 +655,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 self.listmompvs += dostr
             else:
                 if len(ops) != 0:
-                    ss = "".join([dictrad[s_user] for s_user in userdic[userkey]])
+                    ss = "".join(
+                        [dictrad[s_user] for s_user in userdic[userkey]]
+                    )
                     dostrs += [f"{q}_{ss}"]
                 else:
                     dostrs += [f"{q}"]
@@ -970,7 +982,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             Position velocity diagram
         """
         pvimage = moments.pv(
-            self.cubes[ck], int(self.refpixs[ck][1]), halfwidth=halfwidth, axis=1
+            self.cubes[ck],
+            int(self.refpixs[ck][1]),
+            halfwidth=halfwidth,
+            axis=1,
         )
         if savefits:
             hdrpv = ut.get_default_hdr(naxis=2, beam=False, pv=True)
@@ -1166,7 +1181,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 print(f"models/{self.modelname}/fits/{ck}_mom0.fits saved")
         return mom0
 
-    def mom1(self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None):
+    def mom1(
+        self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None
+    ):
         """
         Computes the 1th order moment along the velocity axis
 
@@ -1196,11 +1213,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         chan_vels = self.velchans[chan_range[0] : chan_range[-1]]
         cube_clipped = np.copy(self.cubes[ck])
         clipping = (
-            clipping if clipping != 0 else self.momtol_clipping * np.max(self.cubes[ck])
+            clipping
+            if clipping != 0
+            else self.momtol_clipping * np.max(self.cubes[ck])
         )
         cube_clipped[cube_clipped < clipping] = 0
         mom1 = np.nan_to_num(
-            moments.mom1(cube_clipped, chan_vels=chan_vels, chan_range=chan_range)
+            moments.mom1(
+                cube_clipped, chan_vels=chan_vels, chan_range=chan_range
+            )
         )
         if savefits:
             if self.coordcube == "offset":
@@ -1254,7 +1275,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 print(f"models/{self.modelname}/fits/{ck}_mom1.fits saved")
         return mom1
 
-    def mom2(self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None):
+    def mom2(
+        self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None
+    ):
         """
         Computes the 2th order moment along the velocity axis
 
@@ -1284,11 +1307,15 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         chan_vels = self.velchans[chan_range[0] : chan_range[-1]]
         cube_clipped = np.copy(self.cubes[ck])
         clipping = (
-            clipping if clipping != 0 else self.momtol_clipping * np.max(self.cubes[ck])
+            clipping
+            if clipping != 0
+            else self.momtol_clipping * np.max(self.cubes[ck])
         )
         cube_clipped[cube_clipped < clipping] = 0
         mom2 = np.nan_to_num(
-            moments.mom2(cube_clipped, chan_vels=chan_vels, chan_range=chan_range)
+            moments.mom2(
+                cube_clipped, chan_vels=chan_vels, chan_range=chan_range
+            )
         )
         if savefits:
             if self.coordcube == "offset":
@@ -1344,7 +1371,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 print(f"models/{self.modelname}/fits/{ck}_mom2.fits saved")
         return mom2
 
-    def maxintens(self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None):
+    def maxintens(
+        self, ck, chan_range=None, clipping=0, savefits=False, fitsname=None
+    ):
         """
         Computes the maximum value of the cube along the velocity axis
 
@@ -1374,7 +1403,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         cube_clipped = np.copy(self.cubes[ck])
         clipping = (
-            clipping if clipping != 0 else self.momtol_clipping * np.max(self.cubes[ck])
+            clipping
+            if clipping != 0
+            else self.momtol_clipping * np.max(self.cubes[ck])
         )
         cube_clipped[cube_clipped < clipping] = 0
         maxintens = np.nan_to_num(
@@ -1432,7 +1463,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                 fitsname = f"models/{self.modelname}/fits/{ck}_maxintens.fits"
             hdul.writeto(fitsname, overwrite=True)
             if self.verbose:
-                print(f"models/{self.modelname}/fits/{ck}_maxintens.fits saved")
+                print(
+                    f"models/{self.modelname}/fits/{ck}_maxintens.fits saved"
+                )
         return maxintens
 
     def plotpv(
@@ -1500,7 +1533,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         )
         rangex = (
             np.array(
-                [-0.5 - self.refpixs[ckpv][0], self.nxs - 0.5 - self.refpixs[ckpv][0]]
+                [
+                    -0.5 - self.refpixs[ckpv][0],
+                    self.nxs - 0.5 - self.refpixs[ckpv][0],
+                ]
             )
             * self.arcsecpix
         )

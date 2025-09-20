@@ -325,7 +325,9 @@ parameters).
         Weight the masses across the velocity axis using a Gaussian
         distribution
         """
-        normfactor = np.abs(self.chanwidth) / (np.sqrt(np.pi) * np.abs(self.vt))
+        normfactor = np.abs(self.chanwidth) / (
+            np.sqrt(np.pi) * np.abs(self.vt)
+        )
         em = dmass * np.exp(-((diffv / self.vt) ** 2)) * normfactor
         return em
 
@@ -337,16 +339,22 @@ parameters).
             # Treat boundary of the outer parts of the bowshock wings
             if hasattr(self.o.m, "intmass_analytical"):
                 intmass = self.o.m.intmass_analytical(self.o.m.rbf)
-                intmass_halfdr = self.o.m.intmass_analytical(self.o.m.rbf - self.dr / 2)
+                intmass_halfdr = self.o.m.intmass_analytical(
+                    self.o.m.rbf - self.dr / 2
+                )
                 dmass = (intmass - intmass_halfdr) / self.nphis
             else:
-                dmass = self.o.m.dmass_func(self.zs[0], self.dzs[0] / 2, self.dphi)
+                dmass = self.o.m.dmass_func(
+                    self.zs[0], self.dzs[0] / 2, self.dphi
+                )
         elif iz == len(self.zs) - 1:
             # Treat head boundary
             if hasattr(self.o.m, "intmass_analytical"):
                 dmass = self.o.m.intmass_analytical(self.dr / 2) / self.nphis
             else:
-                dmass = self.o.m.dmass_func(self.zs[-2], self.dzs[-2] / 2, self.dphi)
+                dmass = self.o.m.dmass_func(
+                    self.zs[-2], self.dzs[-2] / 2, self.dphi
+                )
         else:
             # Treat the rest of the bowshock
             dmass = self.o.m.dmass_func(z, self.dzs[iz], self.dphi)
@@ -379,7 +387,9 @@ parameters).
     def _populatechan(self, chan, diffv, xpix, ypix, dxpix, dypix, dmass):
         """Populates the channel"""
         if self._cond_populatechan(diffv):
-            self._particle_in_cell(chan, diffv, xpix, ypix, dxpix, dypix, dmass)
+            self._particle_in_cell(
+                chan, diffv, xpix, ypix, dxpix, dypix, dmass
+            )
             if diffv < self.abschanwidth / 2:
                 self._sampling(chan, xpix, ypix)
 
@@ -470,7 +480,9 @@ coincides with the total mass of the cube.
         spa = np.sin(self.pa)
 
         outsidegrid_warning = True
-        ut.progressbar_bowshock(0, self.nzs, length=50, timelapsed=0, intervaltime=0)
+        ut.progressbar_bowshock(
+            0, self.nzs, length=50, timelapsed=0, intervaltime=0
+        )
         for iz, z in enumerate(self.zs):
             if self.verbose:
                 t0 = datetime.now()
@@ -485,8 +497,12 @@ coincides with the total mass of the cube.
                 vzp = -self.o.vzp(z, phi)
                 vlsr = vzp + self.vsys
 
-                xpixcoord = self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]
-                ypixcoord = self.km2arcsec(yp) / self.arcsecpix + self.refpix[1]
+                xpixcoord = (
+                    self.km2arcsec(xp) / self.arcsecpix + self.refpix[0]
+                )
+                ypixcoord = (
+                    self.km2arcsec(yp) / self.arcsecpix + self.refpix[1]
+                )
                 xpix = int(xpixcoord)
                 ypix = int(ypixcoord)
                 # Conditions model point inside cube
@@ -496,13 +512,17 @@ coincides with the total mass of the cube.
                     and (xpix > 0)
                     and (ypix > 0)
                 )
-                condition_inside_velcoverage = minvelchans <= vlsr <= maxvelchans
+                condition_inside_velcoverage = (
+                    minvelchans <= vlsr <= maxvelchans
+                )
                 if condition_inside_map and condition_inside_velcoverage:
                     dxpix = xpixcoord - xpix
                     dypix = ypixcoord - ypix
                     for chan, vchan in enumerate(self.velchans):
                         diffv = np.abs(vlsr - vchan)
-                        self._populatechan(chan, diffv, xpix, ypix, dxpix, dypix, dmass)
+                        self._populatechan(
+                            chan, diffv, xpix, ypix, dxpix, dypix, dmass
+                        )
                 else:
                     if outsidegrid_warning:
                         self._outsidegrid_warning()

@@ -166,7 +166,9 @@ class BowshockModel(BaseModel):
         "rbf_niters": 1000,
     }
 
-    def __init__(self, L0, zj, vj, va, v0, mass, distpc, rbf_obs=None, **kwargs):
+    def __init__(
+        self, L0, zj, vj, va, v0, mass, distpc, rbf_obs=None, **kwargs
+    ):
         super().__init__(distpc)
         self.L0 = L0
         self.zj = zj
@@ -236,7 +238,9 @@ class BowshockModel(BaseModel):
         float
             Transversal component of the velocity [km/s]
         """
-        return self.v0 * (1 + 3 * self.rb(zb) ** 2 / self.gamma() / self.L0**2) ** (-1)
+        return self.v0 * (
+            1 + 3 * self.rb(zb) ** 2 / self.gamma() / self.L0**2
+        ) ** (-1)
 
     def vz(self, zb):
         """
@@ -386,7 +390,9 @@ class BowshockModel(BaseModel):
         if use_minimize:
             bounds = (0, self.rb(0))
             return minimize_scalar(
-                lambda x: np.abs(self.rbf_0(x)), method="bounded", bounds=bounds
+                lambda x: np.abs(self.rbf_0(x)),
+                method="bounded",
+                bounds=bounds,
             ).x
         else:
             ns = self.rbf_niters if ns is None else ns
@@ -427,7 +433,13 @@ class BowshockModel(BaseModel):
         """
         cosa = np.cos(self.tangent_angle(zb))
         tana = np.tan(self.tangent_angle(zb))
-        sd = 0.5 * self.rhoa * cosa * (self.gamma() * tana + 1) ** 2 * self.rb(zb)
+        sd = (
+            0.5
+            * self.rhoa
+            * cosa
+            * (self.gamma() * tana + 1) ** 2
+            * self.rb(zb)
+        )
         return sd
 
     def dr_func(self, zb, dz):
@@ -585,11 +597,16 @@ class BowshockModel(BaseModel):
         uu = rb / self.L0 * (3 / self.gamma()) ** 0.5
         analit_int = uu**5 / 5 + 2 * uu**3 / 3 + uu
         rhoa = massint * (
-            (self.L0 / np.sqrt(3)) ** 3 * np.pi * self.gamma() ** (5 / 2) * analit_int
+            (self.L0 / np.sqrt(3)) ** 3
+            * np.pi
+            * self.gamma() ** (5 / 2)
+            * analit_int
         ) ** (-1)
         return rhoa
 
-    def rhoa_fromintmass_sigma_simple(self, R0, Rb, massint, return_residual=False):
+    def rhoa_fromintmass_sigma_simple(
+        self, R0, Rb, massint, return_residual=False
+    ):
         """
         Computes numerically the ambient density taken into account the
         integrated mass in a range of radii from R0 to Rb
@@ -636,7 +653,9 @@ class BowshockModel(BaseModel):
             Mass rate at which the jet material is ejected sideways from the
             internal working surface [Msun/s]
         """
-        mp0 = rhoa * np.pi * self.L0**2 * (self.vj - self.va) ** 2 / 3 / self.v0
+        mp0 = (
+            rhoa * np.pi * self.L0**2 * (self.vj - self.va) ** 2 / 3 / self.v0
+        )
         return mp0
 
     def mpamb_f_calc(self, rhoa):
@@ -904,7 +923,9 @@ class IWSModel(BaseModel):
         if rr < self.rbf / 2:
             sigma = self.sigma_max
         elif rr >= self.rbf / 2:
-            sigma = self.sigma_max * (2 * (self.rbf - rr) / self.rbf) ** (1 / 2)
+            sigma = self.sigma_max * (2 * (self.rbf - rr) / self.rbf) ** (
+                1 / 2
+            )
         return sigma
 
     def dz_func(self, zb, dr):

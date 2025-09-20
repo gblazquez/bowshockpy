@@ -297,10 +297,18 @@ class BowshockModelPlot:
             )
 
         xmax_plot = np.max(
-            [np.max(self.zs_arrows_tip), np.max(self.zs_arrows), np.max(self.zs_arcsec)]
+            [
+                np.max(self.zs_arrows_tip),
+                np.max(self.zs_arrows),
+                np.max(self.zs_arcsec),
+            ]
         )
         xmin_plot = np.min(
-            [np.min(self.zs_arrows_tip), np.min(self.zs_arrows), np.min(self.zs_arcsec)]
+            [
+                np.min(self.zs_arrows_tip),
+                np.min(self.zs_arrows),
+                np.min(self.zs_arcsec),
+            ]
         )
         xlims = [xmin_plot, xmax_plot * 1.1]
         ymax_plot = np.max(self.rs_arcsec)
@@ -338,13 +346,14 @@ class BowshockModelPlot:
         )
         self.cbaxs[0].xaxis.set_label_position("top")
 
-
         # Deprojected shell Morph. and Kin., color density
 
         # self.minsurfdens_plot = np.percentile(self.surfdenss_gcm2[:-1], 0)
         # self.maxsurfdens_plot = np.percentile(self.surfdenss_gcm2[:-1], 70)
         self.maxsurfdens_plot = (
-            max_plotdens if max_plotdens is not None else np.max(self.surfdenss_gcm2)
+            max_plotdens
+            if max_plotdens is not None
+            else np.max(self.surfdenss_gcm2)
         )
         self.minsurfdens_plot = (
             min_plotdens
@@ -369,8 +378,8 @@ class BowshockModelPlot:
         # )
 
         cmap = "viridis"
-        # we skip the point at the tip, there is a discontinuity and the surface
-        # density is 0
+        # we skip the point at the tip, there is a discontinuity and the
+        # surface density is 0
         for i, zarcsec in enumerate(self.zs_arcsec[:-1]):
             c = ut.get_color(
                 [self.minsurfdens_plot, self.maxsurfdens_plot],
@@ -398,7 +407,9 @@ class BowshockModelPlot:
             cax=self.cbaxs[1],
             orientation="horizontal",
         )
-        self.cbaxs[1].tick_params(axis="x", which="both", top=True, bottom=False)
+        self.cbaxs[1].tick_params(
+            axis="x", which="both", top=True, bottom=False
+        )
         #        self.cbaxs[1].set_xscale("log")
 
         for i, zs_arrow in enumerate(self.zs_arrows):
@@ -416,10 +427,18 @@ class BowshockModelPlot:
             )
 
         xmax_plot = np.max(
-            [np.max(self.zs_arrows_tip), np.max(self.zs_arrows), np.max(self.zs_arcsec)]
+            [
+                np.max(self.zs_arrows_tip),
+                np.max(self.zs_arrows),
+                np.max(self.zs_arcsec),
+            ]
         )
         xmin_plot = np.min(
-            [np.min(self.zs_arrows_tip), np.min(self.zs_arrows), np.min(self.zs_arcsec)]
+            [
+                np.min(self.zs_arrows_tip),
+                np.min(self.zs_arrows),
+                np.min(self.zs_arcsec),
+            ]
         )
         xlims = [xmin_plot, xmax_plot * 1.1]
         ymax_plot = np.max(self.rs_arcsec)
@@ -529,16 +548,17 @@ class BowshockObsModelPlot:
     vs : numpy.ndarray
         Array of the total velocity for each point of the model [km/s].
     vrs : numpy.ndarray
-        Array of the radial component of the velocity at each point of the model
-        [km/s].
-    vzs : numpy.ndarray
-        Array of the z-coordinate component of the velocity at each point of the
+        Array of the radial component of the velocity at each point of the
         model [km/s].
+    vzs : numpy.ndarray
+        Array of the z-coordinate component of the velocity at each point of
+        the model [km/s].
     surfdenss : numpy.ndarray
         Array of the surfance density of the shell at each z-coordinate [Msun
         km-2]
     surfdenss_gcm2 : numpy.ndarray
-        Array of the surfance density of the shell at each z-coordinate [g cm-2]
+        Array of the surfance density of the shell at each z-coordinate [g
+        cm-2]
     axs : dict
         Dictionary of matplotlib.axes.Axes in the figure
     cbaxs : dict
@@ -634,12 +654,20 @@ class BowshockObsModelPlot:
         self.surfdenss = np.array([self.o.m.surfdens(zb) for zb in self.zs])
         self.surfdenss_gcm2 = self.o.solMasskm2togcm2(self.surfdenss)
 
-        self.xps_phi90 = np.array([self.o.xp(zb, phi=np.pi / 2) for zb in self.zs])
+        self.xps_phi90 = np.array(
+            [self.o.xp(zb, phi=np.pi / 2) for zb in self.zs]
+        )
         self.xps_phi0 = np.array([self.o.xp(zb, phi=0) for zb in self.zs])
-        self.xps_phi180 = np.array([self.o.xp(zb, phi=np.pi) for zb in self.zs])
+        self.xps_phi180 = np.array(
+            [self.o.xp(zb, phi=np.pi) for zb in self.zs]
+        )
         self.vloss_phi0 = -np.array([self.o.vzp(zb, phi=0) for zb in self.zs])
-        self.vloss_phi90 = -np.array([self.o.vzp(zb, phi=np.pi / 2) for zb in self.zs])
-        self.vloss_phi180 = -np.array([self.o.vzp(zb, phi=np.pi) for zb in self.zs])
+        self.vloss_phi90 = -np.array(
+            [self.o.vzp(zb, phi=np.pi / 2) for zb in self.zs]
+        )
+        self.vloss_phi180 = -np.array(
+            [self.o.vzp(zb, phi=np.pi) for zb in self.zs]
+        )
         self.maxvlos = np.max([self.vloss_phi0, self.vloss_phi180])
         self.minvlos = np.min([self.vloss_phi0, self.vloss_phi180])
 
@@ -822,7 +850,9 @@ class BowshockObsModelPlot:
         range_point_sizes = np.linspace(
             self.maxpointsize, self.minpointsize, len(self.zs)
         )[::op]
-        point_sizes = [[i] * len(self.vlos_zs_phis_1) for i in range_point_sizes]
+        point_sizes = [
+            [i] * len(self.vlos_zs_phis_1) for i in range_point_sizes
+        ]
         xps_arcsec_1 = self.o.km2arcsec(self.xp_zs_phis_1.T[::op])
         yps_arcsec_1 = self.o.km2arcsec(self.yp_zs_phis_1.T[::op])
         vlos_1 = self.vlos_zs_phis_1.T[::op] + self.o.vsys
@@ -862,7 +892,9 @@ class BowshockObsModelPlot:
         range_point_sizes = np.linspace(
             self.maxpointsize, self.minpointsize, len(self.zs)
         )[::-op]
-        point_sizes = [[i] * len(self.vlos_zs_phis_1) for i in range_point_sizes]
+        point_sizes = [
+            [i] * len(self.vlos_zs_phis_1) for i in range_point_sizes
+        ]
         xps_arcsec_1 = self.o.km2arcsec(self.xp_zs_phis_2.T[::-op])
         yps_arcsec_1 = self.o.km2arcsec(self.yp_zs_phis_2.T[::-op])
         vlos_1 = self.vlos_zs_phis_2.T[::-op] + self.o.vsys
@@ -892,14 +924,18 @@ class BowshockObsModelPlot:
         oylim = self.axs[2].get_ylim()
         self.axs[2].set_xlim([oxlim[0], oxlim[1] + 0.6])
         self.axs[2].set_ylim([oylim[0], oylim[1] + 0.3])
-        text_obj = self.axs[2].text(0.8, 0.85, "Back", transform=self.axs[2].transAxes)
+        text_obj = self.axs[2].text(
+            0.8, 0.85, "Back", transform=self.axs[2].transAxes
+        )
 
         self.axs[2].set_xlabel("Projected length [arcsec]")
 
         range_point_sizes = np.linspace(
             self.maxpointsize, self.minpointsize, len(self.zs)
         )[::1]
-        point_sizes = [[i] * len(self.vlos_zs_phis_1) for i in range_point_sizes]
+        point_sizes = [
+            [i] * len(self.vlos_zs_phis_1) for i in range_point_sizes
+        ]
 
         xps = self.xp_zs_phis_3.T[::1]
         zps = self.zp_zs_phis_3.T[::1]
@@ -934,8 +970,12 @@ class BowshockObsModelPlot:
         )
         x_obs_text = self.x_obs_arrow - 0.13
         y_obs_text = self.y_obs_arrow - 0.12
-        display_coords_text = self.axs[0].transAxes.transform((x_obs_text, y_obs_text))
-        xtext, ytext = self.axs[0].transData.inverted().transform(display_coords_text)
+        display_coords_text = self.axs[0].transAxes.transform(
+            (x_obs_text, y_obs_text)
+        )
+        xtext, ytext = (
+            self.axs[0].transData.inverted().transform(display_coords_text)
+        )
 
         zarrow_tip = larrow * np.cos(self.o.i) + zarrow
         rarrow_tip = larrow * np.sin(self.o.i) + rarrow
@@ -980,7 +1020,11 @@ class BowshockObsModelPlot:
         )
 
         self.cbaxs[0].tick_params(
-            which="both", left=False, labelleft=False, right=True, labelright=True
+            which="both",
+            left=False,
+            labelleft=False,
+            right=True,
+            labelright=True,
         )
         self.cbaxs[0].set_ylabel(
             r"Line-of-sight velocity [km/s]",
@@ -1008,7 +1052,10 @@ class BowshockObsModelPlot:
             label="PV diagram\n along axis",
         )
         allvelsarray = np.array(
-            [self.vloss_phi0[:-1] + self.o.vsys, self.vloss_phi180[:-1] + self.o.vsys]
+            [
+                self.vloss_phi0[:-1] + self.o.vsys,
+                self.vloss_phi180[:-1] + self.o.vsys,
+            ]
         ).ravel()
         argmaxvelpv = np.argmax(np.abs(allvelsarray))
         if allvelsarray[argmaxvelpv] < 0:
@@ -1167,7 +1214,12 @@ def plot_channel(
     fig = plt.figure(figsize=(4, 3.75))
 
     gs = GridSpec(
-        1, 2, wspace=0.05, hspace=0.05, width_ratios=[1, 0.05], height_ratios=[1]
+        1,
+        2,
+        wspace=0.05,
+        hspace=0.05,
+        width_ratios=[1, 0.05],
+        height_ratios=[1],
     )
     ax = plt.subplot(gs[0, 0])
     cbax = plt.subplot(gs[0, 1])
@@ -1228,7 +1280,12 @@ def plot_channel(
 
     _ = plt.colorbar(im, label=units, cax=cbax)
     cbax.tick_params(
-        axis="y", right=True, left=False, labelright=True, direction="in", color="w"
+        axis="y",
+        right=True,
+        left=False,
+        labelright=True,
+        direction="in",
+        color="w",
     )
 
     ax.set_ylabel("Dec. [arcsec]")
@@ -1291,8 +1348,8 @@ def plot_channels(
         Maximum value of the colormap. If None (default), the maximum value of
         the channel is chosen.
     vcenter : float, optional
-        Center value of the colormap. If None (default), the middle vale will be
-        chosen.
+        Center value of the colormap. If None (default), the middle vale will
+        be chosen.
     vmin : float, optional
         Minimum value of the colormap. If None (default), the minimum value of
         the channel is chosen.
@@ -1340,11 +1397,16 @@ def plot_channels(
     size_factor = 2.5
     beam_ax = (nrow - 1) * ncol
     figsize = (
-        figsize if figsize is not None else (ncol * size_factor, nrow * size_factor)
+        figsize
+        if figsize is not None
+        else (ncol * size_factor, nrow * size_factor)
     )
     fig = plt.figure(figsize=figsize)
     gs = GridSpec(
-        nrow, ncol + 1, height_ratios=[1] * nrow, width_ratios=[1] * ncol + [0.1]
+        nrow,
+        ncol + 1,
+        height_ratios=[1] * nrow,
+        width_ratios=[1] * ncol + [0.1],
     )
     gs.update(wspace=wspace, hspace=hspace)
 
@@ -1406,10 +1468,18 @@ def plot_channels(
             direction="in",
             color="w",
         )
-        axs[chan].xaxis.set_major_locator(ticker.MultipleLocator(xmajor_locator))
-        axs[chan].yaxis.set_major_locator(ticker.MultipleLocator(ymajor_locator))
-        axs[chan].xaxis.set_minor_locator(ticker.MultipleLocator(xminor_locator))
-        axs[chan].yaxis.set_minor_locator(ticker.MultipleLocator(yminor_locator))
+        axs[chan].xaxis.set_major_locator(
+            ticker.MultipleLocator(xmajor_locator)
+        )
+        axs[chan].yaxis.set_major_locator(
+            ticker.MultipleLocator(ymajor_locator)
+        )
+        axs[chan].xaxis.set_minor_locator(
+            ticker.MultipleLocator(xminor_locator)
+        )
+        axs[chan].yaxis.set_minor_locator(
+            ticker.MultipleLocator(yminor_locator)
+        )
         if (j > 0) and (i < nrow - 1):
             axs[chan].set_xticklabels([])
             axs[chan].set_yticklabels([])
@@ -1436,7 +1506,12 @@ def plot_channels(
         orientation="vertical",
     )
     cbax.tick_params(
-        axis="y", right=True, left=False, labelright=True, direction="in", color="w"
+        axis="y",
+        right=True,
+        left=False,
+        labelright=True,
+        direction="in",
+        color="w",
     )
     cbax.set_ylabel(units)
     if return_fig_axs:
@@ -1470,7 +1545,8 @@ def plotpv(
     chan_vels : list or numpy.ndarray
         list or numpy.ndarray with the velocities corresponding to the channels
     ax : matplotlib.axes.Axes, optional
-        The matplotlib.axes.Axes` instance in which the position velodity diagram is drawn.
+        The matplotlib.axes.Axes` instance in which the position velodity
+        diagram is drawn.
     cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
     vmax : float, optional
@@ -1532,7 +1608,9 @@ def plotpv(
         cmap=cmap,
         interpolation=interpolation,
     )
-    ax.set_aspect(np.abs(rangex[0] - rangex[-1]) / np.abs(chan_vels[0] - chan_vels[-1]))
+    ax.set_aspect(
+        np.abs(rangex[0] - rangex[-1]) / np.abs(chan_vels[0] - chan_vels[-1])
+    )
     ax.set_ylabel("Velocity [km/s]")
     ax.set_xlabel("Distance [arcsec]")
     ax.minorticks_on()
@@ -1594,8 +1672,8 @@ def plotsumint(
     sumint : numpy.ndarray
         Image of the sumation of all the pixels along the velocty axis.
     ax : matplotlib.axes.Axes, optional
-        The matplotlib.axes.Axes instance in which the position velodity diagram is
-        drawn.
+        The matplotlib.axes.Axes instance in which the position velodity
+        diagram is drawn.
     cbax : matplotlib.axes.Axes, optional
         The matplotlib.axes.Axes instance in which the color bar is drawn.
     extent : list
@@ -1998,7 +2076,11 @@ def plotmom1(
         )
 
     plt.colorbar(
-        im, cax=cbax, orientation="horizontal", extend=extend_cbar, label=cbarlabel
+        im,
+        cax=cbax,
+        orientation="horizontal",
+        extend=extend_cbar,
+        label=cbarlabel,
     )
     cbax.tick_params(
         axis="x",
@@ -2167,7 +2249,11 @@ def plotmom2(
         )
 
     plt.colorbar(
-        im, cax=cbax, orientation="horizontal", extend=extend_cbar, label=cbarlabel
+        im,
+        cax=cbax,
+        orientation="horizontal",
+        extend=extend_cbar,
+        label=cbarlabel,
     )
     cbax.tick_params(
         axis="x",
@@ -2263,8 +2349,12 @@ def plotmaxintens(
     else:
         fig = None
 
-    vmax = vmax if vmax is not None else np.max(maxintens[~np.isnan(maxintens)])
-    vmin = vmin if vmin is not None else np.min(maxintens[~np.isnan(maxintens)])
+    vmax = (
+        vmax if vmax is not None else np.max(maxintens[~np.isnan(maxintens)])
+    )
+    vmin = (
+        vmin if vmin is not None else np.min(maxintens[~np.isnan(maxintens)])
+    )
     vcenter = vcenter if vcenter is not None else (vmax - vmin) / 2 + vmin
     norm = TwoSlopeNorm(vmax=vmax, vcenter=vcenter, vmin=vmin)
     im = ax.imshow(

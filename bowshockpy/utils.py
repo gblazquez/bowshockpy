@@ -38,6 +38,7 @@ def print_example(example):
             - Example 2: A blueshifted bowshock
             - Example 3: A side-on bowshock
             - Example 4: Several bowshocks in one cube
+            - Example 5: Custom computation of opacities and intensities
     """
     root_dir = os.path.dirname(os.path.abspath(__file__))
     with open(f"{example}", "w") as wr:
@@ -94,7 +95,9 @@ def progressbar_bowshock(
     printend : str
         End of the progress bar
     """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    percent = ("{0:." + str(decimals) + "f}").format(
+        100 * (iteration / float(total))
+    )
     filledlength = int(length * iteration // total)
     _bar = fill * filledlength + ")" + " " * (length - filledlength)
     print(

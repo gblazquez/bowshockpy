@@ -39,3 +39,6 @@ Repository = "https://github.com/gblazquez/bowshockpy"
 
 [tool.setuptools.packages]
 find = {}
+
+[tool.black]
+line-length = 79
