@@ -24,6 +24,10 @@ warnings.filterwarnings("error", category=ut.UserError)
 warnings.filterwarnings("always", category=UserWarning)
 
 
+
+
+
+
 class CubeProcessing(MassCube):
     """
     Process a MassCube instance
@@ -735,19 +739,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
                     if self._newck(ck, s) not in self.cubes:
                         getattr(self, self.dos[s])(ck)
 
-    def savecube(self, ck, fitsname=None):
-        """
-        Saves the cube in fits format
-
-        Parameters
-        -----------
-        ck : str
-            Key of the cube to convolve
-        fitsname : str
-            Relative path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}.fits. If the path does not
-            exist, it will be created.
-        """
+    def _create_header_cube(self, ck):
         hdr = ut.get_default_hdr(naxis=3)
         if self.coordcube == "offset":
             ctype1 = "OFFSET"
@@ -793,8 +785,22 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         hdr["CRPIX3"] = 1.0
         hdr["CUNIT3"] = "km/s"
         hdr["RESTFRQ"] = self.nu.to(u.Hz).value
+        return hdr
 
-        self.hdrs[ck] = hdr
+    def savecube(self, ck, fitsname=None):
+        """
+        Saves the cube in fits format
+
+        Parameters
+        -----------
+        ck : str
+            Key of the cube to convolve
+        fitsname : str
+            Relative path name of the fits file. If None, it will be saved as
+            models/{self.modelname}/fits/{ck}.fits. If the path does not
+            exist, it will be created.
+        """
+        self.hdrs[ck] = self._create_header_cube(ck)
         hdu = fits.PrimaryHDU(self.cubes[ck])
         hdul = fits.HDUList([hdu])
         hdu.header = self.hdrs[ck]
@@ -964,6 +970,69 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         if return_fig_axs:
             return fig, axs, cbax
 
+    def _create_header_pv(self, ckpv, bunit):
+        hdrpv = ut.get_default_hdr(naxis=2, beam=False, pv=True)
+        hdrpv["NAXIS"] = 2
+        hdrpv["NAXIS1"] = np.shape(self.cubes[ckpv])[1]
+        hdrpv["NAXIS2"] = np.shape(self.cubes[ckpv])[0]
+        hdrpv["BTYPE"] = self.btypes[self._q(ckpv)]
+        hdrpv["OBJECT"] = f"{self.modelname}"
+        hdrpv["BUNIT"] = bunit
+        hdrpv["CTYPE1"] = "OFFSET"
+        hdrpv["CRVAL1"] = 0.0
+        hdrpv["CDELT1"] = self.arcsecpix
+        hdrpv["CRPIX1"] = self.refpixs[ckpv][0] + 1.0
+        hdrpv["CUNIT1"] = "arcsec"
+        hdrpv["CTYPE2"] = "VRAD"
+        hdrpv["CRVAL2"] = self.velchans[0]
+        hdrpv["CDELT2"] = self.chanwidth
+        hdrpv["CRPIX2"] = 1.0
+        hdrpv["CUNIT2"] = "km/s"
+        hdrpv["RESTFRQ"] = self.nu.to(u.Hz).value
+        return hdrpv
+
+    def _create_header_moment(self, ck, bunit):
+        if self.coordcube == "offset":
+            ctype1 = "OFFSET"
+            ctype2 = "OFFSET"
+            cunit1 = "arcsec"
+            cunit2 = "arcsec"
+            crval1 = 0.0
+            crval2 = 0.0
+            cdelt1 = self.arcsecpix
+            cdelt2 = self.arcsecpix
+        else:
+            ctype1 = "RA---SIN"
+            ctype2 = "DEC--SIN"
+            cunit1 = "deg"
+            cunit2 = "deg"
+            crval1 = self.ra_source_deg
+            crval2 = self.dec_source_deg
+            cdelt1 = -self.arcsecpix / 3600
+            cdelt2 = self.arcsecpix / 3600
+        hdr = ut.get_default_hdr(naxis=2)
+        hdr["NAXIS"] = 2
+        hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
+        hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
+        if self.beamarea is not None:
+            hdr["BMAJ"] = self.bmaj / 3600
+            hdr["BMIN"] = self.bmin / 3600
+            hdr["BPA"] = self.pabeam
+        hdr["BTYPE"] = self.btypes[self._q(ck)]
+        hdr["OBJECT"] = f"{self.modelname}"
+        hdr["BUNIT"] = bunit
+        hdr["CTYPE1"] = ctype1
+        hdr["CRVAL1"] = crval1
+        hdr["CDELT1"] = cdelt1
+        hdr["CRPIX1"] = self.refpixs[ck][0] + 1.0
+        hdr["CUNIT1"] = cunit1
+        hdr["CTYPE2"] = ctype2
+        hdr["CRVAL2"] = crval2
+        hdr["CDELT2"] = cdelt2
+        hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
+        hdr["CUNIT2"] = cunit2
+        return hdr
+
     def pvalongz(self, ck, halfwidth=0, savefits=False, fitsname=None):
         """
         Performs the position velocity diagram along the self.papv direction
@@ -999,25 +1068,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             axis=1,
         )
         if savefits:
-            hdrpv = ut.get_default_hdr(naxis=2, beam=False, pv=True)
-            hdrpv["NAXIS"] = 2
-            hdrpv["NAXIS1"] = np.shape(self.cubes[ckpv])[1]
-            hdrpv["NAXIS2"] = np.shape(self.cubes[ckpv])[0]
-            hdrpv["BTYPE"] = self.btypes[self._q(ckpv)]
-            hdrpv["OBJECT"] = f"{self.modelname}"
-            hdrpv["BUNIT"] = self.bunits[self._q(ckpv)]
-            hdrpv["CTYPE1"] = "OFFSET"
-            hdrpv["CRVAL1"] = 0.0
-            hdrpv["CDELT1"] = self.arcsecpix
-            hdrpv["CRPIX1"] = self.refpixs[ckpv][0] + 1.0
-            hdrpv["CUNIT1"] = "arcsec"
-            hdrpv["CTYPE2"] = "VRAD"
-            hdrpv["CRVAL2"] = self.velchans[0]
-            hdrpv["CDELT2"] = self.chanwidth
-            hdrpv["CRPIX2"] = 1.0
-            hdrpv["CUNIT2"] = "km/s"
-            hdrpv["RESTFRQ"] = self.nu.to(u.Hz).value
-
+            hdrpv = self._create_header_pv(
+                ckpv, bunit=self.bunits[self._q(ckpv)]
+            )
             hdu = fits.PrimaryHDU(pvimage)
             hdul = fits.HDUList([hdu])
             hdu.header = hdrpv
@@ -1058,47 +1111,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         chan_range = chan_range if chan_range is not None else [0, self.nc]
         sumintimage = moments.sumint(self.cubes[ck], chan_range=chan_range)
         if savefits:
-            if self.coordcube == "offset":
-                ctype1 = "OFFSET"
-                ctype2 = "OFFSET"
-                cunit1 = "arcsec"
-                cunit2 = "arcsec"
-                crval1 = 0.0
-                crval2 = 0.0
-                cdelt1 = self.arcsecpix
-                cdelt2 = self.arcsecpix
-            else:
-                ctype1 = "RA---SIN"
-                ctype2 = "DEC--SIN"
-                cunit1 = "deg"
-                cunit2 = "deg"
-                crval1 = self.ra_source_deg
-                crval2 = self.dec_source_deg
-                cdelt1 = -self.arcsecpix / 3600
-                cdelt2 = self.arcsecpix / 3600
-
-            hdr = ut.get_default_hdr(naxis=2)
-            hdr["NAXIS"] = 2
-            hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
-            hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            if self.beamarea is not None:
-                hdr["BMAJ"] = self.bmaj / 3600
-                hdr["BMIN"] = self.bmin / 3600
-                hdr["BPA"] = self.pabeam
-            hdr["BTYPE"] = self.btypes[self._q(ck)]
-            hdr["OBJECT"] = f"{self.modelname}"
-            hdr["BUNIT"] = self.bunits[self._q(ck)]
-            hdr["CTYPE1"] = ctype1
-            hdr["CRVAL1"] = crval1
-            hdr["CDELT1"] = cdelt1
-            hdr["CRPIX1"] = self.refpixs[ck][0] + 1.0
-            hdr["CUNIT1"] = cunit1
-            hdr["CTYPE2"] = ctype2
-            hdr["CRVAL2"] = crval2
-            hdr["CDELT2"] = cdelt2
-            hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
-            hdr["CUNIT2"] = cunit2
-
+            hdr = self._create_header_moment(
+                ck, bunit=self.bunits[self._q(ck)]
+            )
             hdu = fits.PrimaryHDU(sumintimage)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
@@ -1141,46 +1156,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             chan_range=chan_range,
         )
         if savefits:
-            if self.coordcube == "offset":
-                ctype1 = "OFFSET"
-                ctype2 = "OFFSET"
-                cunit1 = "arcsec"
-                cunit2 = "arcsec"
-                crval1 = 0.0
-                crval2 = 0.0
-                cdelt1 = self.arcsecpix
-                cdelt2 = self.arcsecpix
-            else:
-                ctype1 = "RA---SIN"
-                ctype2 = "DEC--SIN"
-                cunit1 = "deg"
-                cunit2 = "deg"
-                crval1 = self.ra_source_deg
-                crval2 = self.dec_source_deg
-                cdelt1 = -self.arcsecpix / 3600
-                cdelt2 = self.arcsecpix / 3600
-            hdr = ut.get_default_hdr(naxis=2)
-            hdr["NAXIS"] = 2
-            hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
-            hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            if self.beamarea is not None:
-                hdr["BMAJ"] = self.bmaj / 3600
-                hdr["BMIN"] = self.bmin / 3600
-                hdr["BPA"] = self.pabeam
-            hdr["BTYPE"] = self.btypes[self._q(ck)]
-            hdr["OBJECT"] = f"{self.modelname}"
-            hdr["BUNIT"] = "Jy/beam.km/s"
-            hdr["CTYPE1"] = ctype1
-            hdr["CRVAL1"] = crval1
-            hdr["CDELT1"] = cdelt1
-            hdr["CRPIX1"] = self.refpixs[ck][0] + 1.0
-            hdr["CUNIT1"] = cunit1
-            hdr["CTYPE2"] = ctype2
-            hdr["CRVAL2"] = crval2
-            hdr["CDELT2"] = cdelt2
-            hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
-            hdr["CUNIT2"] = cunit2
-
+            hdr = self._create_header_moment(ck, bunit="Jy/beam.km/s")
             hdu = fits.PrimaryHDU(mom0)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
@@ -1235,46 +1211,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
         )
         if savefits:
-            if self.coordcube == "offset":
-                ctype1 = "OFFSET"
-                ctype2 = "OFFSET"
-                cunit1 = "arcsec"
-                cunit2 = "arcsec"
-                crval1 = 0.0
-                crval2 = 0.0
-                cdelt1 = self.arcsecpix
-                cdelt2 = self.arcsecpix
-            else:
-                ctype1 = "RA---SIN"
-                ctype2 = "DEC--SIN"
-                cunit1 = "deg"
-                cunit2 = "deg"
-                crval1 = self.ra_source_deg
-                crval2 = self.dec_source_deg
-                cdelt1 = -self.arcsecpix / 3600
-                cdelt2 = self.arcsecpix / 3600
-            hdr = ut.get_default_hdr(naxis=2)
-            hdr["NAXIS"] = 2
-            hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
-            hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            if self.beamarea is not None:
-                hdr["BMAJ"] = self.bmaj / 3600
-                hdr["BMIN"] = self.bmin / 3600
-                hdr["BPA"] = self.pabeam
-            hdr["BTYPE"] = self.btypes[self._q(ck)]
-            hdr["OBJECT"] = f"{self.modelname}"
-            hdr["BUNIT"] = "km/s"
-            hdr["CTYPE1"] = ctype1
-            hdr["CRVAL1"] = crval1
-            hdr["CDELT1"] = cdelt1
-            hdr["CRPIX1"] = self.refpixs[ck][0] + 1.0
-            hdr["CUNIT1"] = cunit1
-            hdr["CTYPE2"] = ctype2
-            hdr["CRVAL2"] = crval2
-            hdr["CDELT2"] = cdelt2
-            hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
-            hdr["CUNIT2"] = cunit2
-
+            hdr = self._create_header_moment(ck, bunit="km/s")
             hdu = fits.PrimaryHDU(mom1)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
@@ -1329,48 +1266,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
         )
         if savefits:
-            if self.coordcube == "offset":
-                ctype1 = "OFFSET"
-                ctype2 = "OFFSET"
-                cunit1 = "arcsec"
-                cunit2 = "arcsec"
-                crval1 = 0.0
-                crval2 = 0.0
-                cdelt1 = self.arcsecpix
-                cdelt2 = self.arcsecpix
-            else:
-                ctype1 = "RA---SIN"
-                ctype2 = "DEC--SIN"
-                cunit1 = "deg"
-                cunit2 = "deg"
-                crval1 = self.ra_source_deg
-                crval2 = self.dec_source_deg
-                cdelt1 = -self.arcsecpix / 3600
-                cdelt2 = self.arcsecpix / 3600
-            hdr = ut.get_default_hdr(naxis=2)
-            hdr["NAXIS"] = 2
-            hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
-            hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            hdr["EXTEND"] = True
-            if self.beamarea is not None:
-                hdr["BMAJ"] = self.bmaj / 3600
-                hdr["BMIN"] = self.bmin / 3600
-                hdr["BPA"] = self.pabeam
-            hdr["BTYPE"] = self.btypes[self._q(ck)]
-            hdr["OBJECT"] = f"{self.modelname}"
-            hdr["BUNIT"] = "km/s"
-            hdr["RADESYS"] = "ICRS"
-            hdr["CTYPE1"] = ctype1
-            hdr["CRVAL1"] = crval1
-            hdr["CDELT1"] = cdelt1
-            hdr["CRPIX1"] = self.refpixs[ck][0] + 1.0
-            hdr["CUNIT1"] = cunit1
-            hdr["CTYPE2"] = ctype2
-            hdr["CRVAL2"] = crval2
-            hdr["CDELT2"] = cdelt2
-            hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
-            hdr["CUNIT2"] = cunit2
-
+            hdr = self._create_header_moment(ck, bunit="km/s")
             hdu = fits.PrimaryHDU(mom2)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
@@ -1426,46 +1322,9 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
         )
         if savefits:
-            if self.coordcube == "offset":
-                ctype1 = "OFFSET"
-                ctype2 = "OFFSET"
-                cunit1 = "arcsec"
-                cunit2 = "arcsec"
-                crval1 = 0.0
-                crval2 = 0.0
-                cdelt1 = self.arcsecpix
-                cdelt2 = self.arcsecpix
-            else:
-                ctype1 = "RA---SIN"
-                ctype2 = "DEC--SIN"
-                cunit1 = "deg"
-                cunit2 = "deg"
-                crval1 = self.ra_source_deg
-                crval2 = self.dec_source_deg
-                cdelt1 = -self.arcsecpix / 3600
-                cdelt2 = self.arcsecpix / 3600
-            hdr = ut.get_default_hdr(naxis=2)
-            hdr["NAXIS"] = 2
-            hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
-            hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-            if self.beamarea is not None:
-                hdr["BMAJ"] = self.bmaj / 3600
-                hdr["BMIN"] = self.bmin / 3600
-                hdr["BPA"] = self.pabeam
-            hdr["BTYPE"] = self.btypes[self._q(ck)]
-            hdr["OBJECT"] = f"{self.modelname}"
-            hdr["BUNIT"] = self.bunits[self._q(ck)]
-            hdr["CTYPE1"] = ctype1
-            hdr["CRVAL1"] = crval1
-            hdr["CDELT1"] = cdelt1
-            hdr["CRPIX1"] = self.refpixs[ck][0] + 1.0
-            hdr["CUNIT1"] = cunit1
-            hdr["CTYPE2"] = ctype2
-            hdr["CRVAL2"] = crval2
-            hdr["CDELT2"] = cdelt2
-            hdr["CRPIX2"] = self.refpixs[ck][1] + 1.0
-            hdr["CUNIT2"] = cunit2
-
+            hdr = self._create_header_moment(
+                ck, bunit=self.bunits[self._q(ck)]
+            )
             hdu = fits.PrimaryHDU(maxintens)
             hdul = fits.HDUList([hdu])
             hdu.header = hdr
@@ -1532,9 +1391,6 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         pvimage : numpy.ndarray
             Position velocity diagram
         """
-        # ckpv = self._newck(ck, "r")
-        # if ckpv not in self.cubes:
-        #     self._rotate(angle=self.papv+90, ck=ck, forpv=True)
 
         pvimage = self.pvalongz(
             ck,
@@ -1845,7 +1701,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
             * self.arcsecpix
         )
-        fig, axs, cbax, velcmap = pl.plotmom1(
+        fig, axs, cbax, _ = pl.plotmom1(
             mom1,
             extent=extent,
             ax=ax,

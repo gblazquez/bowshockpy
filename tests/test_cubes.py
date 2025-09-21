@@ -188,3 +188,102 @@ def test_pv():
     assert np.isclose(
         pv_xy, 0.03828409594116648
     ), "Fail to obtain the expected values of position-velocity diagram"
+
+
+def test_cube_header():
+    ck = "I"
+    _ , ny, nx = np.shape(bscp.cubes[ck])
+    hdrcube = bscp._create_header_cube(ck)
+    hdrpv = bscp._create_header_pv(ck, bunit="")
+    hdrmom = bscp._create_header_moment(ck, bunit="")
+    ra_i_edge_py = (-0.5 - bscp.refpixs[ck][0]) * bscp.arcsecpix
+    ra_f_edge_py = (nx - 0.5 - bscp.refpixs[ck][0]) * bscp.arcsecpix
+    dec_i_edge_py = (-0.5 - bscp.refpixs[ck][1]) * bscp.arcsecpix
+    dec_f_edge_py = (ny - 0.5 - bscp.refpixs[ck][1]) * bscp.arcsecpix
+    vel_i_edge_py = bscp.velchans[0] - bscp.chanwidth / 2
+    vel_f_edge_py = bscp.velchans[-1] + bscp.chanwidth / 2
+
+    ra_i_edge_fits = (
+        hdrcube["CDELT1"] * (0.5 - hdrcube["CRPIX1"]) + hdrcube["CRVAL1"]
+    )
+    ra_f_edge_fits = (
+        hdrcube["CDELT1"] * (hdrcube["NAXIS1"] + 0.5 - hdrcube["CRPIX1"])
+        + hdrcube["CRVAL1"]
+    )
+
+    dec_i_edge_fits = (
+        hdrcube["CDELT2"] * (0.5 - hdrcube["CRPIX2"]) + hdrcube["CRVAL2"]
+    )
+    dec_f_edge_fits = (
+        hdrcube["CDELT2"] * (hdrcube["NAXIS2"] + 0.5 - hdrcube["CRPIX2"])
+        + hdrcube["CRVAL2"]
+    )
+
+    ra_i_edge_momfits = (
+        hdrmom["CDELT1"] * (0.5 - hdrmom["CRPIX1"]) + hdrmom["CRVAL1"]
+    )
+    ra_f_edge_momfits = (
+        hdrmom["CDELT1"] * (hdrmom["NAXIS1"] + 0.5 - hdrmom["CRPIX1"])
+        + hdrmom["CRVAL1"]
+    )
+
+    dec_i_edge_momfits = (
+        hdrmom["CDELT2"] * (0.5 - hdrmom["CRPIX2"]) + hdrmom["CRVAL2"]
+    )
+    dec_f_edge_momfits = (
+        hdrmom["CDELT2"] * (hdrmom["NAXIS2"] + 0.5 - hdrmom["CRPIX2"])
+        + hdrmom["CRVAL2"]
+    )
+
+    vel_i_edge_fits = (
+        hdrcube["CDELT3"] * (0.5 - hdrcube["CRPIX3"]) + hdrcube["CRVAL3"]
+    )
+
+    vel_f_edge_fits = (
+        hdrcube["CDELT3"] * (hdrcube["NAXIS3"] + 0.5 - hdrcube["CRPIX3"])
+        + hdrcube["CRVAL3"]
+    )
+
+    vel_i_edge_pvfits = (
+        hdrpv["CDELT2"] * (0.5 - hdrpv["CRPIX2"]) + hdrpv["CRVAL2"]
+    )
+
+    vel_f_edge_pvfits = (
+        hdrpv["CDELT2"] * (hdrpv["NAXIS2"] + 0.5 - hdrpv["CRPIX2"])
+        + hdrpv["CRVAL2"]
+    )
+
+    ra_i_ok = np.isclose(ra_i_edge_py, ra_i_edge_fits)
+    ra_f_ok = np.isclose(ra_f_edge_py, ra_f_edge_fits)
+
+    dec_i_ok = np.isclose(dec_i_edge_py, dec_i_edge_fits)
+    dec_f_ok = np.isclose(dec_f_edge_py, dec_f_edge_fits)
+
+    vel_i_ok = np.isclose(vel_i_edge_py, vel_i_edge_fits)
+    vel_f_ok = np.isclose(vel_f_edge_py, vel_f_edge_fits)
+
+    vel_i_ok_pv = np.isclose(vel_i_edge_py, vel_i_edge_pvfits)
+    vel_f_ok_pv = np.isclose(vel_f_edge_py, vel_f_edge_pvfits)
+
+    ra_i_momok = np.isclose(ra_i_edge_py, ra_i_edge_momfits)
+    ra_f_momok = np.isclose(ra_f_edge_py, ra_f_edge_momfits)
+
+    dec_i_momok = np.isclose(dec_i_edge_py, dec_i_edge_momfits)
+    dec_f_momok = np.isclose(dec_f_edge_py, dec_f_edge_momfits)
+
+    assert all(
+        [
+            ra_i_ok,
+            ra_f_ok,
+            dec_i_ok,
+            dec_f_ok,
+            vel_i_ok,
+            vel_f_ok,
+            vel_i_ok_pv,
+            vel_f_ok_pv,
+            ra_i_momok,
+            ra_f_momok,
+            dec_i_momok,
+            dec_f_momok,
+        ]
+    ), f"{ra_i_ok, ra_f_ok, dec_i_ok, dec_f_ok}"
