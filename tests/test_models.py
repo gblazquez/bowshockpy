@@ -2,7 +2,8 @@ import numpy as np
 from astropy import units as u
 
 from bowshockpy.modelproj import ObsModel
-from bowshockpy.models import BowshockModel
+from bowshockpy.models import BowshockModel, IWSModel
+import bowshockpy.plots as pl
 
 distpc = 300
 L0 = (0.391 * distpc * u.au).to(u.km).value
@@ -15,14 +16,51 @@ rbf_obs = (0.75 * distpc * u.au).to(u.km).value
 bsm = BowshockModel(
     L0=L0, zj=zj, vj=vj, va=va, v0=v0, mass=mass, distpc=distpc, rbf_obs=rbf_obs
 )
+bsm2 = BowshockModel(
+    L0=L0, zj=zj, vj=vj, va=va, v0=v0, mass=mass, distpc=distpc, rbf_obs=None
+)
 bso = ObsModel(
     bsm,
     i_deg=20.0,
     vsys=0,
 )
 
+distpc = 300
 
-def test_BowshockModel():
+modelname = "IWS"
+a =  0.9
+z0 = (4.0*distpc*u.au).to(u.km).value
+zf = (3.8 * distpc * u.au).to(u.km).value
+vf = 13.0
+vj = 62.0
+sigma_max = (10**(-3)*u.g*u.cm**(-2)).to(u.Msun*u.km**(-2)).value
+
+iws = IWSModel(
+    a=a,
+    z0=z0,
+    zf=zf,
+    vf=vf,
+    vj=vj,
+    sigma_max=sigma_max,
+    distpc=distpc,
+)
+
+with np.errstate(divide="ignore", invalid="ignore"):
+    iws_modelplot = pl.BowshockModelPlot(
+        iws,
+        )
+
+obsiws = ObsModel(
+    iws,
+    i_deg = 38,
+    pa_deg=25,
+)
+
+with np.errstate(divide="ignore", invalid="ignore"):
+    obsiws_plot = obsiws.get_obsmodelplot()
+
+
+def test_bowshockmodel():
     """Test that BowshockModel produce the expected values"""
     assert np.isclose(
         bsm.mp0_solmassyr, 1.4013290507098549e-06
@@ -47,3 +85,16 @@ def test_numerical_vs_analytical():
     assert np.isclose(
         mass_halfradius_analytical, mass_halfradius_numerical
     ), "Analytical mass computation differs from the numerical"
+
+def test_rbf():
+    """Tests computation of final radius"""
+    assert np.isclose(
+            (bsm2.rbf*u.km).to(u.au).value / distpc, 0.6201861491579407
+    ), "BowshockModel failed to produce the expected value for rbf"
+
+
+def test_obsplot():
+    """Tests get_obsmodelplot"""
+    assert np.isclose(
+        obsiws_plot.xps_phi0_arcsec[0], 2.97385002658107
+    ), "ObsModel.get_obsmodelplot failed to produce the expected value for xps_phi0_arcsec"
