@@ -287,10 +287,10 @@ class CubeProcessing(MassCube):
 
     def _check_combine_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
-            if isinstance(att, (float, int)):
-                att_refval = getattr(modelcubes[0], att)
+            att_ref = getattr(modelcubes[0], att)
+            if isinstance(att_ref, (float, int)):
                 allclose = all(
-                    np.isclose(att_refval, getattr(mc, att), rtol=10 ** (-8))
+                    np.isclose(att_ref, getattr(mc, att), rtol=10 ** (-8))
                     for mc in modelcubes
                 )
                 if not allclose:
