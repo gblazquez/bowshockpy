@@ -298,7 +298,7 @@ parameters).
             self.vt = self.vt
         else:
             try:
-                self.vt = float(self.vt.split("x")[0]) * self.chanwidth
+                self.vt = float(self.vt.split("x")[0]) * self.abschanwidth
             except (TypeError, ValueError):
                 self._wrong_format_vt_error()
 

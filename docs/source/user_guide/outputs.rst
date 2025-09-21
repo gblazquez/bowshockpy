@@ -35,7 +35,7 @@ The filename of each cube is an abbreviation of its quantity and the operations 
      - I
      - Jy/beam
 
-.. list-table:: Operations performed to the cubes files
+.. list-table:: Operations that can be performed to the cubes
    :widths: 10 4
    :header-rows: 1
 
@@ -50,7 +50,7 @@ The filename of each cube is an abbreviation of its quantity and the operations 
    * - convolve
      - c
 
-For example, the cube I_nc.fits, is a cube of the intensities (I) with Gaussian noise (n) and convolved (c).
+For example, the cube I_nc.fits, is a cube of the intensities (I) with Gaussian noise (n) and convolved (c). The operation "rotate" is performed internally before computing the position-velocity diagram.
 
 
 Plots of the morphology and kinematics of the bowshock
