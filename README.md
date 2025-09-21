@@ -25,7 +25,7 @@ An extensive documentation on `BowshockPy` can be found [here](https://bowshockp
 - photutils
 - scipy
 
-It has been tested in python versions 3.8-3.12, but it could work with other versions also.
+It has been tested in python versions 3.9-3.12, but it could work with other versions also.
 
 ## Installation
 
