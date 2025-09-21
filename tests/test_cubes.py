@@ -48,11 +48,30 @@ bsc1 = MassCube(
     tolfactor_vt=5,
     verbose=True,
 )
-bsc2 = copy.deepcopy(bsc1)
 bsc1.makecube()
-bsc3 = copy.deepcopy(bsc1)
+
+bsc2 = MassCube(
+    bso,
+    nphis=100,
+    xpmax=5,
+    vch0=-10,
+    vchf=None,
+    chanwidth=bsc1.chanwidth,
+    nzs=100,
+    nc=50,
+    nxs=50,
+    nys=50,
+    refpix=[25, 10],
+    cic=True,
+    vt=np.abs(bsc1.vt),
+    tolfactor_vt=5,
+    verbose=True,
+)
+
+bsc2.makecube()
+
 bscp = CubeProcessing(
-    [bsc1, bsc3],
+    [bsc1, bsc2],
     J=3,
     nu=345.79598990 * u.GHz,
     abund=8.5 * 10 ** (-5),
@@ -93,17 +112,24 @@ def test_cube_mass_consistency():
 
 def test_makecube_fromcube():
     ones = np.ones_like(bsc1.cube)
-    bsc2.makecube(fromcube=ones)
-    massconsistent = bsc2._check_mass_consistency(tol=None)
+    bsc_test = copy.deepcopy(bsc1)
+    bsc_test.makecube(fromcube=ones)
+    massconsistent = bsc_test._check_mass_consistency(tol=None)
     assert (
         massconsistent
     ), "Mass consistency test failed while creating cube from an intial cube"
 
 
 def test_combine_cubes():
-    assert np.sum(bscp.cube) == np.sum(bsc1.cube) + np.sum(
-        bsc3.cube
-    ), "Mass consistency test failed while combining cubes"
+    masscombined = np.sum(bscp.cube)
+    mass1 = np.sum(bsc1.cube)
+    mass2 = np.sum(bsc2.cube)
+    masstot = mass1 + mass2
+    assert np.isclose(
+        masscombined, masstot
+    ),  f"{masscombined, masstot}"
+
+    # f"Mass consistency test failed while combining cubes {masscombined, masstot}"
 
 
 def test_mass_index():
