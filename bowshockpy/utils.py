@@ -41,8 +41,10 @@ def print_example(example):
             - Example 5: Custom computation of opacities and intensities
     """
     root_dir = os.path.dirname(os.path.abspath(__file__))
-    with open(f"{example}", "w") as wr:
-        with open(root_dir + f"/inputfiles/{example}", "r") as re:
+    with open(f"{example}", "w", encoding="utf-8") as wr:
+        with open(
+            root_dir + f"/inputfiles/{example}", "r", encoding="utf-8"
+        ) as re:
             for line in re:
                 wr.write(line)
 
@@ -108,7 +110,7 @@ def progressbar_bowshock(
         print()
 
 
-def make_folder(foldername=None):
+def make_folder(foldername):
     """
     Makes a folder of the model
 
@@ -229,7 +231,7 @@ class VarsInParamFile:
 
 def allequal(inputlist):
     """
-    Checks if all elements of an iterale object are equal
+    Checks if all elements of a list or a np.array are equal
 
     Parameters
     ----------
@@ -245,7 +247,10 @@ def allequal(inputlist):
         _list = [list(i) for i in inputlist]
     else:
         _list = inputlist
+    # Make an iterator that returns consecutive keys and groups from the
+    # iterable _list.
     g = groupby(_list)
+    # If all elements are equal, the iterator should stop at the 2nd next()
     return next(g, True) and not next(g, False)
 
 

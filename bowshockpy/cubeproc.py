@@ -287,10 +287,21 @@ class CubeProcessing(MassCube):
 
     def _check_combine_possibility(self, modelcubes):
         for att in self.attribs_to_get_from_cubes:
-            if not ut.allequal([getattr(mc, att) for mc in modelcubes]):
-                raise ValueError(
-                    f"Trying to combine cubes with different {att}"
+            if isinstance(att, (float, int)):
+                att_refval = getattr(modelcubes[0], att)
+                allclose = all(
+                    np.isclose(att_refval, getattr(mc, att), rtol=10 ** (-8))
+                    for mc in modelcubes
                 )
+                if not allclose:
+                    raise ValueError(
+                        f"Trying to combine cubes with different {att}"
+                    )
+            else:
+                if not ut.allequal([getattr(mc, att) for mc in modelcubes]):
+                    raise ValueError(
+                        f"Trying to combine cubes with different {att}"
+                    )
 
     def combine_cubes(self, modelcubes):
         """
