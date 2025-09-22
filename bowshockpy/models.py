@@ -112,13 +112,31 @@ class BowshockModel(BaseModel):
     rbf_obs: float | None, optional
         Final radius of the bowshock [km]. If None, the theoretical final
         radius is calculated.
-    rbf_niters: float | None, optional
-        Number of iterations to compute the
-        final radius of the bowshock, used only if rbf_obs is None. If None,
-        rbf_niters is 1000
+    rbf_niters: float, optional
+        Number of iterations to compute the final radius of the bowshock, used
+        only if rbf_obs is None. Default is 1000
 
     Attributes:
     -----------
+    L0 : float
+        Characteristic scale of the bowshock [km]
+    zj : float
+        Distance between the source and the internal working surface [km]
+    vj : float
+        Velocity of the internal working surface [km/s]
+    va : float
+        Velocity of the ambient gas surrounding the jet [km/s]
+    v0 : float
+        Velocity at which the material is ejected sideways from the internal
+        working surface [km/s]
+    mass : float
+        Total mass of the bowshock shell [Solar masses]
+    distpc : float
+        Distance between the source and the observer [pc]
+    rbf_obs: float | None
+        Final radius of the bowshock [km]
+    rbf_niters: float
+        Number of iterations to compute the final radius of the bowshock
     rbf : float
         Final radius of the bowshock [km]
     zbf : float
