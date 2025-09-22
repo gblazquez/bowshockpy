@@ -161,7 +161,10 @@ class BowshockModelPlot:
 
     def _calc_arrows(self):
         idx_arr = int(len(self.zs_arcsec) / self.narrows)
-        self.larrow = 1 / self.maxvs
+        length_model = np.max(self.zs_arcsec) - np.min(self.zs_arcsec)
+        width_model = np.max(self.rs_arcsec)
+        spatial_larrow = np.max([length_model, width_model]) / 2
+        self.larrow = spatial_larrow / self.maxvs
 
         self.zs_arrows = self.zs_arcsec[::idx_arr]
         self.rs_arrows = self.rs_arcsec[::idx_arr]
