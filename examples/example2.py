@@ -170,11 +170,11 @@ vch0 = -25
 
 # Central velocity of the last channel map [km/s]. Set to None if chanwidth is
 # used.
-vchf = -80
+vchf = None
 
 # Width of the velocity channel [km/s]. If chanwidth>0, then vch0<vchf, if
 # chanwidth<0, then vch0>vchf. Set to None if vchf is used.
-chanwidth = None
+chanwidth = -1.122
 
 # Number of pixels in the right ascension axis.
 nxs = 200

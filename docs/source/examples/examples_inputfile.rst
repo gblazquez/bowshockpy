@@ -279,9 +279,9 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   vch0 = -25
   
-  vchf = -80
+  vchf = None
   
-  chanwidth = None
+  chanwidth = -1.122
   
   nxs = 200
   
