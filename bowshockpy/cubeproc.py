@@ -128,8 +128,8 @@ class CubeProcessing(MassCube):
     btypes_colorbar = {
         "m": r"M$_\odot$ / pixel / channel",
         "I": "Jy/beam",
-        "Ntot": r"cm$^{-2}$ / channel",
-        "Nmol": r"cm$^{-2}$ / channel",
+        "Ntot": r"particles cm$^{-2}$ / channel",
+        "Nmol": r"particles cm$^{-2}$ / channel",
         "tau": "Opacity",
     }
     bunits_default = {
@@ -1807,7 +1807,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             )
             * self.arcsecpix
         )
-        fig, axs, cbax, velcmap = pl.plotmom2(
+        fig, axs, cbax, _ = pl.plotmom2(
             mom2,
             extent=extent,
             ax=ax,
