@@ -749,7 +749,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
         hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
         hdr["NAXIS3"] = np.shape(self.cubes[ck])[0]
-        if self.beamarea is not None:
+        if self.beamarea is not None and "c" in ck:
             hdr["BMAJ"] = self.bmaj / 3600
             hdr["BMIN"] = self.bmin / 3600
             hdr["BPA"] = self.pabeam
@@ -1003,7 +1003,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         hdr["NAXIS"] = 2
         hdr["NAXIS1"] = np.shape(self.cubes[ck])[2]
         hdr["NAXIS2"] = np.shape(self.cubes[ck])[1]
-        if self.beamarea is not None:
+        if self.beamarea is not None and "c" in ck:
             hdr["BMAJ"] = self.bmaj / 3600
             hdr["BMIN"] = self.bmin / 3600
             hdr["BPA"] = self.pabeam
