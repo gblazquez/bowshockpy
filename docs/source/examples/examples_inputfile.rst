@@ -6,11 +6,11 @@ Examples of input file
 
 The quickest way to use ``BowshockPy`` is to run it from the terminal and specify an input file containing all the parameters needed to generate the models. You can find here four different examples of input files:
 
-- `Example 1: A redshifted bowshock <Example 1: A redshifted bowshock>`_
-- `Example 2: A blueshifted bowshock <Example 2: A blueshifted bowshock>`_
-- `Example 3: A side-on bowshock <Example 3: A side-on bowshock>`_
-- `Example 4: Several bowshocks in one cube <Example 4: Several bowshocks in one cube>`_
-- `Example 5: Custom model for the molecular transition <Example 5: Custom model for the molecular transition>`_
+- `Example 1: A redshifted bowshock`_
+- `Example 2: A blueshifted bowshock`_
+- `Example 3: A side-on bowshock`_
+- `Example 4: Several bowshocks in one cube`_
+- `Example 5: Custom model for the molecular transition`_
 
 You can either copy and paste these examples to your local machine, download them from the `examples <https://github.com/gblazquez/bowshockpy/tree/main/examples>`_ folder available in the `GitHub repository <https://github.com/gblazquez/bowshockpy>`_, or print them directy to your working directory
 
