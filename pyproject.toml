@@ -11,12 +11,6 @@ maintainers = [{name = "Guillermo Blazquez-Calero", email = "gblazquez@iaa.es"}]
 description = "A Python package for generating spectral channel maps of a jet-driven bowshock model"
 readme = "README.md"
 license = "MIT"
-# dynamic = [
-#     # "version",
-#     # "maintainers",
-#     # "scripts", 
-#     #"dependencies"
-#     ]
 dependencies = [
     "numpy",
     "matplotlib",

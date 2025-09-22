@@ -282,7 +282,7 @@ def generate_bowshock(p):
         )
 
     # Save the file with all the parameters used to generate the bowshocks
-    os.system(f"cp {p.filename.rstrip('.py')}.py models/{p.modelname}")
+    os.system(f"cp {p.filename.removesuffix('.py')}.py models/{p.modelname}")
     _print_end(p.modelname)
 
 
