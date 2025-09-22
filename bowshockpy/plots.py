@@ -1416,10 +1416,10 @@ def plot_channels(
     cbax = plt.subplot(gs[:, ncol])
 
     nc, nys, nxs = np.shape(cube)
-    nchanscube = nrow * ncol
-    chans_plot = nc
-    selint = int(chans_plot / nchanscube)
-    initchan = selint
+    nchanscube = nc
+    chans_plot = nrow * ncol
+    selint = int(nchanscube / chans_plot)
+    initchan = selint - 1
     vmin = vmin if vmin is not None else np.min(cube)
     vmax = vmax if vmax is not None else np.max(cube)
     vcenter = vcenter if vcenter is not None else (vmax + vmin) / 2.0
