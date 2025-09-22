@@ -109,9 +109,13 @@ class BowshockModel(BaseModel):
         Total mass of the bowshock shell [Solar masses]
     distpc : float
         Distance between the source and the observer [pc]
-    rbf_obs: float, optional
+    rbf_obs: float | None, optional
         Final radius of the bowshock [km]. If None, the theoretical final
         radius is calculated.
+    rbf_niters: float | None, optional
+        Number of iterations to compute the
+        final radius of the bowshock, used only if rbf_obs is None. If None,
+        rbf_niters is 1000
 
     Attributes:
     -----------
@@ -158,16 +162,21 @@ class BowshockModel(BaseModel):
     Bow Shock Model for Jet-driven Protostellar Outflow Shells. Astrophys. J.
     557, 443–450 (2001).
 
-    [3] Blazquez-Calero, G., et al. (in prep)
+    [3] Blazquez-Calero, G., et al. (under rev.)
 
     """
 
-    default_kwargs = {
-        "rbf_niters": 1000,
-    }
-
     def __init__(
-        self, L0, zj, vj, va, v0, mass, distpc, rbf_obs=None, **kwargs
+        self,
+        L0,
+        zj,
+        vj,
+        va,
+        v0,
+        mass,
+        distpc,
+        rbf_obs=None,
+        rbf_niters=1000,
     ):
         super().__init__(distpc)
         self.L0 = L0
@@ -177,6 +186,7 @@ class BowshockModel(BaseModel):
         self.v0 = v0
         self.mass = mass
         self.rbf_obs = rbf_obs
+        self.rbf_niters = rbf_niters
         if self.rbf_obs is None:
             self.rbf = self.rbf_calc()
         else:
@@ -394,11 +404,10 @@ class BowshockModel(BaseModel):
                 method="bounded",
                 bounds=bounds,
             ).x
-        else:
-            ns = self.rbf_niters if ns is None else ns
-            rrs = np.linspace(0, self.rb(0), ns)
-            trials = np.array([np.abs(self.rbf_0(rr)) for rr in rrs])
-            return rrs[np.argmin(trials)]
+        ns = self.rbf_niters if ns is None else ns
+        rrs = np.linspace(0, self.rb(0), ns)
+        trials = np.array([np.abs(self.rbf_0(rr)) for rr in rrs])
+        return rrs[np.argmin(trials)]
 
     def zb_r(self, rr):
         """
@@ -573,8 +582,7 @@ class BowshockModel(BaseModel):
         massint = self.rhoa * np.pi * integ[0]
         if return_residual:
             return massint, integ[1]
-        else:
-            return massint
+        return massint
 
     def rhoa_fromintmass_analytical(self, rb, massint):
         """
@@ -634,8 +642,7 @@ class BowshockModel(BaseModel):
         rhoa = massint / np.pi / integ[0]
         if return_residual:
             return rhoa, integ[1]
-        else:
-            return rhoa
+        return rhoa
 
     def mp0_calc(self, rhoa):
         """
@@ -922,7 +929,8 @@ class IWSModel(BaseModel):
         rr = self.rb(zb)
         if rr < self.rbf / 2:
             sigma = self.sigma_max
-        elif rr >= self.rbf / 2:
+        # elif rr >= self.rbf / 2:
+        else:
             sigma = self.sigma_max * (2 * (self.rbf - rr) / self.rbf) ** (
                 1 / 2
             )
