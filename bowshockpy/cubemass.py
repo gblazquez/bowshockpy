@@ -204,6 +204,25 @@ will be an integer N times the channel width specified as "Nxchannel" (e.g.,
             category=ut.UserError,
         )
 
+    def _modeloutside_error(self):
+        warnings.warn(
+            message="""
+The entire model lie outside the grid of the spectral cube! Please, rerun
+BowshockPy with a correct set of parameter that ensures that the model lies
+inside the defined limits of the spectral cubes. This error is due to at least
+one of three reasons:
+    - The image is too small. Try to make the image larger by increasing the
+      number of pixels (parameters nxs and nys), or increase the physical size
+      of the image (parameter xpmax).
+    - The model is far away from the image center. Try to change the reference
+      pixel where the physical center (the source) is found (parameter refpix).
+    - The model is outside your velocity coverage. Try to change the range of
+      velocity channels of the spectral cube (parameters vch0 and vchf,
+      consider negative floats if the model is blueshifted).\n
+""",
+            category=ut.UserError,
+        )
+
     def _outsidegrid_warning(self):
         warnings.warn(
             message="""
@@ -480,7 +499,8 @@ coincides with the total mass of the cube.
         cpa = np.cos(self.pa)
         spa = np.sin(self.pa)
 
-        outsidegrid_warning = True
+        activate_outsidegrid_warning = False
+        activate_modeloutside_error = True
         ut.progressbar_bowshock(
             0, self.nzs, length=50, timelapsed=0, intervaltime=0
         )
@@ -524,10 +544,12 @@ coincides with the total mass of the cube.
                         self._populatechan(
                             chan, diffv, xpix, ypix, dxpix, dypix, dmass
                         )
+                    activate_modeloutside_error = False
                 else:
-                    if outsidegrid_warning:
-                        self._outsidegrid_warning()
-                        outsidegrid_warning = False
+                    activate_outsidegrid_warning = True
+                    # if activate_outsidegrid_warning:
+                    #     self._outsidegrid_warning()
+                    #     activate_outsidegrid_warning = False
             if self.verbose:
                 tf = datetime.now()
                 intervaltime = (tf - t0).total_seconds()
@@ -535,6 +557,13 @@ coincides with the total mass of the cube.
                 ut.progressbar_bowshock(
                     iz + 1, self.nzs, np.sum(ts), intervaltime, length=50
                 )
+        if activate_modeloutside_error:
+            self._modeloutside_error()
+        elif activate_outsidegrid_warning:
+            self._outsidegrid_warning()
+        else:
+            pass
+
         if hasattr(self.o.m, "mass"):
             _ = self._check_mass_consistency(self.massdiff_tol)
         self._check_sampling()
