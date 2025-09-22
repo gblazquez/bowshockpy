@@ -5,8 +5,8 @@ project = 'bowshockpy'
 copyright = '2025, Guillermo Blazquez-Calero & contributors'
 author = 'Guillermo Blazquez-Calero & contributors'
 
-release =  "0.3.1"
-version =  "0.3.1"
+release =  "1.0.0"
+version =  "1.0.0"
 
 # -- General configuration
 
