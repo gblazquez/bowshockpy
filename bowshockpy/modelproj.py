@@ -24,7 +24,8 @@ class ObsModel(BaseModel):
         Systemic velocity of the source, default 0 [km/s]
     """
 
-    def __init__(self, model, i_deg, pa_deg=0, vsys=0, **kwargs):
+    def __init__(self, model, i_deg, pa_deg=0, vsys=0):
+        super().__init__(model.distpc)
         self.__dict__ = model.__dict__
         self.m = model
         self.i_deg = i_deg

@@ -1151,7 +1151,7 @@ def plot_channel(
     cmap="inferno",
     interpolation="bilinear",
     units="Mass [Msun]",
-    refpix=[0, 0],
+    refpix=None,
     markorigin=True,
     add_beam=False,
     bmin=None,
@@ -1210,6 +1210,9 @@ def plot_channel(
         Axes of the channel map and the colorbar, only returns if
         return_fig_axs=True.
     """
+
+    if refpix is None:
+        refpix = [0, 0]
 
     fig = plt.figure(figsize=(4, 3.75))
 
@@ -1314,7 +1317,7 @@ def plot_channels(
     xminor_locator=0.2,
     ymajor_locator=1,
     yminor_locator=0.2,
-    refpix=[0, 0],
+    refpix=None,
     markorigin=True,
     add_beam=False,
     bmin=None,
@@ -1393,6 +1396,8 @@ def plot_channels(
         Axes of the channel map and the colorbar, only returns if
         return_fig_axs=True.
     """
+    if refpix is None:
+        refpix = [0, 0]
 
     size_factor = 2.5
     beam_ax = (nrow - 1) * ncol
