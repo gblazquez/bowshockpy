@@ -490,6 +490,8 @@ class BowshockModelPlot:
             Full path name of the figure. If None, the the full path name will
             be models/{self.modelname}/bowshock_model.pdf. If the folder tree
             does not exist, it will be created.
+        kwargs : optional
+            Keyword arguments into `~matplotlib.pyplot.savefig`
         """
         if figname is None:
             ut.make_folder(f"models/{self.modelname}")
@@ -1078,6 +1080,8 @@ class BowshockObsModelPlot:
             Full path name of the figure. If None, the the full path name will
             be models/{self.modelname}/bowshock_projected.pdf. If the folder
             tree does not exist, it will be created.
+        kwargs : optional
+            Keyword arguments into `~matplotlib.pyplot.savefig`
         """
         if figname is None:
             ut.make_folder(f"models/{self.modelname}")

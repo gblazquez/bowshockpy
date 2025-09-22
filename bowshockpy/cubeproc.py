@@ -24,10 +24,6 @@ warnings.filterwarnings("error", category=ut.UserError)
 warnings.filterwarnings("always", category=UserWarning)
 
 
-
-
-
-
 class CubeProcessing(MassCube):
     """
     Process a MassCube instance
@@ -83,10 +79,10 @@ class CubeProcessing(MassCube):
         Standard deviation of the noise of the map, before convolution. Set to
         None if maxcube2noise is used.
     maxcube2noise : float
-        Standard deviation of the noise of the map, before convolution, relative
-        to the maximum pixel in the cube. The actual noise will be computed
-        after convolving. This parameter would not be used if sigma_beforeconve
-        is not None.
+        Standard deviation of the noise of the map, before convolution,
+        relative to the maximum pixel in the cube. The actual noise will be
+        computed after convolving. This parameter would not be used if
+        sigma_beforeconve is not None.
     verbose : bolean, optional
         Set True to verbose messages about the computation
     kwargs : optional
@@ -122,7 +118,6 @@ class CubeProcessing(MassCube):
         is called
     """
 
-    default_kwargs = {}
     btypes = {
         "m": "mass",
         "I": "Intensity",
@@ -225,14 +220,6 @@ class CubeProcessing(MassCube):
         self.sigma_beforeconv = sigma_beforeconv
         self.maxcube2noise = maxcube2noise
         self.verbose = verbose
-
-        for kwarg in self.default_kwargs:
-            kwarg_attr = (
-                kwargs[kwarg]
-                if kwarg in kwargs
-                else self.default_kwargs[kwarg]
-            )
-            setattr(self, kwarg, kwarg_attr)
 
         self.cubes = {}
         self.cubes["m"] = self.cube
@@ -858,7 +845,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         savefig : str, optional String of the full path to save the figure. If
             None, no figure is saved. By default, None.
         add_beam : bolean, optional
-            If True, plots a ellipse of the beam size in the left bottom corner.
+            If True, plots a ellipse of the beam size in the left bottom
+            corner.
         return_fig_axs : bool, optional
             If True, returns a tuple of the ax of the channel map and the
             colorbar.  If False, does not return anything.
@@ -936,10 +924,11 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         savefig : str, optional String of the full path to save the figure. If
             None, no figure is saved. By default, None.
         add_beam : bolean, optional
-            If True, plots a ellipse of the beam size in the left bottom corner.
+            If True, plots a ellipse of the beam size in the left bottom
+            corner.
         return_fig_axs : bool, optional
-            If True, returns the figure, axes of the channel map, and the axes the
-            colorbar.  If False, does not return anything.
+            If True, returns the figure, axes of the channel map, and the axes
+            the colorbar.  If False, does not return anything.
 
         Returns:
         --------
@@ -1059,7 +1048,7 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
 
         ckpv = self._newck(ck, "r")
         if ckpv not in self.cubes:
-            self._rotate(angle=self.papv+90, ck=ck, forpv=True)
+            self._rotate(angle=self.papv + 90, ck=ck, forpv=True)
 
         pvimage = moments.pv(
             self.cubes[ckpv],
@@ -1378,6 +1367,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         return_fig_axs_im : bool, optional
             If True, returns the figure, axes of the channel map, the axes the
             colorbar, and the image. If False, does not return anything.
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.plotpv`
 
         Returns:
         --------
@@ -1454,7 +1445,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             The matplotlib.axes.Axes instance in which the color bar is drawn.
             If None, it will create one. By default, None
         add_beam : bolean, optional
-            If True, plots a ellipse of the beam size in the left bottom corner.
+            If True, plots a ellipse of the beam size in the left bottom
+            corner.
         savefits : bool
             If True, the moment will be saved in fits format
         fitsname : str
@@ -1467,6 +1459,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         return_fig_axs_im : bool, optional
             If True, returns the figure, axes of the channel map, the axes the
             colorbar, and the image. If False, does not return anything.
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.plotsumint`
 
         Returns:
         --------
@@ -1563,6 +1557,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         return_fig_axs_im : bool, optional
             If True, returns the figure, axes of the channel map, the axes the
             colorbar, and the image. If False, does not return anything.
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.plotmom0`
 
         Returns:
         --------
@@ -1650,7 +1646,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             The matplotlib.axes.Axes instance in which the color bar is drawn.
             If None, it will create one. By default, None
         add_beam : bolean, optional
-            If True, plots a ellipse of the beam size in the left bottom corner.
+            If True, plots a ellipse of the beam size in the left bottom
+            corner.
         savefits : bool
             If True, the moment will be saved in fits format.
         fitsname : str
@@ -1663,6 +1660,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         return_fig_axs_im : bool, optional
             If True, returns the figure, axes of the channel map, the axes the
             colorbar, and the image. If False, does not return anything.
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.plotmom1`
 
         Returns:
         --------
@@ -1754,7 +1753,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             The matplotlib.axes.Axes instance in which the color bar is drawn.
             If None, it will create one. By default, None
         add_beam : bolean, optional
-            If True, plots a ellipse of the beam size in the left bottom corner.
+            If True, plots a ellipse of the beam size in the left bottom
+            corner.
         savefits : bool
             If True, the moment will be saved in fits format
         fitsname : str
@@ -1767,6 +1767,8 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         return_fig_axs_im : bool, optional
             If True, returns the figure, axes of the channel map, the axes the
             colorbar, and the image. If False, does not return anything.
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.plotmom2`
 
         Returns:
         --------
@@ -1853,20 +1855,23 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
             The matplotlib.axes.Axes instance in which the color bar is drawn.
             If None, it will create one. By default, None
         add_beam : bolean, optional
-            If True, plots a ellipse of the beam size in the left bottom corner.
+            If True, plots a ellipse of the beam size in the left bottom
+            corner.
         savefits : bool
             If True, the moments and the position velocity diagram will be
             saved in fits format
         fitsname : str
             Relative path name of the fits file. If None, it will be saved as
-            models/{self.modelname}/fits/{ck}_maxintens.fits. If the path does not
-            exist, it will be created.
+            models/{self.modelname}/fits/{ck}_maxintens.fits. If the path does
+            not exist, it will be created.
         savefig : str, optional
             String of the full path to save the figure. If None, no figure is
             saved. By default, None.
         return_fig_axs_im : bool, optional
             If True, returns the figure, axes of the channel map, the axes the
             colorbar, and the image. If False, does not return anything.
+        kwargs : optional
+            Keyword arguments into `~bowshockpy.plot.plotmaxintens`
 
         Returns:
         --------
@@ -2192,6 +2197,10 @@ The rms of the convolved image is {self.sigma_noises[nck]:.5} {self.bunits[self.
         Computes all the moments and pv to the cubes listed in self.listmompvs,
         including a list of values of the main parameters of the model in the
         first ax
+
+        kwargs : optional
+            Keyword arguments into
+            `~bowshockpy.cubeproc.CubeProcessing.momentsandpv_and_params`
         """
         for ck in self.listmompvs:
             self.momentsandpv_and_params(ck, **kwargs)
