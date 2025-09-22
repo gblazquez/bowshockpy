@@ -4,6 +4,7 @@ terminal"""
 import argparse
 import os
 import runpy
+import numpy as np
 
 import astropy.units as u
 
@@ -199,7 +200,9 @@ def generate_bowshock(p):
         plt_model = bsm.get_modelplot(
             modelname=ps["modelname"] + f" bowshock_{i+1}",
         )
-        plt_model.plot()
+        plt_model.plot(
+            max_plotdens=np.percentile(plt_model.surfdenss_gcm2, 70),
+        )
         plt_model.savefig(
             f"models/{ps['modelname']}/bowshock_model_{i+1}.pdf",
         )
