@@ -115,7 +115,7 @@ Tbg = 2.7
 # parameters).
 
 """
-bowshock 1 [redshifted]
+bowshock 1 [blueshifted]
 """
 
 # Inclination angle of the bowshock symmetry axis with respect to the line of

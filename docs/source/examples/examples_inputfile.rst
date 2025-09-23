@@ -245,7 +245,7 @@ This example of input file generates one blueshifted bowshock. As defined by out
   
   
   """
-  bowshock 1 [redshifted]
+  bowshock 1 [blueshifted]
   """
   
   i_1 = 25

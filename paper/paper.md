@@ -64,7 +64,7 @@ authors:
     corresponding: false
     affiliation: 9 
   - name: Rodrigo D. Garduño
-    orcid: 
+    orcid: 0009-0006-9272-308X
     corresponding: false
     affiliation: 10
 
