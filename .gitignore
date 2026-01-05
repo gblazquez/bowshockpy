@@ -10,7 +10,7 @@ notebook2docs.py
 makedocs.sh
 
 # remove when submit to joss 
-paper/
+# paper/
 
 .pylintrc
 pyrightconfig.json
