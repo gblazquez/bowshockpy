@@ -20,7 +20,7 @@ Workflow
 
 Below, we present a brief description of the workflow of ``BowshockPy``. The name of the model parameters, as defined in :doc:`input parameters<inputparams>`, appear in parenthesis:
 
-* From the mass and momentum conservation equations, the morphology and kinematics of the bowshock shell can be obtained as a function of a few free parameters (see `Ostriker et al. (2001) <https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract>`_ and  `Tabone et al. (2018) <https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract>`_). These model parameters are characteristic length scale (L0), the distance between the working surface and the source (zj), the velocity of the internal working surface (vj), velocity of the material surrounding jet (va), and the velocity at which the material is ejected from the internal working surface (v0). The surface density at each point of the bowshock is computed as a function of the shell integrated mass (mass) (Blazquez-Calero et al. under rev.). At this stage, we have all the parameters that define the model in its own reference frame. The rest of the workflow depends on the observer reference frame.
+* From the mass and momentum conservation equations, the morphology and kinematics of the bowshock shell can be obtained as a function of a few free parameters (see `Ostriker et al. (2001) <https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract>`_ and  `Tabone et al. (2018) <https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract>`_). These model parameters are characteristic length scale (L0), the distance between the working surface and the source (zj), the velocity of the internal working surface (vj), velocity of the material surrounding jet (va), and the velocity at which the material is ejected from the internal working surface (v0). The surface density at each point of the bowshock is computed as a function of the shell integrated mass (mass) `Blazquez-Calero et al. (2025) <https://ui.adsabs.harvard.edu/abs/2025NatAs.tmp..254B/abstract>`_. At this stage, we have all the parameters that define the model in its own reference frame. The rest of the workflow depends on the observer reference frame.
 
 * In order to perform the mock observations, some parameters dependent of the observer reference frame are used, mainly: the inclination angle of the bowshock axis with respect to the line-of-sight (i), the observer distance to the source (distpc), the systemic velocity (vsys), and the position angle of the bowshock axis (PA). 
 
@@ -34,10 +34,11 @@ References
 
 - Tabone, B., Raga, A., Cabrit, S. & Pineau des Forêts, G. "Interaction between a pulsating jet and a surrounding disk wind. A hydrodynamical perspective." Astron. Astrophys. 614, A119 (2018).
 
-- Ostriker, E. C., Lee, C.-F., Stone, J. M. & Mundy, L. G. A Ballistic Bow Shock Model for Jet-driven Protostellar Outflow Shells. Astrophys. J. 557, 443–450 (2001).
+- Ostriker, E. C., Lee, C.-F., Stone, J. M. & Mundy, L. G. "A Ballistic Bow Shock Model for Jet-driven Protostellar Outflow Shells". Astrophys. J. 557, 443–450 (2001).
 
-- Blazquez-Calero, G., Anglada, G., Cabrit, S., Osorio, M., et al. (under rev.).
+- Blazquez-Calero, G., Anglada, G., Cabrit, S., Osorio, M., et al. "Bowshocks driven by the pole-on molecular jet of outbursting protostar SVS 13". Nature Astronomy (2025). doi:10.1038/s41550-025-02716-2
 
 .. _Tabone et al. (2018): https://ui.adsabs.harvard.edu/abs/2018A%26A...614A.119T/abstract
 .. _Ostriker et al. (2001): https://ui.adsabs.harvard.edu/abs/2001ApJ...557..443O/abstract
+.. _Blazquez-Calero et al. (2025): https://ui.adsabs.harvard.edu/abs/2025NatAs.tmp..254B/abstract
  
