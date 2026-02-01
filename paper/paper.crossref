@@ -6,8 +6,8 @@
            version="5.3.1"
            xsi:schemaLocation="http://www.crossref.org/schema/5.3.1 http://www.crossref.org/schemas/crossref5.3.1.xsd">
   <head>
-    <doi_batch_id>20260105120916-eea69719de8d09c4db8b8ee71d07f55fc9cf654d</doi_batch_id>
-    <timestamp>20260105120916</timestamp>
+    <doi_batch_id>20260201163040-eea69719de8d09c4db8b8ee71d07f55fc9cf654d</doi_batch_id>
+    <timestamp>20260201163040</timestamp>
     <depositor>
       <depositor_name>JOSS Admin</depositor_name>
       <email_address>admin@theoj.org</email_address>
@@ -249,7 +249,7 @@
             <cYear>1994</cYear>
             <unstructured_citation>Biro, S., &amp; Raga, A. C. (1994). A Numerical Simulation of a Variable Velocity Jet. 434, 221. https://doi.org/10.1086/174719</unstructured_citation>
           </citation>
-          <citation key="blazquez-calero2025">
+          <citation key="blazquezcalero2025">
             <article_title>Bowshocks driven by the pole-on molecular jet of outbursting protostar SVS 13</article_title>
             <author>Blázquez-Calero</author>
             <journal_title>Nature Astronomy</journal_title>
@@ -434,9 +434,9 @@
             <author>Smith</author>
             <issue>2</issue>
             <volume>339</volume>
-            <doi>10.1046/j.1365-8711.20.3.06195.x</doi>
+            <doi>10.1046/j.1365-8711.2003.06195.x</doi>
             <cYear>2003</cYear>
-            <unstructured_citation>Smith, M. D., Khanzadyan, T., &amp; Davis, C. J. (2003). Anatomy of the Herbig-Haro object HH7 bow shock. 339(2), 524–536. https://doi.org/10.1046/j.1365-8711.20.3.06195.x</unstructured_citation>
+            <unstructured_citation>Smith, M. D., Khanzadyan, T., &amp; Davis, C. J. (2003). Anatomy of the Herbig-Haro object HH7 bow shock. 339(2), 524–536. https://doi.org/10.1046/j.1365-8711.2003.06195.x</unstructured_citation>
           </citation>
           <citation key="stone1993">
             <article_title>Numerical Simulations of Protostellar Jets with Nonequilibrium Cooling. I. Method and Two-dimensional Results</article_title>
@@ -461,6 +461,14 @@
             <doi>10.1051/0004-6361/201629493</doi>
             <cYear>2017</cYear>
             <unstructured_citation>Tafalla, M., Su, Y.-N., Shang, H., Johnstone, D., Zhang, Q., Santiago-Garcı́a, J., Lee, C.-F., Hirano, N., &amp; Wang, L.-Y. (2017). Anatomy of the internal bow shocks in the IRAS 04166+2706 protostellar jet. 597, A119. https://doi.org/10.1051/0004-6361/201629493</unstructured_citation>
+          </citation>
+          <citation key="tafalla2026">
+            <article_title>Interaction of the central jet with the surrounding gas in the protostellar outflow from IRAS 04166+2706</article_title>
+            <author>Tafalla</author>
+            <journal_title>arXiv e-prints</journal_title>
+            <doi>10.48550/arXiv.2601.05310</doi>
+            <cYear>2026</cYear>
+            <unstructured_citation>Tafalla, M., Johnstone, D., Santiago-Garcia, J., Zhang, Q., Shang, H., &amp; Lee, C.-F. (2026). Interaction of the central jet with the surrounding gas in the protostellar outflow from IRAS 04166+2706. arXiv e-Prints, arXiv:2601.05310. https://doi.org/10.48550/arXiv.2601.05310</unstructured_citation>
           </citation>
           <citation key="virtanen2020">
             <article_title>SciPy 1.0: fundamental algorithms for scientific computing in Python</article_title>
